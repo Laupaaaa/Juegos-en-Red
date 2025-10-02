@@ -7,11 +7,11 @@
     - Correo Universidad: p.ortizf.2023@alumnos.urjc.es
     - GitHub: Laupaaaa
   - Daniel Corbacho Anes
-    - Correo Universidad:
-    - GitHub:
+    - Correo Universidad: d.corbacho.2023@alumnos.urjc.es
+    - GitHub: Fostroppp
   - Alejando Hernández Ruiz
-    - Correo Universidad:
-    - GitHub:
+    - Correo Universidad: a.hernandezr.2023@alumnos.urjc.es
+    - GitHub: alexhr1404
   - Ángel Bermudez Fariñas
-    - Correo Universidad:
-    - GitHub: 
+    - Correo Universidad: a.bermudez.2023@alumnos.urjc.es
+    - GitHub: angelbremudezzz
