@@ -16,3 +16,5 @@
   - Ángel Bermudez Fariñas
     - Correo Universidad: a.bermudez.2023@alumnos.urjc.es
     - GitHub: angelbremudezzz
+   
+- Enlace al GDD: [Ir a GDD de "El Enigma De La Torre Encantada"](./ElEnigmaDeLaTorreEncantada.md)
