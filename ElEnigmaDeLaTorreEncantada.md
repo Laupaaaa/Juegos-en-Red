@@ -4,7 +4,9 @@
 
 # **El Enigma de la Torre Encantada**
 
+![Logo "El Enigma de la Torre Encantada"](imagenes/logo.jpg)
 
+REALIZADO POR:
 
 PAULA ORTIZ FERNÁNDEZ  
 DANIEL CORBACHO ANES  
@@ -13,78 +15,78 @@ ALEJANDRO HERNÁNDEZ RUIZ
 
 # **Índice**
 
-**[1.Introducción	](#1introducción)**
+* **[1.Introducción	](#1introducción)**
 
-[Título](#título)
+  * [Título](#título)
 
-[Género](#género)
+  * [Género](#género)
 
-[Plataforma](#plataforma)
+  * [Plataforma](#plataforma)
 
-[Público objetivo](#público-objetivo)
+  * [Público objetivo](#público-objetivo)
 
-[Descripción \- Sinopsis](#descripción---sinopsis)
+  * [Descripción \- Sinopsis](#descripción---sinopsis)
 
-**[2\. Imagen y Diseño Visual](#2-imagen-y-diseño-visual)**
+* **[2\. Imagen y Diseño Visual](#2-imagen-y-diseño-visual)**
 
-[Descripción, Estilo Visual y Aspectos técnicos](#descripción-estilo-visual-y-aspectos-técnicos)
+  * [Descripción, Estilo Visual y Aspectos técnicos](#descripción-estilo-visual-y-aspectos-técnicos)
 
-[Bocetos](#bocetos)
+  * [Bocetos](#bocetos)
 
-[Logotipo](#logotipo)
+  * [Logotipo](#logotipo)
 
-[Inspiración y Referencias](#inspiración-y-referencias)
+  * [Inspiración y Referencias](#inspiración-y-referencias)
 
-**[3\. Sonido	](#3-sonido)**
+* **[3\. Sonido	](#3-sonido)**
 
-[Música	](#música)
+  * [Música	](#música)
 
-[Efectos de sonido	](#efectos-de-sonido)
+  * [Efectos de sonido	](#efectos-de-sonido)
 
-**[4\. Jugabilidad	](#4-jugabilidad)**
+* **[4\. Jugabilidad	](#4-jugabilidad)**
 
-[Objetivo del juego	](#objetivo-del-juego)
+  * [Objetivo del juego	](#objetivo-del-juego)
 
-[Mecánicas principales](#mecánicas-principales)
+  * [Mecánicas principales](#mecánicas-principales)
 
-[Mecánicas secundarias](#mecánicas-secundarias)
+  * [Mecánicas secundarias](#mecánicas-secundarias)
 
-[Progresión y Logros](#progresión-y-logros)
+  * [Progresión y Logros](#progresión-y-logros)
 
-[Físicas](#físicas)
+  * [Físicas](#físicas)
 
-[Escenarios](#escenarios)
+  * [Escenarios](#escenarios)
 
-[Piso 1: El Corredor de los Interruptores](#piso-1-el-corredor-de-los-interruptores)
+    * [Piso 1: El Corredor de los Interruptores](#piso-1-el-corredor-de-los-interruptores)
 
-[Piso 2: El Laboratorio del Caldero](#piso-2-el-laboratorio-del-caldero)
+    * [Piso 2: El Laboratorio del Caldero](#piso-2-el-laboratorio-del-caldero)
 
-[Piso 3: La Cámara de los Ritmos](#piso-3-la-cámara-de-los-ritmos)
+    * [Piso 3: La Cámara de los Ritmos](#piso-3-la-cámara-de-los-ritmos)
 
-[Controles](#controles)
+  * [Controles](#controles)
 
-[Interfaz](#interfaz)
+  * [Interfaz](#interfaz)
 
-[Objetos Interactivos / Mejoras](#objetos-interactivos--mejoras)
+  * [Objetos Interactivos / Mejoras](#objetos-interactivos--mejoras)
 
-**[5\. Narrativa](#5-narrativa)**
+* **[5\. Narrativa](#5-narrativa)**
 
-[Sinopsis del mundo y trama](#sinopsis-del-mundo-y-trama)
+  * [Sinopsis del mundo y trama](#sinopsis-del-mundo-y-trama)
 
-[Desarrollo de personajes](#desarrollo-de-personajes)
+  * [Desarrollo de personajes](#desarrollo-de-personajes)
 
-[Personajes principales](#personajes-principales)
+  * [Personajes principales](#personajes-principales)
 
-[Estructura narrativa](#estructura-narrativa)
+  * [Estructura narrativa](#estructura-narrativa)
 
-[Contexto / ambientación](#contexto--ambientación)
+  * [Contexto / ambientación](#contexto--ambientación)
 
-**[6.Diagrama de Flujo y Prototipo](#6diagrama-de-flujo-y-prototipo)**
+* **[6.Diagrama de Flujo y Prototipo](#6diagrama-de-flujo-y-prototipo)**
 
-**[7\. Comunicación y Marketing	](#7-comunicación-y-marketing)**
+* **[7\. Comunicación y Marketing	](#7-comunicación-y-marketing)**
 
-**[8\. Bibliografía	](#8-bibliografía)**
-
+* **[8\. Bibliografía	](#8-bibliografía)**
+  
 # **1.Introducción** 
 
 ## **Título** 
@@ -120,19 +122,24 @@ Asimismo, se seguirá una estética cartoon, generando un ambiente amigable para
 
 Se han creado unos cuantos bocetos, incluso se ha comenzado con un posible diseño final, en el que se muestran algunos escenarios o pruebas del juego:   
 Boceto nivel 2:
+![Boceto Nivel 2](imagenes/boceto1.jpg)
 
 Boceto prueba: a través de pistas en las paredes y las instrucciones de los libros, deberán encontrar la solución al problema:
+![Boceto prueba](imagenes/boceto2.jpg)
 
-
-Arco nivel 1:
+Arco nivel 1: el nivel 1 estará compuesto por arcos de este estilo con antorchas y palancas 
+![Arco nivel 1](imagenes/arco.jpg)
 
 ## **Logotipo** 
 
 A la hora de diseñar el logotipo, se ha querido representar los aspectos clave del videojuego: dos magos, una torre y un elixir en la cima. Con esto, cualquier usuario que lo vea puede entender un poco de qué va el juego. 
+![Logo "El Enigma de la Torre Encantada"](imagenes/logo.jpg)
 
 ## **Inspiración y Referencias**  
 
 El concepto de este juego surgió como la idea de un juego cooperativo, en el cúal se tuviesen que ayudar varios usuarios para lograr un objetivo común. Para ello se pensó en juegos como “Pico Park” o “Fireboy and Watergirl”. 
+![Referencia Pico Park](imagenes/picoPark.jpg)
+![Referencia Fireboy Watergirl](imagenes/fireboyWatergirl.jpg)
 
 En cuanto a la inspiración de mecánicas, se ha decidido usar algunas parecidas a las del juego mencionado “Pico Park”, como pueden ser la colocación y diseño de puertas, botones y llaves.   
 En cuanto al juego “Fireboy and Watergirl”, la inspiración principal es en el fondo del escenario, ya que una pared blanca no es adecuada para la ambientación del propio juego, sino un fondo que se asemeje al de una torre de la época medieval, que es donde se desarrolla la historia del juego. Para esta inspiración, se han buscado algunas imágenes de internet, así como imágenes, escenarios e historias fruto de la imaginación.  
@@ -205,7 +212,8 @@ Las físicas de El Enigma de la Torre Encantada son las siguientes:
   * Trampas  
   * Pulsación de botones.  
 * Movimiento de los objetos de las diferentes pruebas.
-
+* Daño: en el escenario habrá distintos objetos y trampas, así como el orden incorrecto al seguir una secuencia de pasos, que podrán quitar vida a los personajes
+  
 ## **Escenarios** 
 El escenario de este juego se tratará de la “Torre Encantada”. Esta se dividirá en cuatro pisos, tres de ellos serán los niveles jugables por los usuarios dónde se encuentren las pruebas y acertijos, y el último se trata de la cima de la torre, dónde se encuentra el deseado elixir. 
 
@@ -297,14 +305,16 @@ En el centro de este mundo se alza la Torre Encantada, una construcción legenda
 
 El interior de la torre está dividido en varias salas, cada una con su propia ambientación. Estas han sido explicadas anteriormente en el apartado de [Escenarios](#escenarios).
 
-El ambiente general del juego mantiene una estética oscura y misteriosa, con colores en escala de grises y toques de luz mágica que marcan los objetos y personajes importantes. Esto refuerza la dualidad entre la luz y la sombra, la cooperación y la traición, temas principales del juego.  
-La música y los efectos de sonido acompañan esta atmósfera, intensificando la sensación de aventura, tensión y magia que rodea toda la ascensión por la torre.
-
+El ambiente general del juego mantiene una estética oscura y misteriosa, con colores en escala de grises y toques de luz mágica que marcan los objetos y personajes importantes. 
 ---
 
 # **6.Diagrama de Flujo y Prototipo**
 
 A continuación se presenta un diagrama de flujo en el que se muestra el esquema que seguirá el juego, así como un prototipo de las futuras interfaces.   
+![Diagrama de flujo](imagenes/DiagramaFlujo.jpg)
+![Prototipo1](imagenes/Prototipo1.png)
+![Prototipo2](imagenes/Prototipo2.png)
+![Prototipo3](imagenes/Prototipo3.png)
 
 
 ---
@@ -327,3 +337,6 @@ Por último, para llegar a un mayor rango de personas y que comprendan mejor el 
 
 Toda la historia, personajes, mecánicas, arte y, en general todo el contenido de este documento ha sido fruto de la imaginación de los integrantes del equipo siguiendo la rúbrica y especificaciones del enunciado de la práctica. 
 
+* Los dibujos se han realizado usando: <a href="https://www.clipstudio.net/es/?gad_source=1&gad_campaignid=16152707213&gbraid=0AAAAADy1cQnNcCCgB9czulc02MgTCoyO7&gclid=Cj0KCQjw9czHBhCyARIsAFZlN8QWLZmwXPloxo9gdc2wwsykfjXo1cb7ZaZOJurup7FkNUqMbMHlJvUaAkOGEALw_wcB" title="Clip Studio Paint"> Clip Studio Paint</a> 
+* El diagrama de flujo se ha realizado usando:<a href="https://app.diagrams.net/" title="Draw.io"> Draw.io </a>
+* Los prototipos se han realizado con: <a href="https://www.figma.com/files/team/1361365474905584726/recents-and-sharing" title="Figma"> Figma </a>
