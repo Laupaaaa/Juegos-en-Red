@@ -4,7 +4,7 @@
 
 # **El Enigma de la Torre Encantada**
 
-![Logo "El Enigma de la Torre Encantada"](imagenes/logo.jpg)
+![Logo "El Enigma de la Torre Encantada"](imagenes/logoSinFondo.png)
 
 REALIZADO POR:
 
