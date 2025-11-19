@@ -32,12 +32,15 @@ export class GameScene extends Phaser.Scene {
         this.ball = null;
         this.isPaused = false;
         this.escWasDown = false;
+        this.abrirLibreria = false; 
         this.processor = new CommandProcessor(); 
+        this. maxJump = 3; 
     }
 
     create(){
         this.crearEscenario(); 
         this.crearPlataformas(); 
+        this.crearBarreraInvisible();       
         this.setUpPlayers(); 
         this.establecerColisiones(); 
 
@@ -54,13 +57,23 @@ export class GameScene extends Phaser.Scene {
 
 
         this.escKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC); 
+        this.lkey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.L); 
     }
 
-    update(){
+    update(time, delta){
         if(this.escKey.isDown && !this.escWasDown){
             this.togglePause(); 
         }
+        this.escWasDown = this.escKey.isDown;        
+        
+        this.abrirLibreria = false; //volver a poner a false si no ha habido overlap
+        if(this.lkey.isDown) this.abrirLibreria = true; 
 
+        // Comprobar si alguno de los jugadores está saltando
+        this.players.forEach(paddle => {
+            paddle.update(delta);
+        });
+        
         this.inputMappings.forEach(mapping => {
             const paddle = this.players.get(mapping.playerId);
             let direction = null; 
@@ -82,63 +95,117 @@ export class GameScene extends Phaser.Scene {
 
     crearEscenario(){
         this.suelo = this.physics.add.image(500, 472, 'sueloR'); 
-        this.suelo.setImmovable(true);        
+        this.suelo.setImmovable(true);
+        this.suelo.body.allowGravity = false;
         this.pared = this.physics.add.image(500, 205, 'paredR'); 
         this.pared.setImmovable(true);        
+        this.pared.body.allowGravity = false;
         this.estanteria = this.physics.add.image(190, 300, 'estanteriaR'); 
         this.estanteria.setImmovable(true); 
+        this.estanteria.body.allowGravity = false;
         this.bolaCristal = this.physics.add.image(205,300, 'bolaCristalR'); 
-        this.bolaCristal.setImmovable(true);        
+        this.bolaCristal.setImmovable(true);     
+        this.bolaCristal.body.allowGravity = false;   
         this.caldero = this.physics.add.image(500,430, 'calderoR'); 
         this.caldero.setImmovable(true);
+        this.caldero.body.allowGravity = false;
         this.campoFuerza = this.physics.add.image(915,270, 'campoFuerzaR'); 
         this.campoFuerza.setImmovable(true);
+        this.campoFuerza.body.allowGravity = false;
         this.cofre = this.physics.add.image(500,295, 'cofreR'); 
         this.cofre.setImmovable(true);
+        this.cofre.body.allowGravity = false;
         this.llave = this.physics.add.image(200,180, 'llaveR'); 
-        this.llave.setImmovable(true);        
+        this.llave.setImmovable(true);      
+        this.llave.body.allowGravity = false;  
         this.pergamino = this.physics.add.image(770,190, 'pergaminoR'); 
         this.pergamino.setImmovable(true);        
+        this.pergamino.body.allowGravity = false;
         this.planta = this.physics.add.image(190,358, 'plantaR'); 
         this.planta.setImmovable(true);        
+        this.planta.body.allowGravity = false;
         this.pociones = this.physics.add.image(194,268, 'pocionesR'); 
-        this.pociones.setImmovable(true);        
+        this.pociones.setImmovable(true);       
+        this.pociones.body.allowGravity = false; 
         this.velas = this.physics.add.image(165,305, 'velasR'); 
         this.velas.setImmovable(true);   
-        
+        this.velas.body.allowGravity = false;
+    }
+
+    crearBarreraInvisible(){
+        // Crear una barrera invisible que evita que suba hacia arriba (pero pueda andar libremente por el suelo)
+        this.barreraInvisible = this.physics.add.staticImage(500, 320, null);
+        this.barreraInvisible.setSize(1000, 10); // Wide barrier, thin height
+        this.barreraInvisible.setVisible(false);
+        this.barreraInvisible.body.setSize(1000, 10);
+
+        // Crear collider invisible para que pueda usar la balda superior de la estantería como plataforma
+        this.estanteriaColl = this.physics.add.sprite(190, 210, 'white_pixel');
+        this.estanteriaColl.body.setAllowGravity(false); 
+        this.estanteriaColl.body.setImmovable(true); 
+        this.estanteriaColl.setAlpha(0.0); 
+        this.estanteriaColl.setScale(4, 0.5); 
     }
 
     crearPlataformas(){
         this.plataformas = this.physics.add.staticGroup();
         this.plataformas.create(446, 325, 'estanteR');
         this.plataformas.create(510, 325, 'estanteR'); 
+        this.plataformas.create(446, 240, 'estanteR'); 
+        this.plataformas.create(330, 360, 'estanteR'); 
+        this.plataformas.create(330, 225, 'estanteR'); 
     }
 
     establecerColisiones(){
         this.players.forEach(player => {
             //this.physics.add.collider(player.sprite, this.pared);
-            this.physics.add.collider(player.sprite, this.estanteria);
+            this.physics.add.collider(player.sprite, this.estanteriaColl);
             this.physics.add.collider(player.sprite, this.plataformas);
-            this.physics.add.collider(player.sprite, this.bolaCristal);
+            //this.physics.add.collider(player.sprite, this.bolaCristal);
             this.physics.add.collider(player.sprite, this.caldero);
-            this.physics.add.collider(player.sprite, this.campoFuerza);
+            //this.physics.add.collider(player.sprite, this.campoFuerza);
             this.physics.add.collider(player.sprite, this.cofre);
             //this.physics.add.collider(player.sprite, this.pergamino);
-            this.physics.add.collider(player.sprite, this.planta);
-            this.physics.add.collider(player.sprite, this.pociones);
-            this.physics.add.collider(player.sprite, this.velas);
+            //this.physics.add.collider(player.sprite, this.planta);
+            //this.physics.add.collider(player.sprite, this.pociones);
+            //this.physics.add.collider(player.sprite, this.velas);
 
             this.physics.add.overlap(player.sprite, this.llave, () => {
                 this.llave.destroy();
                 console.log("Llave conseguida");
             }); 
+            this.physics.add.overlap(player.sprite, this.estanteria, () => {
+                if(this.abrirLibreria) {
+                    this.scene.pause();
+                    this.scene.launch('LibreriaScene', {originalScene: 'GameScene'})
+                }
+            }); 
+
+
+            // Barrera invisible para permitir area de suelo dónde se desplacen libremente, y área de salto para subir por las plataformas
+            this.physics.add.collider(
+                player.sprite,
+                this.barreraInvisible,
+                () => {
+                    // al colisionar con la barrera invisible mientras el jugador va hacia arriba, salta
+                    if (!player.isJumping ) {
+                        player.jump();
+                    }
+                },
+                () => {
+                    // Process callback - only collide when moving up and not jumping
+                    const isMovingUp = player.sprite.body.velocity.y < 0;
+                    return !player.isJumping && isMovingUp;
+                },
+                this
+            );
 
         });
     }
 
     setUpPlayers(){
-        const leftPaddle = new Paddle(this, 'player1', 50, 300);
-        const rightPaddle = new Paddle(this, 'player2', 950, 300);
+        const leftPaddle = new Paddle(this, 'player1', 50, 400);
+        const rightPaddle = new Paddle(this, 'player2', 950, 400);
 
         this.players.set('player1', leftPaddle);
         this.players.set('player2', rightPaddle);
@@ -149,7 +216,7 @@ export class GameScene extends Phaser.Scene {
                 upKey: 'W',
                 downKey:'S',
                 leftKey: 'A',
-                rightKey: 'D'
+                rightKey: 'D',
             },
             {
                 playerId: 'player2',

@@ -4,6 +4,7 @@ import { GameScene } from './scenes/GameScene.js';
 import { PauseScene } from './scenes/PauseScene.js';
 import { CreditsScene } from './scenes/CreditsScene.js';
 import { HistoriaScene } from './scenes/HistoriaScene.js';
+import { LibreriaScene } from './scenes/LibreriaScene.js';
 
 const config = {
     type: Phaser.AUTO,
@@ -13,11 +14,11 @@ const config = {
     physics: {
         default: 'arcade',
         arcade: {
-            gravity: { y: 0 },
+            gravity: { y: 9000 },
             debug: false
         }
     },
-    scene: [ GameScene, PauseScene, CreditsScene, HistoriaScene, MenuScene],
+    scene: [  MenuScene, GameScene, PauseScene, CreditsScene, HistoriaScene, LibreriaScene],
     backgroundColor: '#47ddffff',
 }
 
