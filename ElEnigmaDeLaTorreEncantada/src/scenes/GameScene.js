@@ -14,8 +14,8 @@ export class GameScene extends Phaser.Scene {
         this.load.image('paredR', '/imagenes/paredYTecho.png'); 
         this.load.image('sueloR', '/imagenes/suelo.png');
         this.load.image('bolaCristalR', '/imagenes/bolaCristal.png');
-        this.load.image('calderoR', '/imagenes/caldero.png');
-        this.load.image('campoFuerzaR', '/imagenes/campodefuerza2.png');
+        this.load.image('calderoR', '/imagenes/calderoColor.png');
+        this.load.image('campoFuerzaR', '/imagenes/campodefuerza.png');
         this.load.image('cofreR', '/imagenes/cofre.png');
         this.load.image('estanteriaR', '/imagenes/estanteria.png');
         this.load.image('llaveR', '/imagenes/llave.png');
@@ -24,6 +24,7 @@ export class GameScene extends Phaser.Scene {
         this.load.image('pocionesR', '/imagenes/pociones.png');
         this.load.image('velasR', '/imagenes/velas.png');
         this.load.image('estanteR', '/imagenes/estante.png');
+        this.load.image('librosR', '/imagenes/libros.png');
     }
 
     init(){
@@ -96,40 +97,56 @@ export class GameScene extends Phaser.Scene {
     crearEscenario(){
         this.suelo = this.physics.add.image(500, 472, 'sueloR'); 
         this.suelo.setImmovable(true);
+        this.suelo.setScale(0.55);    
         this.suelo.body.allowGravity = false;
         this.pared = this.physics.add.image(500, 205, 'paredR'); 
         this.pared.setImmovable(true);        
+        this.pared.setScale(0.55);    
         this.pared.body.allowGravity = false;
-        this.estanteria = this.physics.add.image(190, 300, 'estanteriaR'); 
+        this.estanteria = this.physics.add.image(165, 300, 'estanteriaR'); 
         this.estanteria.setImmovable(true); 
+        this.estanteria.setScale(0.6);    
         this.estanteria.body.allowGravity = false;
-        this.bolaCristal = this.physics.add.image(205,300, 'bolaCristalR'); 
+        this.bolaCristal = this.physics.add.image(185,303, 'bolaCristalR'); 
         this.bolaCristal.setImmovable(true);     
+        this.bolaCristal.setScale(0.6);    
         this.bolaCristal.body.allowGravity = false;   
         this.caldero = this.physics.add.image(500,430, 'calderoR'); 
         this.caldero.setImmovable(true);
+        this.caldero.setScale(0.6);    
         this.caldero.body.allowGravity = false;
-        this.campoFuerza = this.physics.add.image(915,270, 'campoFuerzaR'); 
+        this.campoFuerza = this.physics.add.image(940,310, 'campoFuerzaR'); 
         this.campoFuerza.setImmovable(true);
+        this.campoFuerza.setScale(0.6);    
         this.campoFuerza.body.allowGravity = false;
-        this.cofre = this.physics.add.image(500,295, 'cofreR'); 
+        this.cofre = this.physics.add.image(505,283, 'cofreR'); 
         this.cofre.setImmovable(true);
+        this.cofre.setScale(0.6);    
         this.cofre.body.allowGravity = false;
-        this.llave = this.physics.add.image(200,180, 'llaveR'); 
+        this.llave = this.physics.add.image(170,160, 'llaveR'); 
         this.llave.setImmovable(true);      
+        this.llave.setScale(0.6);    
         this.llave.body.allowGravity = false;  
-        this.pergamino = this.physics.add.image(770,190, 'pergaminoR'); 
+        this.pergamino = this.physics.add.image(780,180, 'pergaminoR'); 
         this.pergamino.setImmovable(true);        
+        this.pergamino.setScale(0.6);    
         this.pergamino.body.allowGravity = false;
-        this.planta = this.physics.add.image(190,358, 'plantaR'); 
+        this.planta = this.physics.add.image(170,365, 'plantaR'); 
         this.planta.setImmovable(true);        
+        this.planta.setScale(0.6);    
         this.planta.body.allowGravity = false;
-        this.pociones = this.physics.add.image(194,268, 'pocionesR'); 
+        this.pociones = this.physics.add.image(169,262, 'pocionesR'); 
         this.pociones.setImmovable(true);       
+        this.pociones.setScale(0.6);    
         this.pociones.body.allowGravity = false; 
-        this.velas = this.physics.add.image(165,305, 'velasR'); 
+        this.velas = this.physics.add.image(140,308, 'velasR'); 
         this.velas.setImmovable(true);   
+        this.velas.setScale(0.6);    
         this.velas.body.allowGravity = false;
+        this.libros = this.physics.add.image(150,220, 'librosR'); 
+        this.libros.setImmovable(true);   
+        this.libros.setScale(0.6);    
+        this.libros.body.allowGravity = false;
     }
 
     crearBarreraInvisible(){
@@ -149,11 +166,11 @@ export class GameScene extends Phaser.Scene {
 
     crearPlataformas(){
         this.plataformas = this.physics.add.staticGroup();
-        this.plataformas.create(446, 325, 'estanteR');
-        this.plataformas.create(510, 325, 'estanteR'); 
-        this.plataformas.create(446, 240, 'estanteR'); 
-        this.plataformas.create(330, 360, 'estanteR'); 
-        this.plataformas.create(330, 225, 'estanteR'); 
+        this.plataformas.create(446, 315, 'estanteR');
+        this.plataformas.create(510, 315, 'estanteR'); 
+        this.plataformas.create(446, 230, 'estanteR'); 
+        this.plataformas.create(330, 350, 'estanteR'); 
+        this.plataformas.create(330, 215, 'estanteR'); 
     }
 
     establecerColisiones(){

@@ -18,7 +18,7 @@ const config = {
             debug: false
         }
     },
-    scene: [  MenuScene, GameScene, PauseScene, CreditsScene, HistoriaScene, LibreriaScene],
+    scene: [ GameScene,  LibreriaScene, MenuScene, PauseScene, CreditsScene, HistoriaScene],
     backgroundColor: '#47ddffff',
 }
 

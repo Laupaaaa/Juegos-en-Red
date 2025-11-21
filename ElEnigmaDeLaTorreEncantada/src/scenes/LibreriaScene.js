@@ -11,17 +11,23 @@ export class LibreriaScene extends Phaser.Scene {
 
     preload(){
         this.load.image('paredR', '/imagenes/paredYTecho.png'); 
-        this.load.image('bolaCristalR', '/imagenes/bolaCristal.png');
+        this.load.image('bolaCristalColor', '/imagenes/bolaCristalColor.png');
         this.load.image('estanteriaR', '/imagenes/estanteria.png');
-        this.load.image('plantaR', '/imagenes/planta.png');
-        this.load.image('pocionesR', '/imagenes/pociones.png');
-        this.load.image('velasR', '/imagenes/velas.png');
-    }
+        this.load.image('plantaColor', '/imagenes/plantaColor.png');
+        this.load.image('pocionesAz', '/imagenes/pocionAzul.png');
+        this.load.image('pocionesAm', '/imagenes/pocionesAmarillo.png');
+        this.load.image('pocionesN', '/imagenes/pocionNaranja.png');
+        this.load.image('pocionesRo', '/imagenes/pocionRosa.png');
+        this.load.image('pocionesM', '/imagenes/pocionMorada.png');
+        this.load.image('pocionesV', '/imagenes/pocionVerde.png');
+        this.load.image('velasColor', '/imagenes/velasColor.png');
+        this.load.image('librosColor', '/imagenes/librosColor.png');}
 
     init(){
         this.players = new Map();
         this.inputMappings = [];
         this.ball = null;
+        this.abrir = false; 
         //this.isPaused = false;
         this.escWasDown = false;
         this.datos; 
@@ -35,6 +41,7 @@ export class LibreriaScene extends Phaser.Scene {
         this.datos = data; 
 
         this.escKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC); 
+        this.lkey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.L); 
     }
 
     update(){
@@ -43,6 +50,9 @@ export class LibreriaScene extends Phaser.Scene {
             this.scene.resume(this.datos.originalScene);
             // this.scene.get(this.datos.originalScene).resume(); 
         }
+
+        this.abir = false; //volver a poner a false si no ha habido overlap
+        if(this.lkey.isDown) this.abrir = true; 
 
         this.inputMappings.forEach(mapping => {
             const paddle = this.players.get(mapping.playerId);
@@ -66,36 +76,106 @@ export class LibreriaScene extends Phaser.Scene {
     crearEscenario(){     
         this.pared = this.physics.add.image(500, 205, 'paredR'); 
         this.pared.setImmovable(true);     
-        this.pared.setScale(3);    
+        this.pared.setScale(1.7);    
         this.pared.body.allowGravity = false;
         this.estanteria = this.physics.add.image(440, 270, 'estanteriaR'); 
         this.estanteria.setImmovable(true); 
-        this.estanteria.setScale(3);    
+        this.estanteria.setScale(1.7);    
         this.estanteria.body.allowGravity = false;
-        this.bolaCristal = this.physics.add.image(485,280, 'bolaCristalR'); 
+        this.bolaCristal = this.physics.add.image(485,280, 'bolaCristalColor'); 
         this.bolaCristal.setImmovable(true);                    
-        this.bolaCristal.setScale(3);    
+        this.bolaCristal.setScale(1.7);    
         this.bolaCristal.body.allowGravity = false;
-        this.planta = this.physics.add.image(440,450, 'plantaR'); 
+        this.planta = this.physics.add.image(440,450, 'plantaColor'); 
         this.planta.setImmovable(true);        
-        this.planta.setScale(3);    
-        this.planta.body.allowGravity = false;
-        this.pociones = this.physics.add.image(450,175, 'pocionesR'); 
-        this.pociones.setImmovable(true);        
-        this.pociones.setScale(3);    
-        this.pociones.body.allowGravity = false;
-        this.velas = this.physics.add.image(370,290, 'velasR'); 
+        this.planta.setScale(1.7);    
+        this.planta.body.allowGravity = false;      
+        this.pocionAm = this.physics.add.image(530,165, 'pocionesAm'); 
+        this.pocionAm.setImmovable(true);        
+        this.pocionAm.setScale(1.7);    
+        this.pocionAm.body.allowGravity = false;        
+        this.pocionN = this.physics.add.image(595,175, 'pocionesN'); 
+        this.pocionN.setImmovable(true);        
+        this.pocionN.setScale(1.7);    
+        this.pocionN.body.allowGravity = false;        
+        this.pocionM = this.physics.add.image(280,165, 'pocionesM'); 
+        this.pocionM.setImmovable(true);        
+        this.pocionM.setScale(1.7);    
+        this.pocionM.body.allowGravity = false;        
+        this.pocionR = this.physics.add.image(405,165, 'pocionesRo'); 
+        this.pocionR.setImmovable(true);        
+        this.pocionR.setScale(1.7);    
+        this.pocionR.body.allowGravity = false;        
+        this.pocionV = this.physics.add.image(345,175, 'pocionesV'); 
+        this.pocionV.setImmovable(true);        
+        this.pocionV.setScale(1.7);    
+        this.pocionV.body.allowGravity = false;
+        this.pocionAz = this.physics.add.image(470,170, 'pocionesAz'); 
+        this.pocionAz.setImmovable(true);        
+        this.pocionAz.setScale(1.7);    
+        this.pocionAz.body.allowGravity = false;          
+        this.velas = this.physics.add.image(350,290, 'velasColor'); 
         this.velas.setImmovable(true);   
-        this.velas.setScale(3);    
-        this.velas.body.allowGravity = false;    
+        this.velas.setScale(1.7);    
+        this.velas.body.allowGravity = false;   
+        this.libro = this.physics.add.image(370,33, 'librosColor'); 
+        this.libro.setImmovable(true);   
+        this.libro.setScale(1.7);    
+        this.libro.body.allowGravity = false;   
     }
 
     establecerColisiones(){
         this.players.forEach(player => {
-            this.physics.add.overlap(player.sprite, this.bolaCristal);
-            this.physics.add.overlap(player.sprite, this.planta);
-            this.physics.add.overlap(player.sprite, this.pociones);
-            this.physics.add.overlap(player.sprite, this.velas);
+            this.physics.add.overlap(player.sprite, this.bolaCristal, () => {
+            if(this.abrir) {
+                    this.bolaCristal.setAlpha(0.5);
+                    this.abrir = false;
+            }});
+            this.physics.add.overlap(player.sprite, this.planta, () => {
+            if(this.abrir) {
+                    this.planta.setAlpha(0.5);
+                    this.abrir = false;
+            }});
+            this.physics.add.overlap(player.sprite, this.pocionAm, () => {
+            if(this.abrir) {
+                    this.pocionAm.setAlpha(0.5);
+                    this.abrir = false;
+            }});
+            this.physics.add.overlap(player.sprite, this.pocionN, () => {
+            if(this.abrir) {
+                    this.pocionN.setAlpha(0.5);
+                    this.abrir = false;
+            }});
+            this.physics.add.overlap(player.sprite, this.pocionM, () => {
+            if(this.abrir) {
+                    this.pocionM.setAlpha(0.5);
+                    this.abrir = false;
+            }});
+            this.physics.add.overlap(player.sprite, this.pocionR, () => {
+            if(this.abrir) {
+                    this.pocionR.setAlpha(0.5);
+                    this.abrir = false;
+            }});
+            this.physics.add.overlap(player.sprite, this.pocionV, () => {
+            if(this.abrir) {
+                    this.pocionV.setAlpha(0.5);
+                    this.abrir = false;
+            }});
+            this.physics.add.overlap(player.sprite, this.pocionAz, () => {
+            if(this.abrir) {
+                    this.pocionAz.setAlpha(0.5);
+                    this.abrir = false;
+            }});
+            this.physics.add.overlap(player.sprite, this.velas, () => {
+            if(this.abrir) {
+                    this.velas.setAlpha(0.5);
+                    this.abrir = false;
+            }});
+            this.physics.add.overlap(player.sprite, this.libro, () => {
+            if(this.abrir) {
+                    this.libro.setAlpha(0.5);
+                    this.abrir = false;
+            }});
         });
     }
 
