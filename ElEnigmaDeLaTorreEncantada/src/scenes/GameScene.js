@@ -25,6 +25,9 @@ export class GameScene extends Phaser.Scene {
         this.load.image('velasR', '/imagenes/velas.png');
         this.load.image('estanteR', '/imagenes/estante.png');
         this.load.image('librosR', '/imagenes/libros.png');
+        this.load.image('botonVR', '/imagenes/botonVacio.png');
+        this.load.image('botonCR', '/imagenes/botonCompleto.png');
+        this.load.image('estrellaR', '/imagenes/estrella.png');
     }
 
     init(){
@@ -33,9 +36,13 @@ export class GameScene extends Phaser.Scene {
         this.ball = null;
         this.isPaused = false;
         this.escWasDown = false;
-        this.abrirLibreria = false; 
+        this.lPulsada = false; 
         this.processor = new CommandProcessor(); 
         this. maxJump = 3; 
+        
+        // Array de booleanos que representa que objetos han recogido entre ambos jugadores
+        // Los objetos son: 0-llave, 1-libros, 2- pocion morada, 3- pocion verde, 4- pocion rosa, 5- pocion azul, 6- pocion amarilla, 7- pocion naranja, 8- velas, 9- bola de cristal, 10- planta, 11- estrella 1, 12- estrella 2
+        this.inventario = [false, false, false, false, false, false, false, false, false, false, false, false, false];  
     }
 
     create(){
@@ -67,8 +74,8 @@ export class GameScene extends Phaser.Scene {
         }
         this.escWasDown = this.escKey.isDown;        
         
-        this.abrirLibreria = false; //volver a poner a false si no ha habido overlap
-        if(this.lkey.isDown) this.abrirLibreria = true; 
+        this.lPulsada = false; //volver a poner a false si no ha habido overlap
+        if(this.lkey.isDown) this.lPulsada = true; 
 
         // Comprobar si alguno de los jugadores está saltando
         this.players.forEach(paddle => {
@@ -147,6 +154,14 @@ export class GameScene extends Phaser.Scene {
         this.libros.setImmovable(true);   
         this.libros.setScale(0.6);    
         this.libros.body.allowGravity = false;
+        this.boton1 = this.physics.add.image(50,350, 'botonVR'); 
+        this.boton1.setImmovable(true);   
+        this.boton1.setScale(0.6);    
+        this.boton1.body.allowGravity = false;
+        this.boton2 = this.physics.add.image(780,350, 'botonVR'); 
+        this.boton2.setImmovable(true);   
+        this.boton2.setScale(0.6);    
+        this.boton2.body.allowGravity = false;
     }
 
     crearBarreraInvisible(){
@@ -157,47 +172,54 @@ export class GameScene extends Phaser.Scene {
         this.barreraInvisible.body.setSize(1000, 10);
 
         // Crear collider invisible para que pueda usar la balda superior de la estantería como plataforma
-        this.estanteriaColl = this.physics.add.sprite(190, 210, 'white_pixel');
+        this.estanteriaColl = this.physics.add.sprite(165, 195, 'white_pixel');
         this.estanteriaColl.body.setAllowGravity(false); 
         this.estanteriaColl.body.setImmovable(true); 
         this.estanteriaColl.setAlpha(0.0); 
-        this.estanteriaColl.setScale(4, 0.5); 
+        this.estanteriaColl.setScale(4, 0.5);
+
+        // Crear collider invisible para evitar que atraviese el caldero
+        this.calderoColl = this.physics.add.sprite(500, 400, 'white_pixel');
+        this.calderoColl.body.setAllowGravity(false); 
+        this.calderoColl.body.setImmovable(true); 
+        this.calderoColl.setAlpha(0.0); 
+        this.calderoColl.setScale(5, 2);
     }
 
     crearPlataformas(){
         this.plataformas = this.physics.add.staticGroup();
         this.plataformas.create(446, 315, 'estanteR');
         this.plataformas.create(510, 315, 'estanteR'); 
+        this.plataformas.create(570, 315, 'estanteR'); 
         this.plataformas.create(446, 230, 'estanteR'); 
         this.plataformas.create(330, 350, 'estanteR'); 
+        this.plataformas.create(650, 350, 'estanteR'); 
         this.plataformas.create(330, 215, 'estanteR'); 
+        this.plataformas.create(650, 215, 'estanteR'); 
     }
 
     establecerColisiones(){
         this.players.forEach(player => {
-            //this.physics.add.collider(player.sprite, this.pared);
+            // Colisiones del jugador con el escenario
             this.physics.add.collider(player.sprite, this.estanteriaColl);
             this.physics.add.collider(player.sprite, this.plataformas);
-            //this.physics.add.collider(player.sprite, this.bolaCristal);
-            this.physics.add.collider(player.sprite, this.caldero);
-            //this.physics.add.collider(player.sprite, this.campoFuerza);
+            this.physics.add.collider(player.sprite, this.calderoColl);
             this.physics.add.collider(player.sprite, this.cofre);
-            //this.physics.add.collider(player.sprite, this.pergamino);
-            //this.physics.add.collider(player.sprite, this.planta);
-            //this.physics.add.collider(player.sprite, this.pociones);
-            //this.physics.add.collider(player.sprite, this.velas);
 
+            // Conseguir la llave
             this.physics.add.overlap(player.sprite, this.llave, () => {
                 this.llave.destroy();
                 console.log("Llave conseguida");
-            }); 
-            this.physics.add.overlap(player.sprite, this.estanteria, () => {
-                if(this.abrirLibreria) {
-                    this.scene.pause();
-                    this.scene.launch('LibreriaScene', {originalScene: 'GameScene'})
-                }
+                this.inventario[0] = true; // marcar en el inventario que se ha conseguido la llave
             }); 
 
+            // Abrir la librería
+            this.physics.add.overlap(player.sprite, this.estanteria, () => {
+                if(this.lPulsada) {
+                    this.scene.pause();
+                    this.scene.launch('LibreriaScene', {originalScene: 'GameScene', pociones: this.inventario});
+                }
+            }); 
 
             // Barrera invisible para permitir area de suelo dónde se desplacen libremente, y área de salto para subir por las plataformas
             this.physics.add.collider(
@@ -216,6 +238,29 @@ export class GameScene extends Phaser.Scene {
                 },
                 this
             );
+
+            // Crear pocion de disminuir tamaño si se tienen las pociones necesarias
+            this.physics.add.overlap(player.sprite, this.caldero, () => {
+                if(Phaser.Input.Keyboard.JustDown(this.lkey)) { // Comprobar que se ha pulsado la tecla L para crear la pocion (si se mantiene pulsada la tecla no entrará varias veces a la función)
+                    let elemRecogidos = this.inventario.filter(elem => elem === true); // crear un segundo array con unicamente los elementos recogidos
+                    if(elemRecogidos.length === 3){ // primero comprobar que se han recogido 3 elementos
+                        if(this.inventario[3] && this.inventario[5] && this.inventario[7]){ // comprobar que esos elementos recogidos son las pociones verde, azul y naranja 
+                            console.log("Poción de disminuir tamaño creada");
+                        }
+                    } else {
+                        console.log("No tienes las pociones necesarias para crear la poción de disminuir tamaño");
+                        let aleatorio = Phaser.Math.Between(1, 2); // generar un número aleatorio entre 1 y 2 para elegir que jugador recibe daño
+                        if(aleatorio === 1) this.dañoJugLeft(); 
+                        else this.dañoJugRight(); 
+                    }
+
+                    // volver a poner a false todos los elementos del inventario
+                    for (let i = 0; i < this.inventario.length; i++){
+                        this.inventario[i] = false; 
+                    }
+                }                   
+            });
+
 
         });
     }
@@ -246,7 +291,6 @@ export class GameScene extends Phaser.Scene {
 
         //this.intputMappings = InputConfig; 
         this.inputMappings = InputConfig.map(config => {
-            console.log(config); 
             return{
                 playerId: config.playerId,
                 upKeyObj: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes[config.upKey]),
@@ -257,31 +301,47 @@ export class GameScene extends Phaser.Scene {
         });   
     }
 
-    // endGame(winnerID){
-    //     this.ball.setVelocity(0,0);
-    //     this.players.forEach(paddle => {
-    //         paddle.sprite.setVelocity(0,0);
-    //     });
-    //     this.physics.pause();
+    endGame(id){
+        this.add.rectangle(500, 280, 1000, 560, 0x000000, 0.7);
+        this.players.forEach(paddle => {
+            paddle.sprite.setVelocity(0,0);
+        });
+        this.physics.pause();
 
-    //     const winnerText = winnerID === 'player1' ? 'El jugador 1 ha ganado': ' El jugador 2 ha ganado';
-    //     this.add.text(500, 250, winnerText, {
-    //         fontSize: '64px',
-    //         color:' #00ff00',
+        const texto = id === 'player1' ? 'El jugador 1 ha muerto': ' El jugador 2 ha muerto';
+        this.add.text(500, 250, texto, {
+            fontSize: '64px',
+            color:' #ff0000ff',
 
-    //     }).setOrigin(0.5);
+        }).setOrigin(0.5);
 
-    //     const menuBtn = this.add.text(500, 350, 'Volver al menu', {
-    //         fontSize: '32px',
-    //         color: '#ffffff'
-    //     }).setOrigin(0.5)
-    //     .setInteractive({ useHandCursor: true })
-    //     .on('pointerover', () => menuBtn.setStyle({ fill: '#7bffc1ff' }))
-    //     .on('pointerout', () => menuBtn.setStyle({ fill: '#ffffff' }))
-    //     .on('pointerdown', () => {
-    //         this.scene.start('MenuScene');
-    //     });
-    // }
+        const menuBtn = this.add.text(500, 350, 'Volver al menu', {
+            fontSize: '32px',
+            color: '#ffffff'
+        }).setOrigin(0.5)
+        .setInteractive({ useHandCursor: true })
+        .on('pointerover', () => menuBtn.setStyle({ fill: '#7bffc1ff' }))
+        .on('pointerout', () => menuBtn.setStyle({ fill: '#ffffff' }))
+        .on('pointerdown', () => {
+            this.scene.start('MenuScene');
+        });
+    }
+
+    dañoJugLeft() {
+        const player1 = this.players.get('player1');
+        player1.vida--;
+        this.healthLeft.setText(player1.vida.toString());
+        console.log('El jugador de la izquierda ha recibido daño');
+        if(player1.vida <= 0) this.endGame('player1');
+    }
+    
+    dañoJugRight() {
+        const player2 = this.players.get('player2');
+        player2.vida--;
+        this.healthRight.setText(player2.vida.toString());
+        console.log('El jugador de la derecha ha recibido daño');
+        if(player2.vida <= 0) this.endGame('player2');
+    }
 
     setPauseState(isPaused){
         this.isPaused = isPaused;
@@ -291,7 +351,10 @@ export class GameScene extends Phaser.Scene {
         }
     }
 
-    resume(){
+    resume(data){
+        if(data && data.pociones){
+            this.inventario = data.pociones; 
+        }
         this.isPaused = false; 
     }
 

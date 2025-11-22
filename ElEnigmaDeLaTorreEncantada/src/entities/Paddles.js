@@ -2,7 +2,7 @@ export class Paddle{
     constructor(scene, id, x, y){
         this.id = id;
         this.scene = scene;
-        this.score = 0; 
+        this.vida = 3; 
 
         this.baseWidht = 20;
         this.baseHeight = 100;
@@ -29,7 +29,7 @@ export class Paddle{
         if (!this.isJumping ) {
             this.isJumping = true;
             this.groundY = this.sprite.y; // establecer la altura a la que tiene que volver como la actual 
-            this.sprite.setVelocityY(-10000); // Velocidad inicial de salto
+            this.sprite.setVelocityY(-100000); // Velocidad inicial de salto
             this.sprite.body.allowGravity = true; // activar gravedad en los saltos
         }
     }

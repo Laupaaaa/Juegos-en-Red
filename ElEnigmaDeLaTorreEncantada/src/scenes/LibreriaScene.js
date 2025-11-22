@@ -47,7 +47,7 @@ export class LibreriaScene extends Phaser.Scene {
     update(){
         if(this.escKey.isDown && !this.escWasDown){
             this.scene.stop();
-            this.scene.resume(this.datos.originalScene);
+            this.scene.resume(this.datos.originalScene, {pociones: this.datos.pociones});
             // this.scene.get(this.datos.originalScene).resume(); 
         }
 
@@ -129,51 +129,61 @@ export class LibreriaScene extends Phaser.Scene {
             this.physics.add.overlap(player.sprite, this.bolaCristal, () => {
             if(this.abrir) {
                     this.bolaCristal.setAlpha(0.5);
+                    this.datos.pociones[9] = true; // marcar que se ha recogido la bola de cristal
                     this.abrir = false;
             }});
             this.physics.add.overlap(player.sprite, this.planta, () => {
             if(this.abrir) {
                     this.planta.setAlpha(0.5);
+                    this.datos.pociones[10] = true; // marcar que se ha recogido la planta
                     this.abrir = false;
             }});
             this.physics.add.overlap(player.sprite, this.pocionAm, () => {
             if(this.abrir) {
                     this.pocionAm.setAlpha(0.5);
+                    this.datos.pociones[6] = true; // marcar que se ha recogido la pocion amarilla
                     this.abrir = false;
             }});
             this.physics.add.overlap(player.sprite, this.pocionN, () => {
             if(this.abrir) {
                     this.pocionN.setAlpha(0.5);
+                    this.datos.pociones[7] = true; // marcar que se ha recogido la pocion naranja
                     this.abrir = false;
             }});
             this.physics.add.overlap(player.sprite, this.pocionM, () => {
             if(this.abrir) {
                     this.pocionM.setAlpha(0.5);
+                    this.datos.pociones[2] = true; // marcar que se ha recogido la pocion morada
                     this.abrir = false;
             }});
             this.physics.add.overlap(player.sprite, this.pocionR, () => {
             if(this.abrir) {
                     this.pocionR.setAlpha(0.5);
+                    this.datos.pociones[4] = true; // marcar que se ha recogido la pocion rosa
                     this.abrir = false;
             }});
             this.physics.add.overlap(player.sprite, this.pocionV, () => {
             if(this.abrir) {
                     this.pocionV.setAlpha(0.5);
+                    this.datos.pociones[3] = true; // marcar que se ha recogido la pocion verde
                     this.abrir = false;
             }});
             this.physics.add.overlap(player.sprite, this.pocionAz, () => {
             if(this.abrir) {
                     this.pocionAz.setAlpha(0.5);
+                    this.datos.pociones[5] = true; // marcar que se ha recogido la pocion azul
                     this.abrir = false;
             }});
             this.physics.add.overlap(player.sprite, this.velas, () => {
             if(this.abrir) {
                     this.velas.setAlpha(0.5);
+                    this.datos.pociones[8] = true; // marcar que se ha recogido las velas
                     this.abrir = false;
             }});
             this.physics.add.overlap(player.sprite, this.libro, () => {
             if(this.abrir) {
                     this.libro.setAlpha(0.5);
+                    this.datos.pociones[1] = true; // marcar que se ha recogido los libros
                     this.abrir = false;
             }});
         });
