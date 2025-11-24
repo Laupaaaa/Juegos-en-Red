@@ -7,7 +7,7 @@
   - Paula Ortiz Fernández
     - Correo Universidad: p.ortizf.2023@alumnos.urjc.es
     - GitHub: Laupaaaa
-  - Daniel Corbacho Anes (20 años)
+  - Daniel Corbacho Anes
     - Correo Universidad: d.corbacho.2023@alumnos.urjc.es
     - GitHub: Fostroppp
   - Alejando Hernández Ruiz
