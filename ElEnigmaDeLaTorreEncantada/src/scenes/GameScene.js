@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import {Paddle} from '../entities/Paddles'
+import {Mago} from '../entities/Mago'
 import { CommandProcessor } from '../command/commandProcessor';
 import { MovePaddleCommand } from '../command/MovePaddleCommand';
 import { PauseGameCommand } from '../command/PauseGameCommand';
@@ -29,6 +29,14 @@ export class GameScene extends Phaser.Scene {
         this.load.image('botonVR', '/imagenes/botonVacio.png');
         this.load.image('botonCR', '/imagenes/botonCompleto.png');
         this.load.image('estrellaR', '/imagenes/estrella.png');
+        this.load.image('idle', '/imagenes/Mago_Andando_2.png');
+        this.load.image('andar_2', '/imagenes/Mago_Andando_3.png');
+        this.load.image('andar_3', '/imagenes/Mago_Andando_4.png');
+        this.load.image('andar_4', '/imagenes/Mago_Andando_5.png');
+        this.load.image('andar_5', '/imagenes/Mago_Andando_6.png');
+        this.load.image('andar_6', '/imagenes/Mago_Andando_7.png');
+        this.load.image('andar_7', '/imagenes/Mago_Andando_8.png');
+        this.load.image('andar_8', '/imagenes/Mago_Andando_1.png');
     }
 
     init(){
@@ -48,6 +56,23 @@ export class GameScene extends Phaser.Scene {
     }
 
     create(){
+        
+        this.anims.create({
+            key: 'andar_mago',
+            frames: [
+                {key:'idle'},
+                {key:'andar_2'},
+                {key:'andar_3'},
+                {key:'andar_4'},
+                {key:'andar_5'},
+                {key:'andar_6'},
+                {key:'andar_7'},
+                {key:'andar_8'}
+            ],
+            frameRate: 10,
+            repeat: -1
+        });
+
         this.crearEscenario(); 
         this.crearPlataformas(); 
         this.crearBarreraInvisible();       
@@ -69,6 +94,8 @@ export class GameScene extends Phaser.Scene {
         this.escKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC); 
         this.lkey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.L); 
         this.qkey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Q); 
+        
+        
     }
 
     update(time, delta){
@@ -78,28 +105,35 @@ export class GameScene extends Phaser.Scene {
         this.escWasDown = this.escKey.isDown;        
         
         this.lPulsada = false; //volver a poner a false si no ha habido overlap
-        if(this.lkey.isDown || this.qkey.isDown) this.lPulsada = true; 
+        if(this.lkey.isDown) this.lPulsada = true; 
 
         // Comprobar si alguno de los jugadores está saltando
-        this.players.forEach(paddle => {
-            paddle.update(delta);
+        this.players.forEach(mago => {
+            mago.update(delta);
         });
         
         this.inputMappings.forEach(mapping => {
-            const paddle = this.players.get(mapping.playerId);
+            const mago = this.players.get(mapping.playerId);
             let direction = null; 
             if(mapping.upKeyObj.isDown){
                 direction = 'up'; 
+                mago.andar_animacion();
             } else if (mapping.downKeyObj.isDown){
-                direction  = 'down';          
+                direction  = 'down'; 
+                mago.andar_animacion();         
              } else if (mapping.leftKeyObj.isDown){
-                direction  = 'left';          
+                direction  = 'left';
+                mago.sprite.flipX = false;  
+                mago.andar_animacion();        
              } else if (mapping.rightKeyObj.isDown){
-                direction  = 'right';          
+                direction  = 'right';    
+                mago.sprite.flipX = true;  
+                mago.andar_animacion();    
              } else{
                 direction = 'stop'; 
+                mago.andar_animacion_parar('idle');
             }
-            let moveCommand = new MovePaddleCommand(paddle, direction);
+            let moveCommand = new MovePaddleCommand(mago, direction);
             this.processor.process(moveCommand); 
         });
     }
@@ -362,11 +396,11 @@ export class GameScene extends Phaser.Scene {
     }
 
     setUpPlayers(){
-        const leftPaddle = new Paddle(this, 'player1', 50, 400);
-        const rightPaddle = new Paddle(this, 'player2', 950, 400);
+        const leftMago = new Mago(this, 'player1', 50, 400, 'idle');
+        const rightMago = new Mago(this, 'player2', 950, 400, 'idle');
 
-        this.players.set('player1', leftPaddle);
-        this.players.set('player2', rightPaddle);
+        this.players.set('player1', leftMago);
+        this.players.set('player2', rightMago);
 
         const InputConfig = [
             {
@@ -399,8 +433,8 @@ export class GameScene extends Phaser.Scene {
 
     endGame(id){
         this.add.rectangle(500, 280, 1000, 560, 0x000000, 0.7);
-        this.players.forEach(paddle => {
-            paddle.sprite.setVelocity(0,0);
+        this.players.forEach(mago => {
+            mago.sprite.setVelocity(0,0);
         });
         this.physics.pause();
 

@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import {Paddle} from '../entities/Paddles'
+import {Mago} from '../entities/Mago'
 import { CommandProcessor } from '../command/commandProcessor';
 import { MovePaddleCommand } from '../command/MovePaddleCommand';
 
@@ -21,7 +21,9 @@ export class LibreriaScene extends Phaser.Scene {
         this.load.image('pocionesM', '/imagenes/pocionMorada.png');
         this.load.image('pocionesV', '/imagenes/pocionVerde.png');
         this.load.image('velasColor', '/imagenes/velasColor.png');
-        this.load.image('librosColor', '/imagenes/librosColor.png');}
+        this.load.image('librosColor', '/imagenes/librosColor.png');
+        this.load.image('idle', '/imagenes/Mago_Andando_2.png');
+    }
 
     init(){
         this.players = new Map();
@@ -35,6 +37,7 @@ export class LibreriaScene extends Phaser.Scene {
     }
 
     create(data){
+        this.add.image(100, 100, "idle");
         this.crearEscenario(); 
         this.setUpPlayers(); 
         this.establecerColisiones(); 
@@ -192,11 +195,12 @@ export class LibreriaScene extends Phaser.Scene {
     }
 
     setUpPlayers(){
-        const leftPaddle = new Paddle(this, 'player1', 50, 300);
-        const rightPaddle = new Paddle(this, 'player2', 950, 300);
 
-        this.players.set('player1', leftPaddle);
-        this.players.set('player2', rightPaddle);
+        const leftMago = new Mago(this, 'player1', 50, 300, 'idle');
+        const rightMago = new Mago(this, 'player2', 950, 300, 'idle');
+
+        this.players.set('player1', leftMago);
+        this.players.set('player2', rightMago);
 
         const InputConfig = [
             {
