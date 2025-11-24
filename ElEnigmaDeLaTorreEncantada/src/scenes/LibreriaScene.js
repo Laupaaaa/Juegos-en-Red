@@ -42,6 +42,7 @@ export class LibreriaScene extends Phaser.Scene {
 
         this.escKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC); 
         this.lkey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.L); 
+        this.qkey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Q); 
     }
 
     update(){
@@ -53,6 +54,7 @@ export class LibreriaScene extends Phaser.Scene {
 
         this.abir = false; //volver a poner a false si no ha habido overlap
         if(this.lkey.isDown) this.abrir = true; 
+        if(this.qkey.isDown) this.abrir = true; 
 
         this.inputMappings.forEach(mapping => {
             const paddle = this.players.get(mapping.playerId);

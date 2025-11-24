@@ -17,6 +17,7 @@ export class GameScene extends Phaser.Scene {
         this.load.image('calderoR', '/imagenes/calderoColor.png');
         this.load.image('campoFuerzaR', '/imagenes/campodefuerza.png');
         this.load.image('cofreR', '/imagenes/cofre.png');
+        this.load.image('cofreAbiertoR', '/imagenes/cofreAbierto.png');
         this.load.image('estanteriaR', '/imagenes/estanteria.png');
         this.load.image('llaveR', '/imagenes/llave.png');
         this.load.image('pergaminoR', '/imagenes/pergamino.png');
@@ -39,6 +40,7 @@ export class GameScene extends Phaser.Scene {
         this.lPulsada = false; 
         this.processor = new CommandProcessor(); 
         this. maxJump = 3; 
+        this.cofreAbierto = false;
         
         // Array de booleanos que representa que objetos han recogido entre ambos jugadores
         // Los objetos son: 0-llave, 1-libros, 2- pocion morada, 3- pocion verde, 4- pocion rosa, 5- pocion azul, 6- pocion amarilla, 7- pocion naranja, 8- velas, 9- bola de cristal, 10- planta, 11- estrella 1, 12- estrella 2
@@ -66,6 +68,7 @@ export class GameScene extends Phaser.Scene {
 
         this.escKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC); 
         this.lkey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.L); 
+        this.qkey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Q); 
     }
 
     update(time, delta){
@@ -75,7 +78,7 @@ export class GameScene extends Phaser.Scene {
         this.escWasDown = this.escKey.isDown;        
         
         this.lPulsada = false; //volver a poner a false si no ha habido overlap
-        if(this.lkey.isDown) this.lPulsada = true; 
+        if(this.lkey.isDown || this.qkey.isDown) this.lPulsada = true; 
 
         // Comprobar si alguno de los jugadores está saltando
         this.players.forEach(paddle => {
@@ -162,6 +165,18 @@ export class GameScene extends Phaser.Scene {
         this.boton2.setImmovable(true);   
         this.boton2.setScale(0.6);    
         this.boton2.body.allowGravity = false;
+
+        // estrellas de dentro del cofre
+        this.estrella1 = this.physics.add.image(450,283, 'estrellaR'); 
+        this.estrella1.setImmovable(true);
+        this.estrella1.setScale(0.6);  
+        this.estrella1.setAlpha(0.0);
+        this.estrella1.body.allowGravity = false; 
+        this.estrella2 = this.physics.add.image(560,283, 'estrellaR'); 
+        this.estrella2.setImmovable(true);
+        this.estrella2.setScale(0.6);  
+        this.estrella2.setAlpha(0.0);
+        this.estrella2.body.allowGravity = false; 
     }
 
     crearBarreraInvisible(){
@@ -204,7 +219,7 @@ export class GameScene extends Phaser.Scene {
             this.physics.add.collider(player.sprite, this.estanteriaColl);
             this.physics.add.collider(player.sprite, this.plataformas);
             this.physics.add.collider(player.sprite, this.calderoColl);
-            this.physics.add.collider(player.sprite, this.cofre);
+            //this.physics.add.collider(player.sprite, this.cofre);
 
             // Conseguir la llave
             this.physics.add.overlap(player.sprite, this.llave, () => {
@@ -241,7 +256,7 @@ export class GameScene extends Phaser.Scene {
 
             // Crear pocion de disminuir tamaño si se tienen las pociones necesarias
             this.physics.add.overlap(player.sprite, this.caldero, () => {
-                if(Phaser.Input.Keyboard.JustDown(this.lkey)) { // Comprobar que se ha pulsado la tecla L para crear la pocion (si se mantiene pulsada la tecla no entrará varias veces a la función)
+                if(Phaser.Input.Keyboard.JustDown(this.lkey) || Phaser.Input.Keyboard.JustDown(this.qkey)) { // Comprobar que se ha pulsado la tecla L o Q para crear la pocion (si se mantiene pulsada la tecla no entrará varias veces a la función)
                     let elemRecogidos = this.inventario.filter(elem => elem === true); // crear un segundo array con unicamente los elementos recogidos
                     if(elemRecogidos.length === 3){ // primero comprobar que se han recogido 3 elementos
                         if(this.inventario[3] && this.inventario[5] && this.inventario[7]){ // comprobar que esos elementos recogidos son las pociones verde, azul y naranja 
@@ -255,14 +270,95 @@ export class GameScene extends Phaser.Scene {
                     }
 
                     // volver a poner a false todos los elementos del inventario
-                    for (let i = 0; i < this.inventario.length; i++){
+                    for (let i = 1; i < this.inventario.length; i++){ // se salta la llave porque no se utiliza para crear la pocion
                         this.inventario[i] = false; 
                     }
                 }                   
             });
 
+            // Abrir el cofre si se tiene la llave
+            this.physics.add.overlap(player.sprite, this.cofre, () => {
+                if(!this.cofreAbierto){
+                    if(this.inventario[0]) { // comprobar que tiene la llave
+                        this.abrirCofre();
+                    } else {
+                        console.log("Necesitas la llave para abrir el cofre");
+                    }  
+                }
+            });
+
+            // recoger estrellas
+            this.physics.add.overlap(player.sprite, this.estrella1, () => {
+                this.recogerEstrella(1);
+            });            
+            this.physics.add.overlap(player.sprite, this.estrella2, () => {
+                this.recogerEstrella(2);
+            });
+
+
+            //colocar estrellas
+            this.physics.add.overlap(player.sprite, this.boton1, () => {
+                this.colocarEstrella(1);
+            }); 
+            this.physics.add.overlap(player.sprite, this.boton2, () => {
+                this.colocarEstrella(2);
+            });  
+            
+            
+            // pulsar botones para desactivar el campo de fuerza
+            this.physics.add.overlap(player.sprite, this.boton1, () => {
+                this.boton1Activado = true;
+                this.abrirCampoFuerza(); 
+            }); 
+            this.physics.add.overlap(player.sprite, this.boton2, () => {
+                this.boton2Activado = true;
+                this.abrirCampoFuerza();
+            }); 
+            
 
         });
+    }
+    
+    abrirCofre(){
+        console.log("Cofre abierto");
+        this.cofre.setTexture('cofreAbiertoR');
+        this.estrella1.setAlpha(1.0);
+        this.estrella2.setAlpha(1.0);
+        this.cofreAbierto = true; // para que solo se abra una vez
+
+    }
+
+    recogerEstrella(n){
+        this.inventario[11] = true;
+        this.inventario[12] = true;
+        if(this.cofreAbierto){ // solo se puede recoger si el cofre está abierto (porque sino están ocultas)
+            console.log("Estrella " + n + " recogida");
+            this.inventario[10 + n] = true; // marcar en el inventario que se ha conseguido la estrella (11 y 12 en el array)
+            if(n === 1) this.estrella1.destroy();
+            else this.estrella2.destroy();
+        }
+    }
+
+    colocarEstrella(n){
+        if(this.inventario[10 + n]){ // comprobar que se tiene la estrella correspondiente
+            console.log("Estrella " + n + " colocada");
+            if(n === 1){
+                this.boton1.setTexture('botonCR');
+                this.inventario[10 + n] = false; // quitar la estrella del inventario
+            } else {
+                this.boton2.setTexture('botonCR');
+                this.inventario[10 + n] = false; // quitar la estrella del inventario
+            }
+        }
+    }
+
+    abrirCampoFuerza(){
+        if(this.boton1.texture.key === 'botonCR' && this.boton2.texture.key === 'botonCR'){ //comprobar que ambos botones tienen la estrella colocada
+            if(this.qkey.isDown && this.lkey.isDown && this.boton1Activado && this.boton2Activado){ // comprobar que ambos jugadores están pulsando su tecla correspondiente
+                console.log("Campo de fuerza desactivado");
+                this.campoFuerza.destroy();
+            }
+        }
     }
 
     setUpPlayers(){
