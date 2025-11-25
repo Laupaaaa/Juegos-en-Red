@@ -3,6 +3,7 @@ export class Mago{
         this.id = id;
         this.scene = scene;
         this.vida = 3; 
+        this.idle = idSprite;
 
         this.baseWidht = 20;
         this.baseHeight = 100;
@@ -14,7 +15,7 @@ export class Mago{
         this.groundY = y;
 
         this.sprite = this.scene.physics.add.sprite(x, y, idSprite);
-        this.sprite.setScale(0.40);
+        this.sprite.setScale(0.20);
         this.sprite.setCollideWorldBounds(true);
         this.sprite.body.allowGravity = false; 
 
@@ -23,14 +24,18 @@ export class Mago{
 
     andar_animacion(){
         if(!this.sprite.anims.isPlaying){
-            this.sprite.play("andar_mago");
+            if(this.idle === 'idle_Azul'){
+                this.sprite.play("andar_mago_Azul");
+            } else if (this.idle === 'idle_Rojo'){
+                this.sprite.play("andar_mago_Rojo");
+            }
         }
     }
 
-    andar_animacion_parar(idSprite){
+    andar_animacion_parar(){
         if(this.sprite.anims.isPlaying){
             this.sprite.anims.stop();
-            this.sprite.setTexture(idSprite);
+            this.sprite.setTexture(this.idle);
         }
     }
 

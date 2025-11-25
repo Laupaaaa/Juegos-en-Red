@@ -29,14 +29,22 @@ export class GameScene extends Phaser.Scene {
         this.load.image('botonVR', '/imagenes/botonVacio.png');
         this.load.image('botonCR', '/imagenes/botonCompleto.png');
         this.load.image('estrellaR', '/imagenes/estrella.png');
-        this.load.image('idle', '/imagenes/Mago_Andando_2.png');
-        this.load.image('andar_2', '/imagenes/Mago_Andando_3.png');
-        this.load.image('andar_3', '/imagenes/Mago_Andando_4.png');
-        this.load.image('andar_4', '/imagenes/Mago_Andando_5.png');
-        this.load.image('andar_5', '/imagenes/Mago_Andando_6.png');
-        this.load.image('andar_6', '/imagenes/Mago_Andando_7.png');
-        this.load.image('andar_7', '/imagenes/Mago_Andando_8.png');
-        this.load.image('andar_8', '/imagenes/Mago_Andando_1.png');
+        this.load.image('idle_Azul', '/imagenes/Mago_Andando_2.png');
+        this.load.image('andarAzul_2', '/imagenes/Mago_Andando_3.png');
+        this.load.image('andarAzul_3', '/imagenes/Mago_Andando_4.png');
+        this.load.image('andarAzul_4', '/imagenes/Mago_Andando_5.png');
+        this.load.image('andarAzul_5', '/imagenes/Mago_Andando_6.png');
+        this.load.image('andarAzul_6', '/imagenes/Mago_Andando_7.png');
+        this.load.image('andarAzul_7', '/imagenes/Mago_Andando_8.png');
+        this.load.image('andarAzul_8', '/imagenes/Mago_Andando_1.png');
+        this.load.image('idle_Rojo', '/imagenes/MagoRojo_Andando_1.png');
+        this.load.image('andarRojo_2', '/imagenes/MagoRojo_Andando_2.png');
+        this.load.image('andarRojo_3', '/imagenes/MagoRojo_Andando_3.png');
+        this.load.image('andarRojo_4', '/imagenes/MagoRojo_Andando_4.png');
+        this.load.image('andarRojo_5', '/imagenes/MagoRojo_Andando_5.png');
+        this.load.image('andarRojo_6', '/imagenes/MagoRojo_Andando_6.png');
+        this.load.image('andarRojo_7', '/imagenes/MagoRojo_Andando_7.png');
+        this.load.image('andarRojo_8', '/imagenes/MagoRojo_Andando_8.png');
     }
 
     init(){
@@ -58,16 +66,32 @@ export class GameScene extends Phaser.Scene {
     create(){
         
         this.anims.create({
-            key: 'andar_mago',
+            key: 'andar_mago_Azul',
             frames: [
-                {key:'idle'},
-                {key:'andar_2'},
-                {key:'andar_3'},
-                {key:'andar_4'},
-                {key:'andar_5'},
-                {key:'andar_6'},
-                {key:'andar_7'},
-                {key:'andar_8'}
+                {key:'idle_Azul'},
+                {key:'andarAzul_2'},
+                {key:'andarAzul_3'},
+                {key:'andarAzul_4'},
+                {key:'andarAzul_5'},
+                {key:'andarAzul_6'},
+                {key:'andarAzul_7'},
+                {key:'andarAzul_8'}
+            ],
+            frameRate: 10,
+            repeat: -1
+        });
+
+        this.anims.create({
+            key: 'andar_mago_Rojo',
+            frames: [
+                {key:'idle_Rojo'},
+                {key:'andarRojo_2'},
+                {key:'andarRojo_3'},
+                {key:'andarRojo_4'},
+                {key:'andarRojo_5'},
+                {key:'andarRojo_6'},
+                {key:'andarRojo_7'},
+                {key:'andarRojo_8'}
             ],
             frameRate: 10,
             repeat: -1
@@ -131,7 +155,7 @@ export class GameScene extends Phaser.Scene {
                 mago.andar_animacion();    
              } else{
                 direction = 'stop'; 
-                mago.andar_animacion_parar('idle');
+                mago.andar_animacion_parar();
             }
             let moveCommand = new MovePaddleCommand(mago, direction);
             this.processor.process(moveCommand); 
@@ -396,8 +420,8 @@ export class GameScene extends Phaser.Scene {
     }
 
     setUpPlayers(){
-        const leftMago = new Mago(this, 'player1', 50, 400, 'idle');
-        const rightMago = new Mago(this, 'player2', 950, 400, 'idle');
+        const leftMago = new Mago(this, 'player1', 50, 400, 'idle_Azul');
+        const rightMago = new Mago(this, 'player2', 950, 400, 'idle_Rojo');
 
         this.players.set('player1', leftMago);
         this.players.set('player2', rightMago);
