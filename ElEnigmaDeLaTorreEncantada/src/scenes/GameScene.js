@@ -239,7 +239,7 @@ export class GameScene extends Phaser.Scene {
 
     crearBarreraInvisible(){
         // Crear una barrera invisible que evita que suba hacia arriba (pero pueda andar libremente por el suelo)
-        this.barreraInvisible = this.physics.add.staticImage(500, 320, null);
+        this.barreraInvisible = this.physics.add.staticImage(500, 400, null);
         this.barreraInvisible.setSize(1000, 10); // Wide barrier, thin height
         this.barreraInvisible.setVisible(false);
         this.barreraInvisible.body.setSize(1000, 10);
@@ -256,7 +256,9 @@ export class GameScene extends Phaser.Scene {
         this.calderoColl.body.setAllowGravity(false); 
         this.calderoColl.body.setImmovable(true); 
         this.calderoColl.setAlpha(0.0); 
-        this.calderoColl.setScale(5, 2);
+        //this.calderoColl.setScale(5, 5);
+        this.calderoColl.setCircle(85);
+        this.calderoColl.body.setOffset(-70,-55);
     }
 
     crearPlataformas(){

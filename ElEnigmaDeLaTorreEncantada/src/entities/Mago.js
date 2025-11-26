@@ -15,11 +15,12 @@ export class Mago{
         this.groundY = y;
 
         this.sprite = this.scene.physics.add.sprite(x, y, idSprite);
-        this.sprite.setScale(0.20);
+        this.sprite.setScale(0.35);
         this.sprite.setCollideWorldBounds(true);
         this.sprite.body.allowGravity = false; 
 
-        
+        this.sprite.body.setSize(125,175);
+        this.sprite.body.setOffset(880,750);
     }
 
     andar_animacion(){
