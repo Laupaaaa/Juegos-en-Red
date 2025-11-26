@@ -25,7 +25,7 @@ module.exports = {
       inject: false
     }),
     new CopyWebpackPlugin ({patterns:[{
-      from:'imagenes',
+      from:'public/imagenes',
       to:'imagenes', 
 }]})
   ],
