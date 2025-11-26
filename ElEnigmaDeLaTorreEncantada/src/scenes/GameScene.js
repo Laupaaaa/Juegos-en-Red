@@ -45,6 +45,9 @@ export class GameScene extends Phaser.Scene {
         this.load.image('andarRojo_6', '/imagenes/MagoRojo_Andando_6.png');
         this.load.image('andarRojo_7', '/imagenes/MagoRojo_Andando_7.png');
         this.load.image('andarRojo_8', '/imagenes/MagoRojo_Andando_8.png');
+
+        // Cargar BGM
+        this.load.audio('bgm', '/sounds/bgm.mp3');
     }
 
     init(){
@@ -96,6 +99,11 @@ export class GameScene extends Phaser.Scene {
             frameRate: 10,
             repeat: -1
         });
+
+        this.bgm = this.sound.add('bgm', { loop: true, volume: 0.5 });
+        if (!this.bgm.isPlaying) {
+            this.bgm.play();
+        }
 
         this.crearEscenario(); 
         this.crearPlataformas(); 
@@ -499,19 +507,26 @@ export class GameScene extends Phaser.Scene {
         if(player2.vida <= 0) this.endGame('player2');
     }
 
-    setPauseState(isPaused){
-        this.isPaused = isPaused;
-        if(isPaused){
-            this.scene.pause();
-            this.scene.launch('PauseScene', {originalScene: 'GameScene'})
-        }
+setPauseState(isPaused){
+    this.isPaused = isPaused;
+    if(isPaused){
+        this.scene.pause();
+        this.scene.launch('PauseScene', {originalScene: 'GameScene'})
     }
+    if (this.bgm && this.bgm.isPlaying) {
+            this.bgm.pause();
+    }
+    
+}
 
     resume(data){
         if(data && data.pociones){
             this.inventario = data.pociones; 
         }
         this.isPaused = false; 
+        if(this.bgm && this.bgm.isPaused){
+            this.bgm.resume();
+        }
     }
 
     togglePause(){
