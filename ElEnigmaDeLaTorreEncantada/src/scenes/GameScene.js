@@ -53,6 +53,8 @@ export class GameScene extends Phaser.Scene {
         this.load.audio('abrirCofre', '/sounds/chest_open.mp3');
         this.load.audio('recogerPocion', '/sounds/botellas.mp3');
         this.load.audio('recogerLlave', '/sounds/llave.mp3');
+        this.load.audio('walk', '/sounds/walk.mp3');
+        this.load.audio('explosion', '/sounds/explosion.mp3');
     }
 
     init() {
@@ -65,6 +67,7 @@ export class GameScene extends Phaser.Scene {
         this.processor = new CommandProcessor();
         this.maxJump = 3;
         this.cofreAbierto = false;
+        this.walkSounds = new Map(); // Map para guardar el sonido de cada jugador
 
         // Array de booleanos que representa que objetos han recogido entre ambos jugadores
         // Los objetos son: 0-llave, 1-libros, 2- pocion morada, 3- pocion verde, 4- pocion rosa, 5- pocion azul, 6- pocion amarilla, 7- pocion naranja, 8- velas, 9- bola de cristal, 10- planta, 11- estrella 1, 12- estrella 2
@@ -110,6 +113,10 @@ export class GameScene extends Phaser.Scene {
             this.bgm.play();
         }
 
+        // Crear un sonido de pasos para cada jugador
+        this.walkSounds.set('player1', this.sound.add('walk', { loop: true, volume: 0.3 }));
+        this.walkSounds.set('player2', this.sound.add('walk', { loop: true, volume: 0.3 }));
+
         this.crearEscenario();
         this.crearPlataformas();
         this.crearBarreraInvisible();
@@ -151,24 +158,37 @@ export class GameScene extends Phaser.Scene {
 
         this.inputMappings.forEach(mapping => {
             const mago = this.players.get(mapping.playerId);
+            const walkSound = this.walkSounds.get(mapping.playerId);
             let direction = null;
+            let isMoving = false;
             if (mapping.upKeyObj.isDown) {
                 direction = 'up';
+                isMoving = true;
                 mago.andar_animacion();
             } else if (mapping.downKeyObj.isDown) {
                 direction = 'down';
+                isMoving = true;
                 mago.andar_animacion();
             } else if (mapping.leftKeyObj.isDown) {
                 direction = 'left';
+                isMoving = true;
                 mago.sprite.flipX = false;
                 mago.andar_animacion();
             } else if (mapping.rightKeyObj.isDown) {
                 direction = 'right';
+                isMoving = true;
                 mago.sprite.flipX = true;
                 mago.andar_animacion();
             } else {
                 direction = 'stop';
                 mago.andar_animacion_parar();
+
+                if (walkSound && walkSound.isPlaying) {
+                    walkSound.stop();
+                }
+            }
+            if (isMoving && walkSound && !walkSound.isPlaying) {
+                walkSound.play();
             }
             let moveCommand = new MovePaddleCommand(mago, direction);
             this.processor.process(moveCommand);
@@ -309,10 +329,10 @@ export class GameScene extends Phaser.Scene {
             this.physics.add.overlap(player.sprite, this.estanteria, () => {
                 if (this.lPulsada) {
                     this.scene.pause();
-                    this.scene.launch('LibreriaScene', { 
-                        originalScene: 'GameScene', 
+                    this.scene.launch('LibreriaScene', {
+                        originalScene: 'GameScene',
                         pociones: this.inventario,
-                       sound: this.sound
+                        sound: this.sound
                     });
                 }
             });
@@ -345,6 +365,9 @@ export class GameScene extends Phaser.Scene {
                         }
                     } else {
                         console.log("No tienes las pociones necesarias para crear la poción de disminuir tamaño");
+                        if (this.sound) {
+                            this.sound.play('explosion', { volume: 0.5 });
+                        }
                         let aleatorio = Phaser.Math.Between(1, 2); // generar un número aleatorio entre 1 y 2 para elegir que jugador recibe daño
                         if (aleatorio === 1) this.dañoJugLeft();
                         else this.dañoJugRight();
@@ -491,6 +514,11 @@ export class GameScene extends Phaser.Scene {
             mago.sprite.setVelocity(0, 0);
         });
         this.physics.pause();
+
+        // Detener la música de fondo
+        if (this.bgm && this.bgm.isPlaying) {
+            this.bgm.stop();
+        }
 
         const texto = id === 'player1' ? 'El jugador 1 ha muerto' : ' El jugador 2 ha muerto';
         this.add.text(500, 250, texto, {
