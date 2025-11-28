@@ -58,5 +58,16 @@ export class MenuScene extends Phaser.Scene {
         .on('pointerdown', () => {
             this.scene.start('HistoriaScene');
         });
+
+        const controlBtn = this.add.text(500, 500, 'Controles', {
+            fontSize: '24px',
+            color: '#ffffffff',
+        }).setOrigin(0.5)
+        .setInteractive({ useHandCursor: true })
+        .on('pointerover', () => controlBtn.setStyle({ fill: '#ff7bffc1' }))
+        .on('pointerout', () => controlBtn.setStyle({ fill: '#fad3a0ff' }))
+        .on('pointerdown', () => {
+            this.scene.start('ControlScene');
+        });
     }
 }
