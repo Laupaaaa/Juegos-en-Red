@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import {Mago} from '../entities/Mago'
 import { CommandProcessor } from '../command/commandProcessor';
-import { MovePaddleCommand } from '../command/MovePaddleCommand';
+import { MoveMagoCommand } from '../command/MoveMagoCommand';
 import { PauseGameCommand } from '../command/PauseGameCommand';
 
 export class GameScene extends Phaser.Scene {
@@ -50,12 +50,10 @@ export class GameScene extends Phaser.Scene {
     init(){
         this.players = new Map();
         this.inputMappings = [];
-        this.ball = null;
         this.isPaused = false;
         this.escWasDown = false;
         this.lPulsada = false; 
         this.processor = new CommandProcessor(); 
-        this. maxJump = 3; 
         this.cofreAbierto = false;
         
         // Array de booleanos que representa que objetos han recogido entre ambos jugadores
@@ -129,7 +127,7 @@ export class GameScene extends Phaser.Scene {
         this.escWasDown = this.escKey.isDown;        
         
         this.lPulsada = false; //volver a poner a false si no ha habido overlap
-        if(this.lkey.isDown) this.lPulsada = true; 
+        if(this.lkey.isDown || this.qkey.isDown) this.lPulsada = true; 
 
         // Comprobar si alguno de los jugadores está saltando
         this.players.forEach(mago => {
@@ -139,6 +137,7 @@ export class GameScene extends Phaser.Scene {
         this.inputMappings.forEach(mapping => {
             const mago = this.players.get(mapping.playerId);
             let direction = null; 
+            let salto = false; 
             if(mapping.upKeyObj.isDown){
                 direction = 'up'; 
                 mago.andar_animacion();
@@ -152,14 +151,26 @@ export class GameScene extends Phaser.Scene {
              } else if (mapping.rightKeyObj.isDown){
                 direction  = 'right';    
                 mago.sprite.flipX = true;  
-                mago.andar_animacion();    
+                mago.andar_animacion();              
              } else{
                 direction = 'stop'; 
                 mago.andar_animacion_parar();
             }
-            let moveCommand = new MovePaddleCommand(mago, direction);
+
+            if (mapping.jumpObj.isDown){
+                if (mago.sprite.body.blocked.down || mago.sprite.body.touching.down || mago.sprite.body.blocked.up) {
+                    salto = true;
+                    mago.andar_animacion_parar();
+                }
+            }
+            let moveCommand = new MoveMagoCommand(mago, direction, salto);
             this.processor.process(moveCommand); 
+
+
+
         });
+
+        
     }
 
     crearEscenario(){
@@ -239,7 +250,7 @@ export class GameScene extends Phaser.Scene {
 
     crearBarreraInvisible(){
         // Crear una barrera invisible que evita que suba hacia arriba (pero pueda andar libremente por el suelo)
-        this.barreraInvisible = this.physics.add.staticImage(500, 400, null);
+        this.barreraInvisible = this.physics.add.staticImage(500, 350, null);
         this.barreraInvisible.setSize(1000, 10); // Wide barrier, thin height
         this.barreraInvisible.setVisible(false);
         this.barreraInvisible.body.setSize(1000, 10);
@@ -256,7 +267,6 @@ export class GameScene extends Phaser.Scene {
         this.calderoColl.body.setAllowGravity(false); 
         this.calderoColl.body.setImmovable(true); 
         this.calderoColl.setAlpha(0.0); 
-        //this.calderoColl.setScale(5, 5);
         this.calderoColl.setCircle(85);
         this.calderoColl.body.setOffset(-70,-55);
     }
@@ -267,10 +277,13 @@ export class GameScene extends Phaser.Scene {
         this.plataformas.create(510, 315, 'estanteR'); 
         this.plataformas.create(570, 315, 'estanteR'); 
         this.plataformas.create(446, 230, 'estanteR'); 
-        this.plataformas.create(330, 350, 'estanteR'); 
+        this.plataformas.create(380, 350, 'estanteR'); 
         this.plataformas.create(650, 350, 'estanteR'); 
-        this.plataformas.create(330, 215, 'estanteR'); 
+        this.plataformas.create(360, 215, 'estanteR'); 
+        this.plataformas.create(295, 215, 'estanteR'); 
         this.plataformas.create(650, 215, 'estanteR'); 
+        this.plataformas.create(300, 420, 'estanteR'); 
+        this.plataformas.create(700, 420, 'estanteR'); 
     }
 
     establecerColisiones(){
@@ -318,8 +331,8 @@ export class GameScene extends Phaser.Scene {
             this.physics.add.overlap(player.sprite, this.caldero, () => {
                 if(Phaser.Input.Keyboard.JustDown(this.lkey) || Phaser.Input.Keyboard.JustDown(this.qkey)) { // Comprobar que se ha pulsado la tecla L o Q para crear la pocion (si se mantiene pulsada la tecla no entrará varias veces a la función)
                     let elemRecogidos = this.inventario.filter(elem => elem === true); // crear un segundo array con unicamente los elementos recogidos
-                    if(elemRecogidos.length === 3){ // primero comprobar que se han recogido 3 elementos
-                        if(this.inventario[3] && this.inventario[5] && this.inventario[7]){ // comprobar que esos elementos recogidos son las pociones verde, azul y naranja 
+                    if(elemRecogidos.length === 3 || elemRecogidos.lenght === 4){ // primero comprobar que se han recogido 3 elementos
+                        if(this.inventario[3] && this.inventario[5] && this.inventario[7] ){ // comprobar que esos elementos recogidos son las pociones verde, azul y naranja 
                             console.log("Poción de disminuir tamaño creada");
                         }
                     } else {
@@ -330,7 +343,7 @@ export class GameScene extends Phaser.Scene {
                     }
 
                     // volver a poner a false todos los elementos del inventario
-                    for (let i = 1; i < this.inventario.length; i++){ // se salta la llave porque no se utiliza para crear la pocion
+                    for (let i = 1; i < this.inventario.length-2; i++){ // se salta la llave y las estrellas porque no se utilizan para crear la pocion
                         this.inventario[i] = false; 
                     }
                 }                   
@@ -385,12 +398,11 @@ export class GameScene extends Phaser.Scene {
         this.estrella1.setAlpha(1.0);
         this.estrella2.setAlpha(1.0);
         this.cofreAbierto = true; // para que solo se abra una vez
+        this.inventario[0] = false; // quitar la llave del inventario al abrir el cofre
 
     }
 
     recogerEstrella(n){
-        this.inventario[11] = true;
-        this.inventario[12] = true;
         if(this.cofreAbierto){ // solo se puede recoger si el cofre está abierto (porque sino están ocultas)
             console.log("Estrella " + n + " recogida");
             this.inventario[10 + n] = true; // marcar en el inventario que se ha conseguido la estrella (11 y 12 en el array)
@@ -435,13 +447,15 @@ export class GameScene extends Phaser.Scene {
                 downKey:'S',
                 leftKey: 'A',
                 rightKey: 'D',
+                jump: 'SPACE'
             },
             {
                 playerId: 'player2',
                 upKey: 'UP',
                 downKey:'DOWN',
                 leftKey: 'LEFT',
-                rightKey: 'RIGHT'
+                rightKey: 'RIGHT',
+                jump: 'ENTER'
             }
         ]
 
@@ -453,7 +467,7 @@ export class GameScene extends Phaser.Scene {
                 downKeyObj: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes[config.downKey]),
                 leftKeyObj: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes[config.leftKey]),
                 rightKeyObj: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes[config.rightKey]),
-            }
+                jumpObj: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes[config.jump]),}
         });   
     }
 

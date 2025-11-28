@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import {Mago} from '../entities/Mago'
 import { CommandProcessor } from '../command/commandProcessor';
-import { MovePaddleCommand } from '../command/MovePaddleCommand';
+import { MoveMagoCommand } from '../command/MoveMagoCommand';
 
 export class LibreriaScene extends Phaser.Scene {
 
@@ -73,7 +73,7 @@ export class LibreriaScene extends Phaser.Scene {
              } else{
                 direction = 'stop'; 
             }
-            let moveCommand = new MovePaddleCommand(paddle, direction);
+            let moveCommand = new MoveMagoCommand(paddle, direction);
             this.processor.process(moveCommand); 
         });
     }
