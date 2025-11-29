@@ -87,13 +87,8 @@ export class LibreriaScene extends Phaser.Scene {
             } else {
                 direction = 'stop';
             }
-<<<<<<< HEAD
             let moveCommand = new MoveMagoCommand(paddle, direction);
-            this.processor.process(moveCommand); 
-=======
-            let moveCommand = new MovePaddleCommand(paddle, direction);
             this.processor.process(moveCommand);
->>>>>>> 75be533c1f33e156aa8d7a315eebe48e518e5436
         });
     }
 
