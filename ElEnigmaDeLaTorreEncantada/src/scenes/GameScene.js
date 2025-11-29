@@ -11,6 +11,7 @@ export class GameScene extends Phaser.Scene {
     }
 
     preload() {
+        // Escemnario y objetos
         this.load.image('paredR', '/imagenes/paredYTecho.png');
         this.load.image('sueloR', '/imagenes/suelo.png');
         this.load.image('bolaCristalR', '/imagenes/bolaCristal.png');
@@ -29,6 +30,8 @@ export class GameScene extends Phaser.Scene {
         this.load.image('botonVR', '/imagenes/botonVacio.png');
         this.load.image('botonCR', '/imagenes/botonCompleto.png');
         this.load.image('estrellaR', '/imagenes/estrella.png');
+
+        // Personajes
         this.load.image('idle_Azul', '/imagenes/Mago_Andando_2.png');
         this.load.image('andarAzul_2', '/imagenes/Mago_Andando_3.png');
         this.load.image('andarAzul_3', '/imagenes/Mago_Andando_4.png');
@@ -46,10 +49,14 @@ export class GameScene extends Phaser.Scene {
         this.load.image('andarRojo_7', '/imagenes/MagoRojo_Andando_7.png');
         this.load.image('andarRojo_8', '/imagenes/MagoRojo_Andando_8.png');
 
-        // Cargar BGM
+        // Interfaz Muerte
+        this.load.image('titulo', '/imagenes/pergaminoTitulo.png'); 
+        this.load.image('boton', '/imagenes/botonTexto.png'); 
+
+        // BGM
         this.load.audio('bgm', '/sounds/bgm.mp3');
 
-        //Cargar sonidos de efectos
+        // sonidos de efectos
         this.load.audio('abrirCofre', '/sounds/chest_open.mp3');
         this.load.audio('recogerPocion', '/sounds/botellas.mp3');
         this.load.audio('recogerLlave', '/sounds/llave.mp3');
@@ -188,6 +195,7 @@ export class GameScene extends Phaser.Scene {
                 }
             }
 
+            // salto solo si esta pequeño
             if (mapping.jumpObj.isDown){
                 if (mago.sprite.body.blocked.down || mago.sprite.body.touching.down || mago.sprite.body.blocked.up) {
                     salto = true;
@@ -532,6 +540,12 @@ export class GameScene extends Phaser.Scene {
 
     endGame(id) {
         this.add.rectangle(500, 280, 1000, 560, 0x000000, 0.7);
+
+        this.titulo = this.add.image(500,240, 'titulo')
+        this.titulo.setScale(0.25);
+        this.boton = this.add.image(500,450, 'boton')
+        this.boton.setScale(0.1);  
+
         this.players.forEach(mago => {
             mago.sprite.setVelocity(0, 0);
         });
@@ -542,20 +556,20 @@ export class GameScene extends Phaser.Scene {
             this.bgm.stop();
         }
 
-        const texto = id === 'player1' ? 'El jugador 1 ha muerto' : ' El jugador 2 ha muerto';
+        const texto = id === 'player1' ? 'El jugador 1\n   ha muerto' : ' El jugador 2\n   ha muerto';
         this.add.text(500, 250, texto, {
             fontSize: '64px',
             color: ' #ff0000ff',
 
         }).setOrigin(0.5);
 
-        const menuBtn = this.add.text(500, 350, 'Volver al menu', {
-            fontSize: '32px',
-            color: '#ffffff'
+        const menuBtn = this.add.text(500, 450, 'Menú', {
+            fontSize: '30px',
+            color: '#000000ff'
         }).setOrigin(0.5)
             .setInteractive({ useHandCursor: true })
-            .on('pointerover', () => menuBtn.setStyle({ fill: '#7bffc1ff' }))
-            .on('pointerout', () => menuBtn.setStyle({ fill: '#ffffff' }))
+            .on('pointerover', () => menuBtn.setStyle({ fill: '#02ff89ff' }))
+            .on('pointerout', () => menuBtn.setStyle({ fill: '#000000ff' }))
             .on('pointerdown', () => {
                 this.scene.start('MenuScene');
             });

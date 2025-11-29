@@ -7,67 +7,79 @@ export class MenuScene extends Phaser.Scene {
 
     preload(){
         this.load.image('fondoM', '/imagenes/logoSinFondo.png'); 
+        this.load.image('titulo', '/imagenes/pergaminoTitulo.png'); 
+        this.load.image('boton', '/imagenes/botonTexto.png'); 
     }
 
     create() {
-        this.add.image(500,280, 'fondoM')
+        this.fondo = this.add.image(500,350, 'fondoM')
+        this.fondo.setScale(0.8);
+        this.titulo = this.add.image(500,120, 'titulo')
+        this.titulo.setScale(0.25);
+        this.boton1 = this.add.image(500,300, 'boton')
+        this.boton1.setScale(0.1);        
+        this.boton2 = this.add.image(500,350, 'boton')
+        this.boton2.setScale(0.1);
+        this.boton3 = this.add.image(500,400, 'boton')
+        this.boton3.setScale(0.1);
+        this.boton4 = this.add.image(500,450, 'boton')
+        this.boton4.setScale(0.1);
+        this.boton5 = this.add.image(500,500, 'boton')
+        this.boton5.setScale(0.1);
 
-
-        this.add.text(500, 100, 'El Enigma de la\nTorre Encantada', {
-            fontSize: '64px',
-            color: '#ffffff',
+        this.add.text(500, 120, 'El Enigma de la\nTorre Encantada', {
+            fontSize: '56px',
+            color: '#000000ff',
         }).setOrigin(0.5);
 
         const localBtn = this.add.text(500, 300, 'Local', {
             fontSize: '24px',
-            color: '#00ff00',
+            color: '#000000ff',
         }).setOrigin(0.5)
         .setInteractive({ useHandCursor: true })
-        .on('pointerover', () => localBtn.setStyle({ fill: '#7bffc1ff' }))
-        .on('pointerout', () => localBtn.setStyle({ fill: '#00ff00' }))
+        .on('pointerover', () => localBtn.setStyle({ fill: '#4bffabff' }))
+        .on('pointerout', () => localBtn.setStyle({ fill: '#000000ff' }))
         .on('pointerdown', () => {
             this.scene.start('GameScene');
         });
 
-        const onlineBtn = this.add.text(500, 350, 'Online (no disponible)', {
+        this.add.text(500, 350, 'Online', {
             fontSize: '24px',
-            color: '#ad32ffff',
+            color: '#000000ff',
         }).setOrigin(0.5)
-        .setInteractive({ useHandCursor: true })
-        .on('pointerover', () => onlineBtn.setStyle({ fill: '#ca9ee7ff' }))
-        .on('pointerout', () => onlineBtn.setStyle({ fill: '#ad32ffff' }))
+
 
         const creditosBtn = this.add.text(500, 400, 'Créditos', {
             fontSize: '24px',
-            color: '#eb8704ff',
+            color: '#000000ff',
         }).setOrigin(0.5)
         .setInteractive({ useHandCursor: true })
-        .on('pointerover', () => creditosBtn.setStyle({ fill: '#fad3a0ff' }))
-        .on('pointerout', () => creditosBtn.setStyle({ fill: '#eb8704ff' }))
+        .on('pointerover', () => creditosBtn.setStyle({ fill: '#ff9100ff' }))
+        .on('pointerout', () => creditosBtn.setStyle({ fill: '#000000ff' }))
         .on('pointerdown', () => {
             this.scene.start('CreditsScene');
         });
 
         const historiaBtn = this.add.text(500, 450, 'Historia', {
             fontSize: '24px',
-            color: '#04ebebff',
+            color: '#000000ff',
         }).setOrigin(0.5)
         .setInteractive({ useHandCursor: true })
-        .on('pointerover', () => historiaBtn.setStyle({ fill: '#a8ffffff' }))
-        .on('pointerout', () => historiaBtn.setStyle({ fill: '#04ebebff' }))
+        .on('pointerover', () => historiaBtn.setStyle({ fill: '#38ffffff' }))
+        .on('pointerout', () => historiaBtn.setStyle({ fill: '#000000ff' }))
         .on('pointerdown', () => {
             this.scene.start('HistoriaScene');
         });
 
         const controlBtn = this.add.text(500, 500, 'Controles', {
             fontSize: '24px',
-            color: '#ffffffff',
+            color: '#000000ff',
         }).setOrigin(0.5)
         .setInteractive({ useHandCursor: true })
-        .on('pointerover', () => controlBtn.setStyle({ fill: '#ff7bffc1' }))
-        .on('pointerout', () => controlBtn.setStyle({ fill: '#fad3a0ff' }))
+        .on('pointerover', () => controlBtn.setStyle({ fill: '#ff0dffc1' }))
+        .on('pointerout', () => controlBtn.setStyle({ fill: '#000000ff' }))
         .on('pointerdown', () => {
-            this.scene.start('ControlScene');
+            this.scene.start('ControlScene', { originalScene: 'MenuScene' });
         });
     }
 }
