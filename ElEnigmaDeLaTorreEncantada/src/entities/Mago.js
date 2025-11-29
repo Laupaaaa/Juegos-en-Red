@@ -70,5 +70,9 @@ export class Mago{
         }
 
     }
+
+    setScale(scale){
+        this.sprite.setScale(scale);
+    }
  
 }

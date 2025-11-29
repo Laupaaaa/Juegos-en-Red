@@ -20,7 +20,7 @@ export class GameScene extends Phaser.Scene {
         this.load.image('cofreAbiertoR', '/imagenes/cofreAbierto.png');
         this.load.image('estanteriaR', '/imagenes/estanteria.png');
         this.load.image('llaveR', '/imagenes/llave.png');
-        this.load.image('pergaminoR', '/imagenes/pergamino.png');
+        this.load.image('pergaminoR', '/imagenes/pergaminoColor.png');
         this.load.image('plantaR', '/imagenes/planta.png');
         this.load.image('pocionesR', '/imagenes/pociones.png');
         this.load.image('velasR', '/imagenes/velas.png');

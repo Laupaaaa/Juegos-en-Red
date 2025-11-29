@@ -52,7 +52,7 @@ export class LibreriaScene extends Phaser.Scene {
 
     create(data) {
         this.mago = this.add.image(100, 100, "idle");
-        this.mago.setScale(0.3);
+        this.mago.setScale(1.9);
         this.crearEscenario();
         this.setUpPlayers();
         this.establecerColisiones();
@@ -274,6 +274,7 @@ export class LibreriaScene extends Phaser.Scene {
     setUpPlayers() {
 
         const leftMago = new Mago(this, 'player1', 50, 300, 'idle');
+        leftMago.setScale(0.08);
         
         this.players.set('player1', leftMago);
         
