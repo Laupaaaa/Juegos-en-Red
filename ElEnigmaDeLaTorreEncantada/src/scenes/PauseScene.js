@@ -7,7 +7,8 @@ export class PauseScene extends Phaser.Scene{
 
     preload(){
         this.load.image('titulo', '/imagenes/pergaminoTitulo.png'); 
-        this.load.image('boton', '/imagenes/botonTexto.png'); 
+        this.load.image('boton', '/imagenes/botonTexto.png');
+        this.load.audio('hover', '/sounds/hover.mp3');
     }   
 
     create(data){
@@ -32,36 +33,45 @@ export class PauseScene extends Phaser.Scene{
             color: '#000000ff',
         }).setOrigin(0.5)
         .setInteractive({ useHandCursor: true })
-        .on('pointerover', () => resumeBtn.setStyle({ fill: '#00ff88ff' }))
-        .on('pointerout', () => resumeBtn.setStyle({ fill: '#000000ff' }))
-        .on('pointerdown', () => {
-            this.scene.stop();
-            this.scene.resume(data.originalScene);
-            this.scene.get(data.originalScene).resume(); 
-        });
+        .on('pointerover', () => {
+            resumeBtn.setStyle({ fill: '#00ff88ff' });
+            this.sound.play('hover', { volume: 0.5 });
+        })
+         .on('pointerout', () => resumeBtn.setStyle({ fill: '#000000ff' }))
+         .on('pointerdown', () => {
+             this.scene.stop();
+             this.scene.resume(data.originalScene);
+             this.scene.get(data.originalScene).resume(); 
+         });
 
         const menuBtn = this.add.text(500, 400, 'Menú', {
-            fontSize: '32px',
-            color: '#000000ff',
-        }).setOrigin(0.5)
-        .setInteractive({ useHandCursor: true })
-        .on('pointerover', () => menuBtn.setStyle({ fill: '#6839b3ff' }))
-        .on('pointerout', () => menuBtn.setStyle({ fill: '#000000ff' }))
-        .on('pointerdown', () => {
-            this.scene.start('MenuScene');
-            this.scene.stop(data.originalScene);
-        });
+             fontSize: '32px',
+             color: '#000000ff',
+         }).setOrigin(0.5)
+         .setInteractive({ useHandCursor: true })
+         .on('pointerover', () => {
+            menuBtn.setStyle({ fill: '#6839b3ff' });
+            this.sound.play('hover', { volume: 0.5 });
+        })
+          .on('pointerout', () => menuBtn.setStyle({ fill: '#000000ff' }))
+          .on('pointerdown', () => {
+              this.scene.start('MenuScene');
+              this.scene.stop(data.originalScene);
+          });
 
-        
-        const controlBtn = this.add.text(500, 450, 'Controles', {
-            fontSize: '32px',
-            color: '#000000ff',
-        }).setOrigin(0.5)
-        .setInteractive({ useHandCursor: true })
-        .on('pointerover', () => controlBtn.setStyle({ fill: '#00eeffff' }))
-        .on('pointerout', () => controlBtn.setStyle({ fill: '#000000ff' }))
-        .on('pointerdown', () => {
-            this.scene.start('ControlScene', { originalScene: 'GameScene' }); 
-        });
+         
+         const controlBtn = this.add.text(500, 450, 'Controles', {
+             fontSize: '32px',
+             color: '#000000ff',
+         }).setOrigin(0.5)
+         .setInteractive({ useHandCursor: true })
+         .on('pointerover', () => {
+            controlBtn.setStyle({ fill: '#00eeffff' });
+            this.sound.play('hover', { volume: 0.5 });
+        })
+          .on('pointerout', () => controlBtn.setStyle({ fill: '#000000ff' }))
+          .on('pointerdown', () => {
+              this.scene.start('ControlScene', { originalScene: 'GameScene' }); 
+          });
     }
 }
