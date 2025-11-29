@@ -4,6 +4,7 @@ export class Mago{
         this.scene = scene;
         this.vida = 3; 
         this.idle = idSprite;
+        this.estado_normal = true;
 
         this.baseWidht = 20;
         this.baseHeight = 100;
@@ -50,6 +51,7 @@ export class Mago{
     }
 
     update(delta) {
+
         if (this.isJumping ) {
             // Check if landed (back to ground level or below)
             if (this.sprite.y >= this.groundY && this.sprite.body.velocity.y >= 0) { // Comprobar si tiene que volver a area de suelo
@@ -59,6 +61,12 @@ export class Mago{
                 this.isJumping = false; // ya no está saltando
             }
 
+        }
+
+        if(this.estado_normal === false){
+            this.sprite.setScale(0.1);
+        } else {
+            this.sprite.setScale(0.35);
         }
 
     }

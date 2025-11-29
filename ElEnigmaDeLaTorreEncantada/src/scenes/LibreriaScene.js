@@ -64,6 +64,7 @@ export class LibreriaScene extends Phaser.Scene {
 
     update() {
         if (this.escKey.isDown && !this.escWasDown) {
+            
             this.scene.stop();
             this.scene.resume(this.datos.originalScene, { pociones: this.datos.pociones });
             // this.scene.get(this.datos.originalScene).resume(); 
@@ -154,6 +155,7 @@ export class LibreriaScene extends Phaser.Scene {
                     this.bolaCristal.setAlpha(0.5);
                     this.datos.pociones[9] = true; // marcar que se ha recogido la bola de cristal
                     this.abrir = false;
+                    console.log("BOLA CRISTAL RECOGIDA");
                 }
             });
             this.physics.add.overlap(player.sprite, this.planta, () => {
@@ -165,6 +167,7 @@ export class LibreriaScene extends Phaser.Scene {
                     this.planta.setAlpha(0.5);
                     this.datos.pociones[10] = true; // marcar que se ha recogido la planta
                     this.abrir = false;
+                    console.log("PLANTA RECOGIDA");
                 }
             });
             this.physics.add.overlap(player.sprite, this.pocionAm, () => {
@@ -176,6 +179,7 @@ export class LibreriaScene extends Phaser.Scene {
                     this.pocionAm.setAlpha(0.5);
                     this.datos.pociones[6] = true; // marcar que se ha recogido la pocion amarilla
                     this.abrir = false;
+                    console.log("POCION AMARILLA RECOGIDA");
                 }
             });
             this.physics.add.overlap(player.sprite, this.pocionN, () => {
@@ -187,6 +191,7 @@ export class LibreriaScene extends Phaser.Scene {
                     this.pocionN.setAlpha(0.5);
                     this.datos.pociones[7] = true; // marcar que se ha recogido la pocion naranja
                     this.abrir = false;
+                    console.log("POCION NARANJA RECOGIDA");
                 }
             });
             this.physics.add.overlap(player.sprite, this.pocionM, () => {
@@ -198,6 +203,7 @@ export class LibreriaScene extends Phaser.Scene {
                     this.pocionM.setAlpha(0.5);
                     this.datos.pociones[2] = true; // marcar que se ha recogido la pocion morada
                     this.abrir = false;
+                    console.log("POCION MORADA RECOGIDA");
                 }
             });
             this.physics.add.overlap(player.sprite, this.pocionR, () => {
@@ -209,6 +215,7 @@ export class LibreriaScene extends Phaser.Scene {
                     this.pocionR.setAlpha(0.5);
                     this.datos.pociones[4] = true; // marcar que se ha recogido la pocion rosa
                     this.abrir = false;
+                    console.log("POCION ROSA RECOGIDA");
                 }
             });
             this.physics.add.overlap(player.sprite, this.pocionV, () => {
@@ -220,6 +227,7 @@ export class LibreriaScene extends Phaser.Scene {
                     this.pocionV.setAlpha(0.5);
                     this.datos.pociones[3] = true; // marcar que se ha recogido la pocion verde
                     this.abrir = false;
+                    console.log("POCION VERDE RECOGIDA");
                 }
             });
             this.physics.add.overlap(player.sprite, this.pocionAz, () => {
@@ -231,6 +239,7 @@ export class LibreriaScene extends Phaser.Scene {
                     this.pocionAz.setAlpha(0.5);
                     this.datos.pociones[5] = true; // marcar que se ha recogido la pocion azul
                     this.abrir = false;
+                    console.log("POCION AZUL RECOGIDA");
                 }
             });
             this.physics.add.overlap(player.sprite, this.velas, () => {
@@ -242,6 +251,7 @@ export class LibreriaScene extends Phaser.Scene {
                     this.velas.setAlpha(0.5);
                     this.datos.pociones[8] = true; // marcar que se ha recogido las velas
                     this.abrir = false;
+                    console.log("VELAS RECOGIDAS");
                 }
             });
             this.physics.add.overlap(player.sprite, this.libro, () => {
@@ -253,6 +263,7 @@ export class LibreriaScene extends Phaser.Scene {
                     this.libro.setAlpha(0.5);
                     this.datos.pociones[1] = true; // marcar que se ha recogido los libros
                     this.abrir = false;
+                    console.log("LIBROS RECOGIDOS");
                 }
             });
         });
