@@ -22,7 +22,7 @@ export class MoveMagoCommand extends Command {
             this.mago.sprite.setVelocityX(0); 
         }
         if(this.salto){
-            this.mago.sprite.setVelocityY(-this.mago.baseSpeed*9 );
+            this.mago.sprite.setVelocityY(-this.mago.baseSpeed*3.5 );
         }
     }
 }

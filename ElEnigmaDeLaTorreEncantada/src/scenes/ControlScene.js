@@ -37,7 +37,7 @@ export class ControlScene extends Phaser.Scene {
 
         this.add.text(250, 310, 'Jugador 1:', {
             fontSize: '32px',
-            color: '#ffbbbbff',
+            color: '#9be3ffff',
         }).setOrigin(0.5);
 
         this.add.text(260, 400, 'Moverse:\n W-Arriba\n A-Izquierda\n S-Abajo\n D-Derecha\n SPACE-Saltar\n Q-Interactuar', {
@@ -47,7 +47,7 @@ export class ControlScene extends Phaser.Scene {
 
         this.add.text(750, 310, 'Jugador 2:', {
             fontSize: '32px',
-            color: '#9f98ffff',
+            color: 'rgba(255, 99, 99, 1)',
         }).setOrigin(0.5);
 
         this.add.text(790, 400, 'Moverse:\n Flechas-Arriba\n Flechas-Izquierda\n Flechas-Abajo\n Flechas-Derecha\n ENTER-Saltar\n L-Interactuar', {

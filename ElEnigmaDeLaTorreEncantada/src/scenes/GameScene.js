@@ -197,7 +197,7 @@ export class GameScene extends Phaser.Scene {
 
             // salto solo si esta pequeño
             if (mapping.jumpObj.isDown){
-                if (mago.sprite.body.blocked.down || mago.sprite.body.touching.down || mago.sprite.body.blocked.up) {
+                if (!mago.estado_normal) {
                     salto = true;
                     mago.andar_animacion_parar();
                 }
@@ -312,17 +312,22 @@ export class GameScene extends Phaser.Scene {
 
     crearPlataformas() {
         this.plataformas = this.physics.add.staticGroup();
+        // Centro
         this.plataformas.create(446, 315, 'estanteR');
         this.plataformas.create(510, 315, 'estanteR'); 
         this.plataformas.create(570, 315, 'estanteR'); 
-        this.plataformas.create(446, 230, 'estanteR'); 
-        this.plataformas.create(380, 350, 'estanteR'); 
+
+        // Izquierda
         this.plataformas.create(650, 350, 'estanteR'); 
-        this.plataformas.create(360, 215, 'estanteR'); 
-        this.plataformas.create(295, 215, 'estanteR'); 
         this.plataformas.create(650, 215, 'estanteR'); 
-        this.plataformas.create(300, 420, 'estanteR'); 
-        this.plataformas.create(700, 420, 'estanteR'); 
+        this.plataformas.create(700, 390, 'estanteR'); 
+
+        // Derecha
+        this.plataformas.create(446, 250, 'estanteR'); 
+        this.plataformas.create(360, 235, 'estanteR'); 
+        this.plataformas.create(295, 215, 'estanteR'); 
+        this.plataformas.create(300, 390, 'estanteR'); 
+        this.plataformas.create(380, 350, 'estanteR'); 
     }
 
     establecerColisiones() {
@@ -468,12 +473,13 @@ export class GameScene extends Phaser.Scene {
             this.inventario[10 + n] = true; // marcar en el inventario que se ha conseguido la estrella (11 y 12 en el array)
             if (n === 1) this.estrella1.destroy();
             else this.estrella2.destroy();
+            this.players.forEach(player => {
+                this.time.delayedCall(4000, () => {
+                player.estado_normal = true;});
+            });
         }
 
-        this.players.forEach(player => {
-            this.time.delayedCall(4000, () => {
-                player.estado_normal = true;});
-        });
+
     }
 
     colocarEstrella(n) {
