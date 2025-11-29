@@ -64,6 +64,7 @@ export class GameScene extends Phaser.Scene {
         this.load.audio('explosion', '/sounds/explosion.mp3');
         this.load.audio('puerta', '/sounds/puerta.mp3');
         this.load.audio('trigger', '/sounds/trigger.mp3');
+        this.load.audio('pequeño', '/sounds/pequeño.mp3');
     }
 
     init() {
@@ -388,6 +389,9 @@ export class GameScene extends Phaser.Scene {
                     if ((elemRecogidos.length === 3) || (elemRecogidos.lenght === 4)) { // primero comprobar que se han recogido 3 elementos
                         if (this.inventario[3] && this.inventario[5] && this.inventario[7]) { // comprobar que esos elementos recogidos son las pociones verde, azul y naranja 
                             console.log("Poción de disminuir tamaño creada");
+                            if (this.sound) {
+                                this.sound.play('pequeño', { volume: 0.6 });
+                            }
                             this.players.forEach(player => {
                                 player.estado_normal = false;
                             });
