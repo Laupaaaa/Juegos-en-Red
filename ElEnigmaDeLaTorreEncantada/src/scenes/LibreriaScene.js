@@ -22,7 +22,7 @@ export class LibreriaScene extends Phaser.Scene {
         this.load.image('pocionesV', '/imagenes/pocionVerde.png');
         this.load.image('velasColor', '/imagenes/velasColor.png');
         this.load.image('librosColor', '/imagenes/librosColor.png');
-        this.load.image('idle', '/imagenes/Mago_Andando_2.png');
+        this.load.image('idle', '/imagenes/mano.png');
     }
 
     init() {
@@ -51,11 +51,13 @@ export class LibreriaScene extends Phaser.Scene {
 
 
     create(data) {
-        this.add.image(100, 100, "idle");
+        this.mago = this.add.image(100, 100, "idle");
+        this.mago.setScale(0.3);
         this.crearEscenario();
         this.setUpPlayers();
         this.establecerColisiones();
         this.datos = data;
+        
 
         this.escKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
         this.lkey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.L);
@@ -272,11 +274,9 @@ export class LibreriaScene extends Phaser.Scene {
     setUpPlayers() {
 
         const leftMago = new Mago(this, 'player1', 50, 300, 'idle');
-        const rightMago = new Mago(this, 'player2', 950, 300, 'idle');
-
+        
         this.players.set('player1', leftMago);
-        this.players.set('player2', rightMago);
-
+        
         const InputConfig = [
             {
                 playerId: 'player1',
@@ -284,13 +284,6 @@ export class LibreriaScene extends Phaser.Scene {
                 downKey: 'S',
                 leftKey: 'A',
                 rightKey: 'D'
-            },
-            {
-                playerId: 'player2',
-                upKey: 'UP',
-                downKey: 'DOWN',
-                leftKey: 'LEFT',
-                rightKey: 'RIGHT'
             }
         ]
 
