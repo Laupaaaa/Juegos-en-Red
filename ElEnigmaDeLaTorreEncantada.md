@@ -145,6 +145,10 @@ En cuanto a la inspiración de mecánicas, se ha decidido usar algunas parecidas
 En cuanto al juego “Fireboy and Watergirl”, la inspiración principal es en el fondo del escenario, ya que una pared blanca no es adecuada para la ambientación del propio juego, sino un fondo que se asemeje al de una torre de la época medieval, que es donde se desarrolla la historia del juego. Para esta inspiración, se han buscado algunas imágenes de internet, así como imágenes, escenarios e historias fruto de la imaginación.  
 Además, se han utilizado referencias de la Edad Media para el apartado tanto artístico, como para desarrollar la historia, ya que este juego transcurrirá en esta época, una época sin tecnologías y llena de magia. 
 
+## **Escenario Final**
+![Escenario Final](imagenes/escenario.png)
+
+
 ---
 
 # **3\. Sonido** 
@@ -175,20 +179,19 @@ Gracias a estos sonidos, se conseguirá que el jugador llegue a un estado de inm
 El objetivo de ambos jugadores es colaborar en las diferentes pruebas que se irán encontrando en las salas de la torre, para así poder alcanzar “el elixir de la vida eterna”, cada jugador deberá ayudar en las resoluciones de las pruebas para que logren ir descifrando cada enigma y llegar hasta el final. 
 
 ## **Mecánicas principales**  
-* Movimiento: Salto, caminar (izq, derecha), agacharse.  
-* Resolución de puzzles: interactuar con los elementos para superar las pruebas.  
-* Compartir vidas: el jugador con más vida podrá darle parte de su vida a su compañero si este la necesita, pudiendo llegar a resucitar si su compañero falleció
+* Movimiento: Salto, caminar (izq, derecha, arriba y abajo) 
+* Resolución de puzzles: observar el entorno e interactuar con los elementos para superar las pruebas.  
 
 ## **Mecánicas secundarias** 
 
 * Interacción con el entorno: dan acceso a otra zona, o un objeto clave con el cual poder avanzar en la historia. Al interactuar con esas zonas del entorno, se desbloqueará un minijuego, ya sea un puzzle, un acertijo…,   
-* Gestión de objetos: el jugador llevará consigo los objetos obtenidos, y en caso de morir, el objeto permanecerá en el sitio donde el jugador haya muerto y este deberá volver para recogerlo y llevarlo a su destino.  
+* Gestión de objetos: los jugadores mantendrán un inventario común en el que almacenarán conjuntamente los objetos obtenidos.  
 * Hechizos: usar magia para obtener distintos beneficios.
 
 
 ## **Progresión y Logros** 
-
-El videojuego consta de tres niveles diferentes con una dificultad progresiva, donde cada nivel representa un piso distinto de la torre. A lo largo del juego, el usuario podrá ir consiguiendo los siguientes logros:
+**(Todavía no implementado)**
+A lo largo del juego, el usuario podrá ir consiguiendo los siguientes logros:
 
 * *La vida eterna*: completa el juego  
 * *Magia blanca*: comparte la poción con tu amigo  
@@ -203,16 +206,19 @@ El videojuego consta de tres niveles diferentes con una dificultad progresiva, d
 
 Las físicas de El Enigma de la Torre Encantada son las siguientes:
 
-* Movimiento de los personajes (esto también incluye salto)(Ver [Mecánicas principales](#mecánicas-principales)).  
-* Interacción con el entorno: (Ver [Objetos Interactivos / PowerUps](#objetos-interactivos--mejoras))  
-  * Puertas  
+* El movimiento de los personajes dependerá de la zona dónde se encuentren y si han activado la poción o no. 
+  * **Zona de suelo:** podrán desplazarse ambos magos libremente (derecha, izquierda, arriba, abajo). 
+  * **Zona de pared:** ya no podrán subir y bajar libremente. Aquí la gravedad les afectará, por lo que si suben, automaticamente empezarán a bajar hasta el suelo o una plataforma.
+  * **Salto:** los magos están cansados y son muy grandes, por lo que solo podrán saltar si dismunuyen su tamaño, pudiendo saltar entre las distintas plataformas de la pared.
+* Interacción con el entorno: (Ver [Objetos Interactivos / PowerUps](#objetos-interactivos--mejoras))    
   * Cofres  
   * Llaves  
   * Pócimas  
-  * Trampas  
-  * Pulsación de botones.  
-* Movimiento de los objetos de las diferentes pruebas.
-* Daño: en el escenario habrá distintos objetos y trampas, así como el orden incorrecto al seguir una secuencia de pasos, que podrán quitar vida a los personajes
+  * Estrellas
+  * Caldero
+  * Estantería  
+  * Botones  
+* Daño: si el jugador realiza pociones con los ingredientes incorrectos, puede no obtener el resultado esperado y recibir una explosión. 
   
 ## **Escenarios** 
 El escenario de este juego se tratará de la “Torre Encantada”. Esta se dividirá en cuatro pisos, tres de ellos serán los niveles jugables por los usuarios dónde se encuentren las pruebas y acertijos, y el último se trata de la cima de la torre, dónde se encuentra el deseado elixir. 
@@ -230,39 +236,54 @@ El último piso se trata de una sala circular iluminada por cristales mágicos q
 
 Una vez los magos han superado cada una de las pruebas de las salas de la torre, llegarán a la cima. Este se trata de un escenario al aire libre, rodeado de almenas que protegen la cima de la torre, así como un campo de fuerza que impide que alguien llegue a aquella cima sin haber superado las pruebas. En el centro se encuentra un pilar sobre el que flota el frasco del elixir de la vida eterna. Los jugadores deberán llegar hasta él y decidir si seguirán el camino de la magia negra o no. 
 
+### **Nota**
+Estos tres pisos han sido simplificados y unidos en un único nivel, en el que los jugadores se encontrará en una sala repleta de objetos, un caldero y pistas. Los jugadores deberán encontrar los ingredientes necesarios para conseguir la poción que les ayudará a alcanzar la llave. Una vez conseguida la llave, deberán obtener las estrellas del interior del cofre y colocarlas en su sitio. Si ambos magos se coordinan y pulsan ambos botones de estrella a la vez, lograrán desactivar el campo de fuerza que les impide subir la torre. 
+
 ## **Controles** 
 El videojuego consta del sistema WASD para el movimiento de su personaje: 
 
 * A para el movimiento a la izquierda  
 * D para el movimiento a la derecha  
-* S para agacharse  
+* S para el movimiento hacia abajo
+* W para el movimiento hacia arriba  
 * ESPACIO para el salto
+* Q para interactuar con el entorno
 
-Así mismo, si se desea jugar el juego en la opción local, es decir, en el mismo dispositivo, la alternativa para jugar dos jugadores es uno, el ya citado anteriormente, y el otro jugador con las flechas del teclado:  
+Así mismo, si se desea jugar el juego en la opción local, es decir, en el mismo dispositivo, el jugador 1 usará los controles citados y el jugador 2 usará los siguientes:  
 
 * FLECHA IZQUIERDA para ir a la izquierda   
 * FLECHA DERECHA para ir a la derecha  
-* FLECHA ABAJO para agacharse   
-* FLECHA ARRIBA para saltar 
+* FLECHA ABAJO para ir hacia abajo   
+* FLECHA ARRIBA para ir hacia arriba
+* ENTER para saltar
+* L para interactuar con el entorno
+
 
 ## **Interfaz** 
-Cada jugador dispondrá de una cantidad de tres vidas, pudiendo transferirse entre ellos si hiciera falta. Las vidas aparecerán en la pantalla en la posición arriba a la izquierda y derecha, según sea un personaje u otro.   
-En la recolección de objetos, no se dispondrá de un inventario físico, sino que el objeto aparecerá debajo de las vidas, a modo de recordatorio de su posesión.  
-Por otro lado, se dispondrá del menú de pausa del juego donde podrás cambiar los ajustes del mismo como el brillo del juego, el volumen de la música, la opción de salir de la partida o de continuar con ella.
+Cada jugador dispondrá de una cantidad de tres vidas. Las vidas aparecerán en la pantalla en la posición arriba a la izquierda y derecha, según sea el personaje 1 o el 2 respectivamente.   
+
+En la recolección de objetos, no se dispondrá de un inventario físico, sino que se irá almacenando todo en un inventario común. Cabe destacar que al crear una poción, todos los ingredientes recolectados en la librería se utilizarán, por lo que estos se perderán y deberá recogerlos de nuevo si los quiere volver a usar. Tanto la llave como las estrellas no se utilizarán para crear pociones. 
+
+Por otro lado, se dispondrá del menú de pausa del juego donde el jugador podrá terminar la partida y volver al menú (perderá su progreso), consultar los controles (podrá volver a la partida dónde lo había dejado), o retomar la partida después de una pausa.
+
+En cuanto al menú de inicio, podrá desplazarse a los distintos modos de juego, como a los créditos, la historia del juego, o los controles.
 
 ## **Objetos Interactivos / Mejoras** 
 
 A lo largo de todo el juego, los magos deberán ir superando distintos tipos de puzzles y acertijos, para los cuales tendrán que conseguir objetos y hechizos:
 
 * Llave: algunas puertas y cofres de las salas se encontrarán cerradas, y para poder abrirlas deberán encontrar la llave escondida.  
-* Aumento de tamaño: algunos objetos están demasiado altos, y el mago no consigue alcanzarlos. Para ello, deberán usar un hechizo que aumente su tamaño para poder llegar.  
-* Disminución de tamaño: en la sala hay recovecos muy pequeños que esconden distintos enigmas, pero los magos no pueden acceder a ellos. Para ello, deberán usar un hechizo que disminuya su tamaño y puedan pasar por lugares pequeños y estrechos sin ningún problema.  
-* Placas de presión: para poder activar estas placas, será necesario de la colaboración de ambos jugadores y accionar su mecanismo a la vez.   
-* Interruptores: en la sala habrá múltiples interruptores que deberán pulsar en el orden correcto para poder avanzar.  
-* Pociones: los jugadores deberán encontrar los ingredientes necesarios para crear la poción que necesitan.  
+* Disminución de tamaño: en la sala hay ciertos lugares a los que el mago no puede haceder. Para ello, deberán usar un hechizo que disminuya su tamaño y podrán pasar por lugares pequeños y estrechos sin ningún problema.   
+* Pociones: los jugadores deberán encontrar los ingredientes necesarios para crear la poción que necesitan. 
+* Ingredientes: en la librería los magos podrán encontrar distintos tipos de ingrecientes, como cera de vela, sabiduría de los libros o incluso lágrimas de fenix. Deberán de recoger las que le sean necesarias según las pistas de la sala.
+* Estrellas: los magos deberán encontrarlas y colocarlas en su lugar para poder activar el mecanismo de los botones.
+* Botones de presión: para poder activar estas placas, será necesario de la colaboración de ambos jugadores y accionar su mecanismo a la vez.   
+
+**No implementados**
 * Cristales luminosos: brillarán a un ritmo que servirá a los magos para abrir una puerta.  
 * Trampas: a lo largo del mapa habrá trampas que deberán evitar. De lo contrario, los magos perderán parte de su vida. 
-
+* Aumento de tamaño: algunos objetos están demasiado altos, y el mago no consigue alcanzarlos. Para ello, deberán usar un hechizo que aumente su tamaño para poder llegar. 
+* Interruptores: en la sala habrá múltiples interruptores que deberán pulsar en el orden correcto para poder avanzar. 
 ---
 
 # **5\. Narrativa** 

@@ -158,7 +158,7 @@ export class GameScene extends Phaser.Scene {
         this.escWasDown = this.escKey.isDown;
 
         this.lPulsada = false; //volver a poner a false si no ha habido overlap
-        if (this.lkey.isDown) this.lPulsada = true;
+        if (this.lkey.isDown || this.qkey.isDown) this.lPulsada = true;
 
         // Comprobar si alguno de los jugadores está saltando
         this.players.forEach(mago => {
@@ -351,6 +351,9 @@ export class GameScene extends Phaser.Scene {
                 this.inventario[0] = true; // marcar en el inventario que se ha conseguido la llave
             });
 
+            let id; 
+            if(player.playerId === 'player1') id = 1;
+            else id = 2;
 
             // Abrir la librerí­a
             this.physics.add.overlap(player.sprite, this.estanteria, () => {
@@ -359,7 +362,8 @@ export class GameScene extends Phaser.Scene {
                     this.scene.launch('LibreriaScene', {
                         originalScene: 'GameScene',
                         pociones: this.inventario,
-                        sound: this.sound
+                        sound: this.sound,
+                        jugador: id
                     });
                 }
             });

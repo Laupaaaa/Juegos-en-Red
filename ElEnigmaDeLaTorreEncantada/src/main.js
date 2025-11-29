@@ -16,10 +16,10 @@ const config = {
         default: 'arcade',
         arcade: {
             gravity: { y: 20000 },
-            debug: true
+            debug: false
         }
     },
-    scene: [GameScene, MenuScene,   LibreriaScene,  PauseScene, CreditsScene, HistoriaScene, ControlScene ],
+    scene: [ MenuScene, GameScene, LibreriaScene,  PauseScene, CreditsScene, HistoriaScene, ControlScene ],
     backgroundColor: '#47ddffff',
 }
 
