@@ -4,30 +4,39 @@ export class FinalM2Scene extends Phaser.Scene {
         constructor() {
             super('FinalM2Scene');
         }
+
+        preload() {
+
+            this.load.image('fondo_2M', '/imagenes/traicion_ranaAzul.png');
+        }
     
         create(){
     
+            this.fondo_2M = this.physics.add.image(500,300, 'fondo_2M');
+            this.fondo_2M.setImmovable(true);
+            this.fondo_2M.body.allowGravity = false;
+
             this.add.text(500, 50, 'El jugador 2 ha decidido', {
-            fontSize: '16px',
+            fontSize: '32px',
             color: '#ffffffff',
         }).setOrigin(0.5);
 
         this.add.text(500, 100, 'no compartir el Elixir de la Vida Eterna,', {
+            fontSize: '32px',
+            color: '#ffffffff',
+        }).setOrigin(0.5);
+
+        this.add.text(500, 150, 'ahora debe enfrentar las consecuencias de su elección y vivir solo', {
             fontSize: '16px',
             color: '#ffffffff',
         }).setOrigin(0.5);
 
-        this.add.text(500, 150, 'ahora debe enfrentar las consecuencias', {
-            fontSize: '16px',
-            color: '#ffffffff',
-        }).setOrigin(0.5);
+        // this.add.text(500, 200, ' de su elección y vivir solo', {
+        //     fontSize: '16px',
+        //     color: '#ffffffff',
+        // }).setOrigin(0.5);
 
-        this.add.text(500, 200, ' de su elección y vivir solo', {
-            fontSize: '16px',
-            color: '#ffffffff',
-        }).setOrigin(0.5);
-
-        this.add.text(500, 250, 'hasta la eternidad...', {
+        this.add.text(500, 175, 'hasta la eternidad...', {
             fontSize: '16px',
             color: '#ffffffff',
         }).setOrigin(0.5);
