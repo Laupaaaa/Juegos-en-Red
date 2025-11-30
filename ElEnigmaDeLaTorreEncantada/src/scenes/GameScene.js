@@ -125,6 +125,26 @@ export class GameScene extends Phaser.Scene {
         this.walkSounds.set('player1', this.sound.add('walk', { loop: true, volume: 0.3 }));
         this.walkSounds.set('player2', this.sound.add('walk', { loop: true, volume: 0.3 }));
 
+        // Parar pasos cuando la escena se pause (ej. PauseScene) y limpiar sonidos al shutdown
+        this.events.on('pause', () => {
+            this.walkSounds.forEach(ws => { try { if (ws && ws.isPlaying) ws.stop(); } catch(err){ console.warn(err); } });
+        });
+        // Al resume no se reproduce automáticamente: el update() reanudará pasos si se pulsa mover
+        this.events.on('resume', () => {
+            // nada especial: update() volverá a reproducir cuando detecte movimiento
+        });
+        // Asegurar limpieza cuando la escena se cierre definitivamente
+        this.events.once('shutdown', () => {
+            // parar y destruir sonidos de pasos
+            this.walkSounds.forEach(ws => {
+                try { if (ws && ws.isPlaying) ws.stop(); } catch(err){ console.warn(err); }
+                try { if (ws) ws.destroy(); } catch(err){ console.warn(err); }
+            });
+            this.walkSounds.clear();
+            // parar BGM
+            try { if (this.bgm && (this.bgm.isPlaying || this.bgm.isPaused)) this.bgm.stop(); } catch(err){ console.warn(err); }
+        });
+
         this.crearEscenario();
         this.crearPlataformas();
         this.crearBarreraInvisible();
@@ -456,7 +476,6 @@ export class GameScene extends Phaser.Scene {
                 this.abrirCampoFuerza();
             });
 
-
         });
     }
 
@@ -534,18 +553,35 @@ export class GameScene extends Phaser.Scene {
             this.players.get('player1').sprite.disableBody(true, true);
             desactivado[0] = true; // el personaje ya ha entrado por la puerta y ha desaparecido
             this.entrarPuertaFinal(desactivado);
-            this.walkSounds.get('player1').stop();// desactivar el sonido de pasos
+            const ws1 = this.walkSounds.get('player1');
+            if (ws1) {
+                try { if (ws1.isPlaying) ws1.stop(); } catch(err){ console.warn(err); }
+            }
         });
         this.physics.add.overlap(this.players.get('player2').sprite, this.puertaFinal, () => {
             this.players.get('player2').sprite.disableBody(true, true);
             desactivado[1] = true;
             this.entrarPuertaFinal(desactivado);
-            this.walkSounds.get('player2').stop();// desactivar el sonido de pasos
+            const ws2 = this.walkSounds.get('player2');
+            if (ws2) {
+                try { if (ws2.isPlaying) ws2.stop(); } catch(err){ console.warn(err); }
+            }
         });  
     }       
 
     entrarPuertaFinal(desactivado) {
         if (desactivado[0] && desactivado[1]) { //cambiar de escena solo si ambos jugadores han llegado a la puerta final
+            // Parar y destruir sonidos de pasos
+            this.walkSounds.forEach(ws => {
+                try { if (ws && ws.isPlaying) ws.stop(); } catch(err){ console.warn(err); }
+                try { if (ws) ws.destroy(); } catch(err){ console.warn(err); }
+            });
+            this.walkSounds.clear();
+            // Parar BGM
+            try { if (this.bgm && (this.bgm.isPlaying || this.bgm.isPaused)) this.bgm.stop(); } catch(err){ console.warn(err); }
+            // Fallback: parar cualquier instancia por clave
+            if (this.sound) this.sound.stopByKey('walk');
+            if (this.sound) this.sound.stopByKey('bgm');
             this.scene.start('DecisionScene');
         }
     }
