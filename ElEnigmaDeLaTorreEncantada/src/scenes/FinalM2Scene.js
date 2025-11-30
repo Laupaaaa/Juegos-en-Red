@@ -8,6 +8,7 @@ export class FinalM2Scene extends Phaser.Scene {
     preload() {
         this.load.image('boton', '/imagenes/botonTexto.png');
         this.load.image('fondo_2M', '/imagenes/traicion_ranaAzul.png');
+        this.load.audio('derrota', '/sounds/derrota.mp3');
     }
 
     create(){
@@ -15,6 +16,11 @@ export class FinalM2Scene extends Phaser.Scene {
         this.fondo_2M = this.physics.add.image(500,300, 'fondo_2M');
         this.fondo_2M.setImmovable(true);
         this.fondo_2M.body.allowGravity = false;
+
+        // Reproducir música de derrota
+        if (this.sound) {
+            this.sound.play('derrota', { volume: 0.7 });
+        }
 
         this.boton1 = this.add.image(500,500, 'boton')
         this.boton1.setScale(0.13);   
@@ -46,11 +52,14 @@ export class FinalM2Scene extends Phaser.Scene {
         .setInteractive({ useHandCursor: true })
         .on('pointerover', () => {
             btn.setStyle({ fill: '#4bffabff' });
+            this.sound.play('hover', { volume: 0.5 });
         })
-        .on('pointerout', () => btn.setStyle({ fill: '#000000ff' }))
-        .on('pointerdown', () => {
-            this.scene.start('MenuScene');
-        })
+         .on('pointerout', () => btn.setStyle({ fill: '#000000ff' }))
+         .on('pointerdown', () => {
+            // Detener música de derrota antes de cambiar de escena
+            if (this.sound) this.sound.stopByKey('derrota');
+             this.scene.start('MenuScene');
+         })
 
     }
 }

@@ -8,12 +8,18 @@ export class FinalBScene extends Phaser.Scene {
     preload(){
         this.load.image('boton', '/imagenes/botonTexto.png');
         this.load.image('fondoC', '/imagenes/compartir.png');
+        this.load.audio('victoria', '/sounds/victoria.mp3');
     }   
 
     create(){
         this.fondoC = this.physics.add.image(500,300, 'fondoC');
         this.fondoC.setImmovable(true);
         this.fondoC.body.allowGravity = false;
+
+        // Reproducir música de victoria
+        if (this.sound) {
+            this.sound.play('victoria', { volume: 0.7 });
+        }
 
         this.boton1 = this.add.image(500,500, 'boton')
         this.boton1.setScale(0.13);        
@@ -52,9 +58,12 @@ export class FinalBScene extends Phaser.Scene {
             .setInteractive({ useHandCursor: true })
             .on('pointerover', () => {
                 btn.setStyle({ fill: '#4bffabff' });
+                this.sound.play('hover', { volume: 0.5 });
             })
             .on('pointerout', () => btn.setStyle({ fill: '#000000ff' }))
             .on('pointerdown', () => {
+                // Detener música de victoria antes de cambiar de escena
+                if (this.sound) this.sound.stopByKey('victoria');
                 this.scene.start('MenuScene');
             })
         }
