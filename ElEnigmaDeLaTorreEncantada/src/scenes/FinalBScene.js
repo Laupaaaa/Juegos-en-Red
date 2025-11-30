@@ -5,9 +5,22 @@ export class FinalBScene extends Phaser.Scene {
             super('FinalBScene');
         }
     
-        create(){
+    preload(){
+        this.load.image('boton', '/imagenes/botonTexto.png');
+        this.load.image('fondoC', '/imagenes/compartir.png');
+    }   
+
+    create(){
+        this.fondoC = this.physics.add.image(500,300, 'fondoC');
+        this.fondoC.setImmovable(true);
+        this.fondoC.body.allowGravity = false;
+
+        this.boton1 = this.add.image(500,500, 'boton')
+        this.boton1.setScale(0.13);        
+
+
     
-            this.add.text(500, 50, 'Los jugadores han decidido', {
+        this.add.text(500, 50, 'Los jugadores han decidido', {
             fontSize: '16px',
             color: '#ffffffff',
         }).setOrigin(0.5);
@@ -34,13 +47,13 @@ export class FinalBScene extends Phaser.Scene {
 
         const btn = this.add.text(500, 500, 'Volver al menú principal', {
             fontSize: '16px',
-            color: '#ffffffff',
+            color: '#000000ff',
         }).setOrigin(0.5)
             .setInteractive({ useHandCursor: true })
             .on('pointerover', () => {
                 btn.setStyle({ fill: '#4bffabff' });
             })
-            .on('pointerout', () => btn.setStyle({ fill: '#ffffffff' }))
+            .on('pointerout', () => btn.setStyle({ fill: '#000000ff' }))
             .on('pointerdown', () => {
                 this.scene.start('MenuScene');
             })
