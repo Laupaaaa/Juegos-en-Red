@@ -291,10 +291,10 @@ export class GameScene extends Phaser.Scene {
 
     crearBarreraInvisible() {
         // Crear una barrera invisible que evita que suba hacia arriba (pero pueda andar libremente por el suelo)
-        this.barreraInvisible = this.physics.add.staticImage(500, 350, null);
-        this.barreraInvisible.setSize(1000, 10); // Wide barrier, thin height
+        this.barreraInvisible = this.physics.add.staticImage(500, 105, null);
+        this.barreraInvisible.setSize(1000, 500); 
         this.barreraInvisible.setVisible(false);
-        this.barreraInvisible.body.setSize(1000, 10);
+        this.barreraInvisible.body.setSize(1000, 500);
 
         // Crear collider invisible para que pueda usar la balda superior de la estanterí­a como plataforma
         this.estanteriaColl = this.physics.add.sprite(165, 195, 'white_pixel');
@@ -392,6 +392,7 @@ export class GameScene extends Phaser.Scene {
                     if ((elemRecogidos.length === 3) || (elemRecogidos.lenght === 4)) { // primero comprobar que se han recogido 3 elementos
                         if (this.inventario[3] && this.inventario[5] && this.inventario[7]) { // comprobar que esos elementos recogidos son las pociones verde, azul y naranja 
                             console.log("Poción de disminuir tamaño creada");
+                            this.calderoColl.disableBody(); // desactivar el collider del caldero para mientras estén pequeños puedan atravesarlo (causaba bugs: levitaba)
                             if (this.sound) {
                                 this.sound.play('pequeño', { volume: 0.6 });
                             }
@@ -485,6 +486,8 @@ export class GameScene extends Phaser.Scene {
             this.players.forEach(player => {
                 this.time.delayedCall(4000, () => {
                     player.estado_normal = true;
+                   // volver a activar el collider del caldero
+                    this.calderoColl.enableBody(false, 0, 0, true, true);
                 });
             });
         }
@@ -606,7 +609,7 @@ export class GameScene extends Phaser.Scene {
             this.bgm.stop();
         }
 
-        const texto = id === 'player1' ? 'El jugador 1\n   ha muerto' : ' El jugador 2\n   ha muerto';
+        const texto = id === 'player1' ? 'El jugador 1\n  ha muerto' : ' El jugador 2\n  ha muerto';
         this.add.text(500, 250, texto, {
             fontSize: '64px',
             color: ' #ff0000ff',
