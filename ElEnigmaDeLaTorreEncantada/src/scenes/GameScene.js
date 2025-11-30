@@ -74,7 +74,6 @@ export class GameScene extends Phaser.Scene {
         this.escWasDown = false;
         this.lPulsada = false;
         this.processor = new CommandProcessor();
-        this.maxJump = 3;
         this.cofreAbierto = false;
         this.walkSounds = new Map(); // Map para guardar el sonido de cada jugador
 
@@ -517,10 +516,37 @@ export class GameScene extends Phaser.Scene {
                     this.sound.play('puerta', { volume: 0.7 });
                 }
                 this.campoFuerza.destroy();
+                this.crearPuertaFinal();
             }
         }
     }
 
+    crearPuertaFinal() {
+        this.puertaFinal = this.physics.add.image(940, 370, null);
+        this.puertaFinal.setImmovable(true);
+        this.puertaFinal.body.allowGravity = false; 
+        this.puertaFinal.setAlpha(0.0); 
+        let desactivado = [false, false]; // array para controlar que ambos jugadores han llegado a la puerta final
+        this.physics.add.overlap(this.players.get('player1').sprite, this.puertaFinal, () => {
+            this.players.get('player1').sprite.disableBody(true, true);
+            desactivado[0] = true; // el personaje ya ha entrado por la puerta y ha desaparecido
+            this.entrarPuertaFinal(desactivado);
+            this.walkSounds.get('player1').stop();// desactivar el sonido de pasos
+        });
+        this.physics.add.overlap(this.players.get('player2').sprite, this.puertaFinal, () => {
+            this.players.get('player2').sprite.disableBody(true, true);
+            desactivado[1] = true;
+            this.entrarPuertaFinal(desactivado);
+            this.walkSounds.get('player2').stop();// desactivar el sonido de pasos
+        });  
+    }       
+
+    entrarPuertaFinal(desactivado) {
+        if (desactivado[0] && desactivado[1]) { //cambiar de escena solo si ambos jugadores han llegado a la puerta final
+            this.scene.start('DecisionScene');
+        }
+    }
+    
     setUpPlayers() {
         const leftMago = new Mago(this, 'player1', 50, 400, 'idle_Azul');
         const rightMago = new Mago(this, 'player2', 950, 400, 'idle_Rojo');
