@@ -6,6 +6,10 @@ import { CreditsScene } from './scenes/CreditsScene.js';
 import { HistoriaScene } from './scenes/HistoriaScene.js';
 import { LibreriaScene } from './scenes/LibreriaScene.js';
 import { ControlScene } from './scenes/ControlScene.js';
+import { DecisionScene } from './scenes/DecisionScene.js';
+import { FinalBScene } from './scenes/FinalBScene.js';
+import { FinalM1Scene } from './scenes/FinalM1Scene.js';
+import { FinalM2Scene } from './scenes/FinalM2Scene.js';
 
 const config = {
     type: Phaser.AUTO,
@@ -19,7 +23,7 @@ const config = {
             debug: false
         }
     },
-    scene: [ MenuScene, GameScene, LibreriaScene,  PauseScene, CreditsScene, HistoriaScene, ControlScene ],
+    scene: [ MenuScene, GameScene, LibreriaScene,  PauseScene, CreditsScene, HistoriaScene, ControlScene, DecisionScene, FinalBScene, FinalM1Scene, FinalM2Scene ],
     backgroundColor: '#47ddffff',
 }
 

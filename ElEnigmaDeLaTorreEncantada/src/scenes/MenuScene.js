@@ -98,5 +98,21 @@ export class MenuScene extends Phaser.Scene {
             .on('pointerdown', () => {
                 this.scene.start('ControlScene', { originalScene: 'MenuScene' });
             });
+
+            const finalBtn = this.add.text(500, 550, 'Final', {
+            fontSize: '24px',
+            color: '#000000ff',
+        }).setOrigin(0.5)
+            .setInteractive({ useHandCursor: true })
+            .on('pointerover', () => finalBtn.setStyle({ fill: '#ff0dffc1' }))
+            .on('pointerover', () => {
+                finalBtn.setStyle({ fill: '#ff0dffc1' });
+                this.sound.play('hover', { volume: 0.5 });
+            })
+            .on('pointerout', () => finalBtn.setStyle({ fill: '#000000ff' }))
+            .on('pointerdown', () => {
+                this.scene.start('DecisionScene', { originalScene: 'MenuScene' });
+            });
+            
     }
 }
