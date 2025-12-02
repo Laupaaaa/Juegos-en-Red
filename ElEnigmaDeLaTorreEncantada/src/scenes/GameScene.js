@@ -11,7 +11,7 @@ export class GameScene extends Phaser.Scene {
     }
 
     preload() {
-        // Escemnario y objetos
+        // Escemnario y objetos 
         this.load.image('paredR', '/imagenes/paredYTecho.png');
         this.load.image('sueloR', '/imagenes/suelo.png');
         this.load.image('bolaCristalR', '/imagenes/bolaCristal.png');
@@ -30,6 +30,12 @@ export class GameScene extends Phaser.Scene {
         this.load.image('botonVR', '/imagenes/botonVacio.png');
         this.load.image('botonCR', '/imagenes/botonCompleto.png');
         this.load.image('estrellaR', '/imagenes/estrella.png');
+        this.load.image('pocionesAz', '/imagenes/pocionAzul.png');
+        this.load.image('pocionesAm', '/imagenes/pocionesAmarillo.png');
+        this.load.image('pocionesN', '/imagenes/pocionNaranja.png');
+        this.load.image('pocionesRo', '/imagenes/pocionRosa.png');
+        this.load.image('pocionesM', '/imagenes/pocionMorada.png');
+        this.load.image('pocionesV', '/imagenes/pocionVerde.png');
 
         // Personajes
         this.load.image('idle_Azul', '/imagenes/Mago_Andando_2.png');
@@ -150,6 +156,7 @@ export class GameScene extends Phaser.Scene {
         this.crearBarreraInvisible();
         this.setUpPlayers();
         this.establecerColisiones();
+        this.inventarioEnPantalla(); 
 
 
         this.healthLeft = this.add.text(50, 30, '3', {
@@ -231,6 +238,17 @@ export class GameScene extends Phaser.Scene {
             this.processor.process(moveCommand);
         });
 
+            //actualizar inventario en pantalla
+            if(this.inventario[1]) this.uno.setAlpha(1); else this.uno.setAlpha(0.2); 
+            if(this.inventario[2]) this.dos.setAlpha(1);else this.dos.setAlpha(0.2); 
+            if(this.inventario[3]) this.tres.setAlpha(1); else this.tres.setAlpha(0.2); 
+            if(this.inventario[4]) this.cuatro.setAlpha(1); else this.cuatro.setAlpha(0.2); 
+            if(this.inventario[5]) this.cinco.setAlpha(1); else this.cinco.setAlpha(0.2); 
+            if(this.inventario[6]) this.seis.setAlpha(1);else this.seis.setAlpha(0.2); 
+            if(this.inventario[7]) this.siete.setAlpha(1);else this.siete.setAlpha(0.2); 
+            if(this.inventario[8]) this.ocho.setAlpha(1);else this.ocho.setAlpha(0.2); 
+            if(this.inventario[9]) this.nueve.setAlpha(1);else this.nueve.setAlpha(0.2); 
+            if(this.inventario[10]) this.diez.setAlpha(1); else this.diez.setAlpha(0.2); 
 
     }
 
@@ -350,6 +368,7 @@ export class GameScene extends Phaser.Scene {
         this.plataformas.create(295, 215, 'estanteR');
         this.plataformas.create(300, 390, 'estanteR');
         this.plataformas.create(380, 350, 'estanteR');
+
     }
 
     establecerColisiones() {
@@ -368,6 +387,7 @@ export class GameScene extends Phaser.Scene {
                 this.llave.destroy();
                 console.log("Llave conseguida");
                 this.inventario[0] = true; // marcar en el inventario que se ha conseguido la llave
+                this.cero.setAlpha(1); 
             });
 
             let id; 
@@ -433,6 +453,19 @@ export class GameScene extends Phaser.Scene {
                     // volver a poner a false todos los elementos del inventario
                     for (let i = 1; i < this.inventario.length - 2; i++) { // se salta la llave y las estrellas porque no se utilizan para crear la pocion
                         this.inventario[i] = false;
+                        //actualizar inventario en pantalla
+                        switch(i) {
+                            case 1: this.uno.setAlpha(0.2); break;
+                            case 2: this.dos.setAlpha(0.2); break;
+                            case 3: this.tres.setAlpha(0.2); break;
+                            case 4: this.cuatro.setAlpha(0.2); break;  
+                            case 5: this.cinco.setAlpha(0.2); break;
+                            case 6: this.seis.setAlpha(0.2); break;
+                            case 7: this.siete.setAlpha(0.2); break;
+                            case 8: this.ocho.setAlpha(0.2); break;
+                            case 9: this.nueve.setAlpha(0.2); break;
+                            case 10: this.diez.setAlpha(0.2); break;
+                        }
                     }
                 }
             });
@@ -478,6 +511,22 @@ export class GameScene extends Phaser.Scene {
 
         });
     }
+    // Los objetos son: 0-llave, 1-libros, 2- pocion morada, 3- pocion verde, 4- pocion rosa, 5- pocion azul, 6- pocion amarilla, 7- pocion naranja, 8- velas, 9- bola de cristal, 10- planta, 11- estrella 1, 12- estrella 2
+    inventarioEnPantalla() { //Como se acaba de crear, todavía no se habrá recogido ningún elemento
+        this.cero = this.add.image(200, 40, 'llaveR').setAlpha(0.4);
+        this.uno = this.add.image(250, 40, 'librosR').setAlpha(0.4).setScale(0.5);
+        this.dos = this.add.image(300, 40, 'pocionesM').setAlpha(0.4);
+        this.tres = this.add.image(350, 40, 'pocionesV').setAlpha(0.4);
+        this.cuatro = this.add.image(400, 40, 'pocionesRo').setAlpha(0.4);
+        this.cinco = this.add.image(450, 40, 'pocionesAz').setAlpha(0.4);
+        this.seis = this.add.image(500, 40, 'pocionesAm').setAlpha(0.4);
+        this.siete = this.add.image(550, 40, 'pocionesN').setAlpha(0.4);
+        this.ocho = this.add.image(600, 40, 'velasR').setAlpha(0.4).setScale(0.5);
+        this.nueve = this.add.image(650, 40, 'bolaCristalR').setAlpha(0.4).setScale(0.5);
+        this.diez = this.add.image(700, 40, 'plantaR').setAlpha(0.4).setScale(0.5);
+        this.once = this.add.image(750, 40, 'estrellaR').setAlpha(0.4);
+        this.doce = this.add.image(800, 40, 'estrellaR').setAlpha(0.4);
+    }
 
     abrirCofre() {
         if (this.sound) {
@@ -493,15 +542,20 @@ export class GameScene extends Phaser.Scene {
         this.estrella2.setAlpha(1.0);
         this.cofreAbierto = true; // para que solo se abra una vez
         this.inventario[0] = false; // quitar la llave del inventario al abrir el cofre
-
+        this.cero.setAlpha(0.2); // actualizar inventario en pantalla
     }
 
     recogerEstrella(n) {
         if (this.cofreAbierto) { // solo se puede recoger si el cofre está abierto (porque sino están ocultas)
             console.log("Estrella " + n + " recogida");
             this.inventario[10 + n] = true; // marcar en el inventario que se ha conseguido la estrella (11 y 12 en el array)
-            if (n === 1) this.estrella1.destroy();
-            else this.estrella2.destroy();
+            if (n === 1) {
+                this.estrella1.destroy();
+                this.once.setAlpha(1.0); // actualizar inventario en pantalla
+            } else{ 
+                this.estrella2.destroy();
+                this.doce.setAlpha(1.0); // actualizar inventario en pantalla
+            }
             this.players.forEach(player => {
                 this.time.delayedCall(4000, () => {
                     player.estado_normal = true;
@@ -523,9 +577,11 @@ export class GameScene extends Phaser.Scene {
             if (n === 1) {
                 this.boton1.setTexture('botonCR');
                 this.inventario[10 + n] = false; // quitar la estrella del inventario
+                this.once.setAlpha(0.2); // actualizar inventario en pantalla
             } else {
                 this.boton2.setTexture('botonCR');
                 this.inventario[10 + n] = false; // quitar la estrella del inventario
+                this.doce.setAlpha(0.2); // actualizar inventario en pantalla
             }
         }
     }
