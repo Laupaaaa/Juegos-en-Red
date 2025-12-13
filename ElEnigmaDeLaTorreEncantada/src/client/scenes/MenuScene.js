@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { connectionManager } from '../services/ConnectionManager';
+import * as api from '../api';
 
 export class MenuScene extends Phaser.Scene {
     constructor() {
@@ -49,10 +50,35 @@ export class MenuScene extends Phaser.Scene {
                 this.scene.start('GameScene');
             });
 
-        this.add.text(500, 350, 'Online', {
+        const onlineBtn = this.add.text(500, 350, 'Online', {
             fontSize: '24px',
             color: '#000000ff',
         }).setOrigin(0.5)
+        .setInteractive({ useHandCursor: true })
+            .on('pointerover', () => {
+                onlineBtn.setStyle({ fill: '#ff0000ff' });
+                this.sound.play('hover', { volume: 0.5 });
+            })
+            .on('pointerout', () => onlineBtn.setStyle({ fill: '#000000ff' }))
+            .on('pointerdown', async() => {
+                try {
+                    const id = connectionManager.generateSessionId(); //generamos un id para el usuario
+                    const jugador = await api.registerUser({
+                        email: 'example@gmail.com',
+                        name: `Jugador_` + id,
+                        avatar: 'Mago_andando_1',
+                        level: 1
+                    }); //registramos el usuario en el servidor
+                    
+                    
+                    this.scene.start('SalaDeEspera', { online: true, jugador });
+
+                } catch (error) {
+                    console.error('Error al conectar con el servidor:', error);
+                }
+                
+
+            });
 
 
         const creditosBtn = this.add.text(500, 400, 'Créditos', {
@@ -60,7 +86,6 @@ export class MenuScene extends Phaser.Scene {
             color: '#000000ff',
         }).setOrigin(0.5)
             .setInteractive({ useHandCursor: true })
-            .on('pointerover', () => creditosBtn.setStyle({ fill: '#ff9100ff' }))
             .on('pointerover', () => {
                 creditosBtn.setStyle({ fill: '#ff9100ff' });
                 this.sound.play('hover', { volume: 0.5 });
@@ -75,7 +100,6 @@ export class MenuScene extends Phaser.Scene {
             color: '#000000ff',
         }).setOrigin(0.5)
             .setInteractive({ useHandCursor: true })
-            .on('pointerover', () => historiaBtn.setStyle({ fill: '#38ffffff' }))
             .on('pointerover', () => {
                 historiaBtn.setStyle({ fill: '#38ffffff' });
                 this.sound.play('hover', { volume: 0.5 });
@@ -90,7 +114,6 @@ export class MenuScene extends Phaser.Scene {
             color: '#000000ff',
         }).setOrigin(0.5)
             .setInteractive({ useHandCursor: true })
-            .on('pointerover', () => controlBtn.setStyle({ fill: '#ff0dffc1' }))
             .on('pointerover', () => {
                 controlBtn.setStyle({ fill: '#ff0dffc1' });
                 this.sound.play('hover', { volume: 0.5 });
@@ -101,7 +124,7 @@ export class MenuScene extends Phaser.Scene {
             });
 
         // Indicador de conexión al servidor
-        this.connectionText = this.add.text(400, 500, 'Servidor: Comprobando...', {
+        this.connectionText = this.add.text(500, 540, 'Servidor: Comprobando...', {
             fontSize: '18px',
             color: '#ffff00'
         }).setOrigin(0.5);

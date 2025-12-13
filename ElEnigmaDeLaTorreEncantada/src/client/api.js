@@ -25,6 +25,17 @@ export async function registerUser(userData) {
   });
 
   if (!response.ok) {
+    // let errorTxt;
+
+    // try{
+    // const error = await response.json();
+    // errorTxt = (error.error || 'Error al registrar usuario');}
+    // catch{
+    //   errorTxt = await response.text();
+    // } 
+
+    // throw new Error( errorTxt);
+
     const error = await response.json();
     throw new Error(error.error || 'Error al registrar usuario');
   }
