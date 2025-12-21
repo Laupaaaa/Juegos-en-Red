@@ -1,6 +1,5 @@
 import Phaser from 'phaser';
 import { connectionManager } from '../services/ConnectionManager';
-import * as api from '../api';
 
 export class MenuScene extends Phaser.Scene {
     constructor() {
@@ -61,23 +60,7 @@ export class MenuScene extends Phaser.Scene {
             })
             .on('pointerout', () => onlineBtn.setStyle({ fill: '#000000ff' }))
             .on('pointerdown', async() => {
-                try {
-                    const id = connectionManager.generateSessionId(); //generamos un id para el usuario
-                    const jugador = await api.registerUser({
-                        email: 'example@gmail.com',
-                        name: `Jugador_` + id,
-                        avatar: 'Mago_andando_1',
-                        level: 1
-                    }); //registramos el usuario en el servidor
-                    
-                    
-                    this.scene.start('SalaDeEspera', { online: true, jugador });
-
-                } catch (error) {
-                    console.error('Error al conectar con el servidor:', error);
-                }
-                
-
+                this.scene.start('SalaDeEspera');
             });
 
 

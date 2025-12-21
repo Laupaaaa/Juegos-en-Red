@@ -18,19 +18,19 @@ export function createMessageController(messageService) {
   async function create(req, res, next) {
     try {
       // 1. Extraer email y message del body
-      const {email, message}  = req.body; 
+      const {email,message}  = req.body; 
       // 2. Validar que ambos campos estén presentes
-      if(!email || !message){
+      if(!message){
         return res.status(400).json({
           error: 'Los campos email y mensaje no se han encontrado.'
         });
       }
       // 3. Llamar a messageService.createMessage()
-      const newMensaje = await messageService.createMessage(email, message); 
+      const newMensaje = await messageService.createMessage(message); 
 
       // 5. Si el email no existe, retornar 400 con error descriptivo
       if (!newMensaje) {
-        return res.status(400).json({ error: "El email no existe en el sistema" });
+        return res.status(400).json({ error: "El mensaje no existe en el sistema" });
       }
       // 4. Retornar 201 con el mensaje creado
       return res.status(201).json(newMensaje);

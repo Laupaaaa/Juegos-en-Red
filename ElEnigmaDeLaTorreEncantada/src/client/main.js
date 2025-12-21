@@ -11,7 +11,7 @@ import { FinalBScene } from './scenes/FinalBScene.js';
 import { FinalM1Scene } from './scenes/FinalM1Scene.js';
 import { FinalM2Scene } from './scenes/FinalM2Scene.js';
 import { ConnectionLostScene } from './scenes/ConnectionLostScene.js';
-import { SalaDeEspera } from './scenes/SalaDeEspera.js';
+import SalaDeEspera from './scenes/SalaDeEspera.js';
 
 const config = {
     type: Phaser.AUTO,

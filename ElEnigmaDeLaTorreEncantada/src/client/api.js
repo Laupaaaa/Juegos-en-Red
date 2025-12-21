@@ -12,8 +12,8 @@ const API_BASE_URL = 'http://localhost:3000';
 
 /**
  * Registra un nuevo usuario en el sistema
- * @param {Object} userData - Datos del usuario {email, name, avatar, level}
- * @returns {Promise<Object>} - Usuario creado
+ * @param {object} userData - Datos del usuario { name, avatar, level}
+ * @returns {Promise<object>} - Usuario creado
  */
 export async function registerUser(userData) {
   const response = await fetch(`${API_BASE_URL}/api/users`, {
@@ -47,7 +47,7 @@ export async function registerUser(userData) {
 /**
  * Obtiene un usuario por su ID
  * @param {string} userId - ID del usuario
- * @returns {Promise<Object>} - Usuario encontrado
+ * @returns {Promise<object>} - Usuario encontrado
  */
 export async function getUser(userId) {
   // Retornar: usuario o lanzar error si no existe
@@ -82,8 +82,8 @@ export async function getAllUsers() {
 /**
  * Actualiza un campo específico de un usuario
  * @param {string} userId - ID del usuario
- * @param {Object} updates - Objeto con los campos a actualizar
- * @returns {Promise<Object>} - Usuario actualizado
+ * @param {object} updates - Objeto con los campos a actualizar
+ * @returns {Promise<object>} - Usuario actualizado
  */
 export async function updateUser(userId, updates) {
   // Body: updates (JSON)
@@ -121,18 +121,16 @@ export async function deleteUser(userId) {
     throw new Error(error.error || 'Error al eliminar usuario');
   }
   console.log("Usuario eliminado correctamente."); 
-  return response.ok;
 }
 
 // ==================== MENSAJES ====================
 
 /**
  * Envía un mensaje al chat
- * @param {string} userEmail - Email del usuario que envía
- * @param {string} message - Contenido del mensaje
- * @returns {Promise<Object>} - Mensaje creado
+ * @param {string} userMessage - Contenido del mensaje
+ * @returns {Promise<object>} - Mensaje creado
  */
-export async function sendMessage(userEmail, userMessage) {
+export async function sendMessage(userMessage) {
   // Body: {email: userEmail, message: message}
   // El servidor debe verificar que el email existe
   // Retornar: mensaje creado con timestamp
@@ -142,7 +140,6 @@ export async function sendMessage(userEmail, userMessage) {
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
-      email: userEmail, 
       message: userMessage
     })
   });

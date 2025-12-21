@@ -12,14 +12,18 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
-    "game", "torre", "mago", "pociones"
+    "game",
+    "torre",
+    "mago",
+    "pociones"
   ],
   "author": "PAULA ORTIZ FERNÁNDEZ, DANIEL CORBACHO ANES, ALEJANDRO HERNÁNDEZ RUIZ, ÁNGEL BERMÚDEZ FARIÑAS",
   "license": "Apache-2.0",
   "description": "El enigma de la torre encantada",
   "dependencies": {
     "express": "^5.1.0",
-    "phaser": "^3.90.0"
+    "phaser": "^3.90.0",
+    "ws": "^8.18.3"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
