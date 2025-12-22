@@ -2,7 +2,6 @@ import Phaser from "phaser";
 import { Mago } from '../entities/Mago'
 import { CommandProcessor } from '../command/commandProcessor';
 import { MoveMagoCommand } from '../command/MoveMagoCommand';
-import { PauseGameCommand } from '../command/PauseGameCommand';
 
 export default class SalaDeEspera extends Phaser.Scene {
   constructor() {
@@ -25,6 +24,10 @@ export default class SalaDeEspera extends Phaser.Scene {
         this.load.image('andarAzul_6', '/imagenes/Mago_Andando_7.png');
         this.load.image('andarAzul_7', '/imagenes/Mago_Andando_8.png');
         this.load.image('andarAzul_8', '/imagenes/Mago_Andando_1.png');
+        this.load.image('pergaminoTitulo', '/imagenes/pergaminoTitulo.png');
+        this.load.image('boton', '/imagenes/botonTexto.png');
+        this.load.image('campoFuerza', '/imagenes/campodefuerza.png');
+
         // this.load.image('idle_Rojo', '/imagenes/MagoRojo_Andando_1.png');
         // this.load.image('andarRojo_2', '/imagenes/MagoRojo_Andando_2.png');
         // this.load.image('andarRojo_3', '/imagenes/MagoRojo_Andando_3.png');
@@ -52,66 +55,66 @@ export default class SalaDeEspera extends Phaser.Scene {
   }
 
   create(){
-         this.anims.create({
-            key: 'andar_mago_Azul',
-            frames: [
-                { key: 'idle_Azul' },
-                { key: 'andarAzul_2' },
-                { key: 'andarAzul_3' },
-                { key: 'andarAzul_4' },
-                { key: 'andarAzul_5' },
-                { key: 'andarAzul_6' },
-                { key: 'andarAzul_7' },
-                { key: 'andarAzul_8' }
-            ],
-            frameRate: 10,
-            repeat: -1
-        });
+    this.anims.create({
+      key: 'andar_mago_Azul',
+      frames: [
+          { key: 'idle_Azul' },
+          { key: 'andarAzul_2' },
+          { key: 'andarAzul_3' },
+          { key: 'andarAzul_4' },
+          { key: 'andarAzul_5' },
+          { key: 'andarAzul_6' },
+          { key: 'andarAzul_7' },
+          { key: 'andarAzul_8' }
+      ],
+      frameRate: 10,
+      repeat: -1
+    });
 
-        // this.anims.create({
-        //     key: 'andar_mago_Rojo',
-        //     frames: [
-        //         { key: 'idle_Rojo' },
-        //         { key: 'andarRojo_2' },
-        //         { key: 'andarRojo_3' },
-        //         { key: 'andarRojo_4' },
-        //         { key: 'andarRojo_5' },
-        //         { key: 'andarRojo_6' },
-        //         { key: 'andarRojo_7' },
-        //         { key: 'andarRojo_8' }
-        //     ],
-        //     frameRate: 10,
-        //     repeat: -1
-        // });
+    // this.anims.create({
+    //     key: 'andar_mago_Rojo',
+    //     frames: [
+    //         { key: 'idle_Rojo' },
+    //         { key: 'andarRojo_2' },
+    //         { key: 'andarRojo_3' },
+    //         { key: 'andarRojo_4' },
+    //         { key: 'andarRojo_5' },
+    //         { key: 'andarRojo_6' },
+    //         { key: 'andarRojo_7' },
+    //         { key: 'andarRojo_8' }
+    //     ],
+    //     frameRate: 10,
+    //     repeat: -1
+    // });
 
-        this.bgm = this.sound.add('bgm', { loop: true, volume: 0.5 });
-        if (!this.bgm.isPlaying) {
-            this.bgm.play();
-        }
+    this.bgm = this.sound.add('bgm', { loop: true, volume: 0.5 });
+    if (!this.bgm.isPlaying) {
+        this.bgm.play();
+    }
 
-        // Crear un sonido de pasos para cada jugador
-        this.walkSounds.set('player1', this.sound.add('walk', { loop: true, volume: 0.3 }));
-        //this.walkSounds.set('player2', this.sound.add('walk', { loop: true, volume: 0.3 }));
+    // Crear un sonido de pasos para cada jugador
+    this.walkSounds.set('player1', this.sound.add('walk', { loop: true, volume: 0.3 }));
+    //this.walkSounds.set('player2', this.sound.add('walk', { loop: true, volume: 0.3 }));
 
-        // Parar pasos cuando la escena se pause (ej. PauseScene) y limpiar sonidos al shutdown
-        this.events.on('pause', () => {
-            this.walkSounds.forEach(ws => { try { if (ws && ws.isPlaying) ws.stop(); } catch(err){ console.warn(err); } });
+    // Parar pasos cuando la escena se pause (ej. PauseScene) y limpiar sonidos al shutdown
+    this.events.on('pause', () => {
+        this.walkSounds.forEach(ws => { try { if (ws && ws.isPlaying) ws.stop(); } catch(err){ console.warn(err); } });
+    });
+    // Al resume no se reproduce automáticamente: el update() reanudará pasos si se pulsa mover
+    this.events.on('resume', () => {
+        // nada especial: update() volverá a reproducir cuando detecte movimiento
+    });
+    // Asegurar limpieza cuando la escena se cierre definitivamente
+    this.events.once('shutdown', () => {
+        // parar y destruir sonidos de pasos
+        this.walkSounds.forEach(ws => {
+            try { if (ws && ws.isPlaying) ws.stop(); } catch(err){ console.warn(err); }
+            try { if (ws) ws.destroy(); } catch(err){ console.warn(err); }
         });
-        // Al resume no se reproduce automáticamente: el update() reanudará pasos si se pulsa mover
-        this.events.on('resume', () => {
-            // nada especial: update() volverá a reproducir cuando detecte movimiento
-        });
-        // Asegurar limpieza cuando la escena se cierre definitivamente
-        this.events.once('shutdown', () => {
-            // parar y destruir sonidos de pasos
-            this.walkSounds.forEach(ws => {
-                try { if (ws && ws.isPlaying) ws.stop(); } catch(err){ console.warn(err); }
-                try { if (ws) ws.destroy(); } catch(err){ console.warn(err); }
-            });
-            this.walkSounds.clear();
-            // parar BGM
-            try { if (this.bgm && (this.bgm.isPlaying || this.bgm.isPaused)) this.bgm.stop(); } catch(err){ console.warn(err); }
-        });
+        this.walkSounds.clear();
+        // parar BGM
+        try { if (this.bgm && (this.bgm.isPlaying || this.bgm.isPaused)) this.bgm.stop(); } catch(err){ console.warn(err); }
+    });
 
     this.crearEscenario();
     this.crearBarreraInvisible();
@@ -128,6 +131,12 @@ export default class SalaDeEspera extends Phaser.Scene {
 
     const width = this.cameras.main.width;
     const height = this.cameras.main.height;
+
+    this.titulo = this.add.image(width / 2, 100, 'pergaminoTitulo')
+    this.titulo.setScale(0.25, 0.20);
+    this.boton = this.add.image(width / 2, height - 100, 'boton')
+    this.boton.setScale(0.05, 0.1); 
+
 
     // Title
     this.add.text(width / 2, 100, 'Online Multiplayer', {
@@ -148,10 +157,9 @@ export default class SalaDeEspera extends Phaser.Scene {
     }).setOrigin(0.5);
 
     // Cancel button
-    const cancelButton = this.add.text(width / 2, height - 100, 'Cancel', {
+    const cancelButton = this.add.text(width / 2, height - 100, 'Volver', {
       fontSize: '24px',
-      color: '#ff6666',
-      backgroundColor: '#333333',
+      color: '#000000ff',
       padding: { x: 20, y: 10 }
     }).setOrigin(0.5).setInteractive();
 
@@ -160,7 +168,7 @@ export default class SalaDeEspera extends Phaser.Scene {
     });
 
     cancelButton.on('pointerout', () => {
-      cancelButton.setColor('#ff6666');
+      cancelButton.setColor('#000000ff');
     });
 
     cancelButton.on('pointerdown', () => {
@@ -173,50 +181,45 @@ export default class SalaDeEspera extends Phaser.Scene {
   }
 
   update(){
-    if (this.escKey.isDown && !this.escWasDown) {
-            this.togglePause();
-        }
-        this.escWasDown = this.escKey.isDown;
+    this.inputMappings.forEach(mapping => {
+      const mago = this.players.get(mapping.playerId);
+      let direction = null;
+      let salto = false;
+      const walkSound = this.walkSounds.get(mapping.playerId);
+      let isMoving = false;
+      if (mapping.upKeyObj.isDown) {
+          direction = 'up';
+          isMoving = true;
+          mago.andar_animacion();
+      } else if (mapping.downKeyObj.isDown) {
+          direction = 'down';
+          isMoving = true;
+          mago.andar_animacion();
+      } else if (mapping.leftKeyObj.isDown) {
+          direction = 'left';
+          isMoving = true;
+          mago.sprite.flipX = false;
+          mago.andar_animacion();
+      } else if (mapping.rightKeyObj.isDown) {
+          direction = 'right';
+          isMoving = true;
+          mago.sprite.flipX = true;
+          mago.andar_animacion();
+      } else {
+          direction = 'stop';
+          mago.andar_animacion_parar();
 
-        this.inputMappings.forEach(mapping => {
-            const mago = this.players.get(mapping.playerId);
-            let direction = null;
-            let salto = false;
-            const walkSound = this.walkSounds.get(mapping.playerId);
-            let isMoving = false;
-            if (mapping.upKeyObj.isDown) {
-                direction = 'up';
-                isMoving = true;
-                mago.andar_animacion();
-            } else if (mapping.downKeyObj.isDown) {
-                direction = 'down';
-                isMoving = true;
-                mago.andar_animacion();
-            } else if (mapping.leftKeyObj.isDown) {
-                direction = 'left';
-                isMoving = true;
-                mago.sprite.flipX = false;
-                mago.andar_animacion();
-            } else if (mapping.rightKeyObj.isDown) {
-                direction = 'right';
-                isMoving = true;
-                mago.sprite.flipX = true;
-                mago.andar_animacion();
-            } else {
-                direction = 'stop';
-                mago.andar_animacion_parar();
+          if (walkSound && walkSound.isPlaying) {
+              walkSound.stop();
+          }
+      }
 
-                if (walkSound && walkSound.isPlaying) {
-                    walkSound.stop();
-                }
-            }
-
-            if (isMoving && walkSound && !walkSound.isPlaying) {
-                walkSound.play();
-            }
-            let moveCommand = new MoveMagoCommand(mago, direction, salto);
-            this.processor.process(moveCommand);
-        });
+      if (isMoving && walkSound && !walkSound.isPlaying) {
+          walkSound.play();
+      }
+      let moveCommand = new MoveMagoCommand(mago, direction, salto);
+      this.processor.process(moveCommand);
+    });
 
  }
 
@@ -230,6 +233,10 @@ export default class SalaDeEspera extends Phaser.Scene {
         this.pared.setImmovable(true);
         this.pared.setScale(0.55);
         this.pared.body.allowGravity = false;
+        this.campoFuerza = this.physics.add.image(940, 310, 'campoFuerza');
+        this.campoFuerza.setImmovable(true);
+        this.campoFuerza.setScale(0.6);
+        this.campoFuerza.body.allowGravity = false;
     }
 
     crearBarreraInvisible() {
@@ -247,19 +254,7 @@ export default class SalaDeEspera extends Phaser.Scene {
             // Barrera invisible para permitir area de suelo donde se desplacen libremente, y area de salto para subir por las plataformas
             this.physics.add.collider(
                 player.sprite,
-                this.barreraInvisible,
-                () => {
-                    // al colisionar con la barrera invisible mientras el jugador va hacia arriba, salta
-                    if (!player.isJumping) {
-                        player.jump();
-                    }
-                },
-                () => {
-                    // Process callback - only collide when moving up and not jumping
-                    const isMovingUp = player.sprite.body.velocity.y < 0;
-                    return !player.isJumping && isMovingUp;
-                },
-                this
+                this.barreraInvisible
             );
         });
     }
@@ -330,13 +325,6 @@ export default class SalaDeEspera extends Phaser.Scene {
         this.inventario.forEach((item, index) => {
             console.log(`Inventario[${index}]: ${item}`);
         });
-    }
-
-    togglePause() {
-        const newPauseState = !this.isPaused;
-        this.processor.process(
-            new PauseGameCommand(this, newPauseState)
-        );
     }
 
     connectToServer() {
