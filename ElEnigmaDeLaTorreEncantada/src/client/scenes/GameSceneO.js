@@ -4,10 +4,10 @@ import { CommandProcessor } from '../command/commandProcessor';
 import { MoveMagoCommand } from '../command/MoveMagoCommand';
 import { PauseGameCommand } from '../command/PauseGameCommand';
 
-export class GameScene extends Phaser.Scene {
+export class GameSceneO extends Phaser.Scene {
 
     constructor() {
-        super('GameScene');
+        super('GameSceneO');
     }
 
     preload() {
@@ -73,7 +73,7 @@ export class GameScene extends Phaser.Scene {
         this.load.audio('pequeño', '/sounds/pequeño.mp3');
     }
 
-    init() {
+    init(data) {
         this.players = new Map();
         this.inputMappings = [];
         this.isPaused = false;
@@ -86,6 +86,12 @@ export class GameScene extends Phaser.Scene {
         // Array de booleanos que representa que objetos han recogido entre ambos jugadores
         // Los objetos son: 0-llave, 1-libros, 2- pocion morada, 3- pocion verde, 4- pocion rosa, 5- pocion azul, 6- pocion amarilla, 7- pocion naranja, 8- velas, 9- bola de cristal, 10- planta, 11- estrella 1, 12- estrella 2
         this.inventario = [false, false, false, false, false, false, false, false, false, false, false, false, false];
+    
+        this.ws = data.ws;
+        this.playerRole = data.playerRole; // 'player1' or 'player2'    
+        this.roomId = data.roomId;
+        this.localPlayer = null;
+        this.remotePlayer = null;
     }
 
     create() {
@@ -151,6 +157,8 @@ export class GameScene extends Phaser.Scene {
             try { if (this.bgm && (this.bgm.isPlaying || this.bgm.isPaused)) this.bgm.stop(); } catch(err){ console.warn(err); }
         });
 
+
+        // Crear escenario
         this.crearEscenario();
         this.crearPlataformas();
         this.crearBarreraInvisible();
@@ -158,7 +166,7 @@ export class GameScene extends Phaser.Scene {
         this.establecerColisiones();
         this.inventarioEnPantalla(); 
 
-
+        //Mostrar vidas
         this.healthLeft = this.add.text(50, 30, '3', {
             fontSize: '48px',
             color: '#ff0000ff'
@@ -169,21 +177,49 @@ export class GameScene extends Phaser.Scene {
             color: '#ff0000ff'
         });
 
+        // Mostar que jugador es cada uno
+        const localPlayerText = this.playerRole === 'player1' ? 'Eres el Jugador 1 (Azul)' : 'Eres el Jugador 2 (Rojo)';
+        this.add.text(350, 450, localPlayerText, {
+            fontSize: '24px',
+            color: '#00ffffff',
+        }).setOrigin(0.5);  
 
+
+        // Asignar a cada jugador si es local o remoto
+        if (this.playerRole === 'player1') {
+            this.localPlayer = this.players.get('player1');
+            this.remotePlayer = this.players.get('player2');
+        } else {
+            this.localPlayer = this.players.get('player2');
+            this.remotePlayer = this.players.get('player1');
+        }
+
+        // Inputs
+        this.cursors = this.input.keyboard.createCursorKeys();
+        this.jumpKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
         this.escKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
         this.lkey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.L);
         this.qkey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Q);
-
-
-
+    
+        // WebSocket listeners
+        this.setupWebSocketListeners();
     }
 
     update(time, delta) {
         if (this.escKey.isDown && !this.escWasDown) {
             this.togglePause();
         }
+
+        // Detectar dirección de movimiento local
+        let direccion = null;
+        if (this.cursors.up.isDown) direccion = 'up';
+        else if (this.cursors.down.isDown) direccion = 'down';
+        else if (this.cursors.left.isDown) direccion = 'left';
+        else if (this.cursors.right.isDown) direccion = 'right';
+        else direccion = 'stop';
+
+
         this.escWasDown = this.escKey.isDown;
-console.log("Holaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
         this.lPulsada = false; //volver a poner a false si no ha habido overlap
         if (this.lkey.isDown || this.qkey.isDown) this.lPulsada = true;
 
@@ -192,52 +228,64 @@ console.log("Holaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
             mago.update(delta);
         });
 
-        this.inputMappings.forEach(mapping => {
-            const mago = this.players.get(mapping.playerId);
-            let direction = null;
-            let salto = false;
-            const walkSound = this.walkSounds.get(mapping.playerId);
-            let isMoving = false;
-            if (mapping.upKeyObj.isDown) {
-                direction = 'up';
-                isMoving = true;
-                mago.andar_animacion();
-            } else if (mapping.downKeyObj.isDown) {
-                direction = 'down';
-                isMoving = true;
-                mago.andar_animacion();
-            } else if (mapping.leftKeyObj.isDown) {
-                direction = 'left';
-                isMoving = true;
-                mago.sprite.flipX = false;
-                mago.andar_animacion();
-            } else if (mapping.rightKeyObj.isDown) {
-                direction = 'right';
-                isMoving = true;
-                mago.sprite.flipX = true;
-                mago.andar_animacion();
-            } else {
-                direction = 'stop';
-                mago.andar_animacion_parar();
+        // Ejecutar comando de movimiento local
+        let moveCommand = new MoveMagoCommand(this.localPlayer, direccion, this.jumpKey.isDown);
+        this.processor.process(moveCommand);
 
-                if (walkSound && walkSound.isPlaying) {
-                    walkSound.stop();
-                }
-            }
-
-            // salto solo si esta pequeño
-            if (mapping.jumpObj.isDown) {
-                if (!mago.estado_normal) {
-                    salto = true;
-                    mago.andar_animacion_parar();
-                }
-            }
-            if (isMoving && walkSound && !walkSound.isPlaying) {
-                walkSound.play();
-            }
-            let moveCommand = new MoveMagoCommand(mago, direction, salto);
-            this.processor.process(moveCommand);
+        // Enviar posición del jugador local al servidor
+        this.sendMessage({
+            type: 'playerMove',
+            x: this.localPlayer.sprite.x,
+            y: this.localPlayer.sprite.y
         });
+
+
+        // this.inputMappings.forEach(mapping => {
+        //     const mago = this.players.get(mapping.playerId);
+        //     let direction = null;
+        //     let salto = false;
+        //     const walkSound = this.walkSounds.get(mapping.playerId);
+        //     let isMoving = false;
+        //     if (mapping.upKeyObj.isDown) {
+        //         direction = 'up';
+        //         isMoving = true;
+        //         mago.andar_animacion();
+        //     } else if (mapping.downKeyObj.isDown) {
+        //         direction = 'down';
+        //         isMoving = true;
+        //         mago.andar_animacion();
+        //     } else if (mapping.leftKeyObj.isDown) {
+        //         direction = 'left';
+        //         isMoving = true;
+        //         mago.sprite.flipX = false;
+        //         mago.andar_animacion();
+        //     } else if (mapping.rightKeyObj.isDown) {
+        //         direction = 'right';
+        //         isMoving = true;
+        //         mago.sprite.flipX = true;
+        //         mago.andar_animacion();
+        //     } else {
+        //         direction = 'stop';
+        //         mago.andar_animacion_parar();
+
+        //         if (walkSound && walkSound.isPlaying) {
+        //             walkSound.stop();
+        //         }
+        //     }
+
+        //     // salto solo si esta pequeño
+        //     if (mapping.jumpObj.isDown) {
+        //         if (!mago.estado_normal) {
+        //             salto = true;
+        //             mago.andar_animacion_parar();
+        //         }
+        //     }
+        //     if (isMoving && walkSound && !walkSound.isPlaying) {
+        //         walkSound.play();
+        //     }
+        //     let moveCommand = new MoveMagoCommand(mago, direction, salto);
+        //     this.processor.process(moveCommand);
+        // });
 
             //actualizar inventario en pantalla
             if(this.inventario[1]) this.uno.setAlpha(1); else this.uno.setAlpha(0.2); 
@@ -251,6 +299,7 @@ console.log("Holaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
             if(this.inventario[9]) this.nueve.setAlpha(1);else this.nueve.setAlpha(0.2); 
             if(this.inventario[10]) this.diez.setAlpha(1); else this.diez.setAlpha(0.2); 
 
+            
     }
 
     crearEscenario() {
@@ -644,44 +693,10 @@ console.log("Holaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
     }
     
     setUpPlayers() {
-        const leftMago = new Mago(this, 'player1', 50, 400, 'idle_Azul');
-        const rightMago = new Mago(this, 'player2', 950, 400, 'idle_Rojo');
-
-        this.players.set('player1', leftMago);
-        this.players.set('player2', rightMago);
-
-        const InputConfig = [
-            {
-                playerId: 'player1',
-                upKey: 'W',
-                downKey: 'S',
-                leftKey: 'A',
-                rightKey: 'D',
-                jump: 'SPACE'
-            },
-            {
-                playerId: 'player2',
-                upKey: 'UP',
-                downKey: 'DOWN',
-                leftKey: 'LEFT',
-                rightKey: 'RIGHT',
-                jump: 'ENTER'
-            }
-        ]
-
-        //this.intputMappings = InputConfig; 
-        this.inputMappings = InputConfig.map(config => {
-            return {
-                playerId: config.playerId,
-                upKeyObj: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes[config.upKey]),
-                downKeyObj: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes[config.downKey]),
-                leftKeyObj: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes[config.leftKey]),
-                rightKeyObj: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes[config.rightKey]),
-                jumpObj: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes[config.jump]),
-            }
-
-        }
-        );
+       const mago1 =new Mago(this, 'player1',  50, 400, 'idle_Azul');
+       const mago2 =  new Mago(this, 'player2', 950, 400, 'idle_Rojo');
+       this.players.set('player1', mago1);
+       this.players.set('player2', mago2);
     }
 
     endGame(id) {
@@ -769,5 +784,93 @@ console.log("Holaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
         this.processor.process(
             new PauseGameCommand(this, newPauseState)
         );
+    }
+
+
+    // WEBSOCKETS
+    setupWebSocketListeners() {
+        this.ws.onmessage = (event) => {
+            try {
+                const data = JSON.parse(event.data);
+                this.handleServerMessage(data);
+            } catch (error) {
+                console.error('Error al parsear mensaje Websocket:', error);
+            }
+        };
+
+        this.ws.onclose = () => {
+            console.log('Conexión WebSocket cerrada');
+            if (!this.gameEnded) {
+                this.handleDisconnection();
+            }
+        };
+
+        this.ws.onerror = (error) => {
+            console.error('Error de WebSocket :', error);
+            if (!this.gameEnded) {
+                this.handleDisconnection();
+            }
+        };
+    }
+
+    handleServerMessage(data) {
+        switch (data.type) {
+            case 'movimientoJugador':
+                if (data.player === this.playerRole) return; // ignora sus propios mensajes
+                this.remotePlayer.sprite.x = data.x;
+                this.remotePlayer.sprite.y = data.y;                break;
+            case 'gameOver':
+                this.endGame(data.winnerId);
+                break; 
+            case 'playerDisconnected':
+                this.handleDisconnection();
+                break;       
+            default:
+                console.log('Mensaje WebSocket desconocido:', data);
+        }        
+    }
+
+    handleDisconnection() {
+        this.gameEnded = true;
+        //this.ball.setVelocity(0, 0);
+        this.localPlayer.sprite.setVelocity(0, 0);
+        this.remotePlayer.sprite.setVelocity(0, 0);
+        this.physics.pause();
+
+        this.add.text(400, 250, 'Opponent Disconnected', {
+            fontSize: '48px',
+            color: '#ff0000'
+        }).setOrigin(0.5);
+
+        this.createMenuButton();
+    }
+
+    createMenuButton() {
+        const menuBtn = this.add.text(400, 400, 'Return to Main Menu', {
+            fontSize: '32px',
+            color: '#ffffff',
+        }).setOrigin(0.5)
+        .setInteractive({ useHandCursor: true })
+        .on('pointerover', () => menuBtn.setColor('#cccccc'))
+        .on('pointerout', () => menuBtn.setColor('#ffffff'))
+        .on('pointerdown', () => {
+            if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+                this.ws.close();
+            }
+            this.scene.start('MenuScene');
+        });
+    }
+
+    sendMessage(message) {
+        if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+            this.ws.send(JSON.stringify(message));
+        }
+    }
+
+
+    shutdown() {
+        if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+            this.ws.close();
+        }
     }
 }

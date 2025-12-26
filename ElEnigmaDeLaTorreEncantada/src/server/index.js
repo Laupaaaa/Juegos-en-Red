@@ -131,8 +131,8 @@ wss.on('connection', (ws) => {
           matchmakingService.leaveQueue(ws);
           break;
 
-        case 'paddleMove':
-          gameRoomService.handlePaddleMove(ws, data.y);
+        case 'playerMove':
+          gameRoomService.handlePlayerMove(ws, data);
           break;
 
         case 'goal':

@@ -75,4 +75,7 @@ export class Mago{
         this.sprite.setScale(scale);
     }
  
+    setPosition(x, y){
+        this.sprite.setPosition(x, y);
+    }
 }

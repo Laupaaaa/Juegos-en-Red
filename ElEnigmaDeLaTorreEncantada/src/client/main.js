@@ -12,6 +12,7 @@ import { FinalM1Scene } from './scenes/FinalM1Scene.js';
 import { FinalM2Scene } from './scenes/FinalM2Scene.js';
 import { ConnectionLostScene } from './scenes/ConnectionLostScene.js';
 import SalaDeEspera from './scenes/SalaDeEspera.js';
+import { GameSceneO } from './scenes/GameSceneO.js';
 
 const config = {
     type: Phaser.AUTO,
@@ -25,7 +26,7 @@ const config = {
             debug: false
         }
     },
-    scene: [ MenuScene, GameScene, LibreriaScene,  PauseScene, CreditsScene, HistoriaScene, ControlScene, DecisionScene, FinalBScene, FinalM1Scene, FinalM2Scene, ConnectionLostScene, SalaDeEspera ],
+    scene: [ MenuScene, GameSceneO, GameScene, LibreriaScene,  PauseScene, CreditsScene, HistoriaScene, ControlScene, DecisionScene, FinalBScene, FinalM1Scene, FinalM2Scene, ConnectionLostScene, SalaDeEspera ],
     backgroundColor: '#47ddffff',
 }
 

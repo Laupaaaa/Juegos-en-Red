@@ -380,7 +380,7 @@ export default class SalaDeEspera extends Phaser.Scene {
       case 'gameStart':
         console.log('Game starting!', data);
         // Store game data and transition to multiplayer game scene
-        this.scene.start('MultiplayerGameScene', {
+        this.scene.start('GameSceneO', {
           ws: this.ws,
           playerRole: data.role,
           roomId: data.roomId,
