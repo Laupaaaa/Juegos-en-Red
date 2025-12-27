@@ -46,8 +46,6 @@ export function createGameRoomService() {
    * @param {object} data - posicion del jugador
    */
   function handlePlayerMove(ws, data) {
-    console.log("roomId del cliente:", ws.roomId);
-    console.log("SERVIDOR → Recibido playerMove:", data);
     const roomId = ws.roomId;
     if (!roomId) return;
 
@@ -66,7 +64,6 @@ export function createGameRoomService() {
     // Relay to the other player
     const opponent = room.player1.ws === ws ? room.player2.ws : room.player1.ws;
 
-    console.log("SERVIDOR → Reenviando a oponente:", { type: 'movimientoJugador', player: player === room.player1 ? 'player1' : 'player2', x: data.x, y: data.y });
     if (opponent.readyState === 1) { // WebSocket.OPEN
       opponent.send(JSON.stringify({
         type: 'movimientoJugador',

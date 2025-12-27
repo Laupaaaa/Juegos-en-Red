@@ -11,31 +11,42 @@ export class ConnectionLostScene extends Phaser.Scene {
         this.reconnectCheckInterval = null;
     }
 
+    preload(){
+        this.load.image('titulo', '/imagenes/pergaminoTitulo.png'); 
+    }  
+
+     
+
     init(data) {
         // Guardar la escena que estaba activa cuando se perdió la conexión
         this.previousScene = data.previousScene;
     }
 
     create() {
-        // Fondo semi-transparente
-        this.add.rectangle(400, 300, 800, 600, 0x000000, 0.8);
+        // Fondo semi-transparente        
+        this.add.rectangle(500, 280, 1000, 560, 0x000000, 0.7);
+
+        this.titulo = this.add.image(500,180, 'titulo')
+        this.titulo.setScale(0.25);
+
+
 
         // Título
-        this.add.text(400, 200, 'CONEXIÓN PERDIDA', {
+        this.add.text(500, 180, 'CONEXIÓN PERDIDA', {
             fontSize: '48px',
-            color: '#ff0000',
+            color: '#c90000ff',
             fontStyle: 'bold'
         }).setOrigin(0.5);
 
         // Mensaje
-        this.statusText = this.add.text(400, 300, 'Intentando reconectar...', {
+        this.statusText = this.add.text(500, 320, 'Intentando reconectar...', {
             fontSize: '24px',
-            color: '#ffff00'
+            color: '#ffffffff'
         }).setOrigin(0.5);
 
         // Contador de intentos
         this.attemptCount = 0;
-        this.attemptText = this.add.text(400, 350, 'Intentos: 0', {
+        this.attemptText = this.add.text(500, 390, 'Intentos: 0', {
             fontSize: '18px',
             color: '#ffffff'
         }).setOrigin(0.5);

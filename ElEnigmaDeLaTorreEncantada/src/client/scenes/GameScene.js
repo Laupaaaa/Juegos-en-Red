@@ -514,19 +514,19 @@ console.log("Holaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
     }
     // Los objetos son: 0-llave, 1-libros, 2- pocion morada, 3- pocion verde, 4- pocion rosa, 5- pocion azul, 6- pocion amarilla, 7- pocion naranja, 8- velas, 9- bola de cristal, 10- planta, 11- estrella 1, 12- estrella 2
     inventarioEnPantalla() { //Como se acaba de crear, todavía no se habrá recogido ningún elemento
-        this.cero = this.add.image(200, 40, 'llaveR').setAlpha(0.4);
-        this.uno = this.add.image(250, 40, 'librosR').setAlpha(0.4).setScale(0.5);
-        this.dos = this.add.image(300, 40, 'pocionesM').setAlpha(0.4);
-        this.tres = this.add.image(350, 40, 'pocionesV').setAlpha(0.4);
-        this.cuatro = this.add.image(400, 40, 'pocionesRo').setAlpha(0.4);
-        this.cinco = this.add.image(450, 40, 'pocionesAz').setAlpha(0.4);
-        this.seis = this.add.image(500, 40, 'pocionesAm').setAlpha(0.4);
-        this.siete = this.add.image(550, 40, 'pocionesN').setAlpha(0.4);
-        this.ocho = this.add.image(600, 40, 'velasR').setAlpha(0.4).setScale(0.5);
-        this.nueve = this.add.image(650, 40, 'bolaCristalR').setAlpha(0.4).setScale(0.5);
-        this.diez = this.add.image(700, 40, 'plantaR').setAlpha(0.4).setScale(0.5);
-        this.once = this.add.image(750, 40, 'estrellaR').setAlpha(0.4);
-        this.doce = this.add.image(800, 40, 'estrellaR').setAlpha(0.4);
+        this.cero = this.add.image(200, 520, 'llaveR').setAlpha(0.2);
+        this.uno = this.add.image(250, 520, 'librosR').setAlpha(0.2).setScale(0.5);
+        this.dos = this.add.image(300, 520, 'pocionesM').setAlpha(0.2);
+        this.tres = this.add.image(350, 520, 'pocionesV').setAlpha(0.2);
+        this.cuatro = this.add.image(400, 520, 'pocionesRo').setAlpha(0.2);
+        this.cinco = this.add.image(450, 520, 'pocionesAz').setAlpha(0.2);
+        this.seis = this.add.image(500, 520, 'pocionesAm').setAlpha(0.2);
+        this.siete = this.add.image(550, 520, 'pocionesN').setAlpha(0.2);
+        this.ocho = this.add.image(600, 520, 'velasR').setAlpha(0.2).setScale(0.5);
+        this.nueve = this.add.image(650, 520, 'bolaCristalR').setAlpha(0.2).setScale(0.5);
+        this.diez = this.add.image(700, 520, 'plantaR').setAlpha(0.2).setScale(0.5);
+        this.once = this.add.image(750, 520, 'estrellaR').setAlpha(0.2);
+        this.doce = this.add.image(800, 520, 'estrellaR').setAlpha(0.2);
     }
 
     abrirCofre() {
