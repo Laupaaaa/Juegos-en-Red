@@ -59,6 +59,10 @@ export function createGameRoomService() {
     player.state.y = data.y;
     player.state.x = data.x;
 
+    player.state.direction=data.direction;
+    player.state.isMoving=data.isMoving;
+    player.state.flipX=data.flipX;
+
     // Relay to the other player
     const opponent = room.player1.ws === ws ? room.player2.ws : room.player1.ws;
 
@@ -68,7 +72,10 @@ export function createGameRoomService() {
         type: 'movimientoJugador',
         player: player === room.player1 ? 'player1' : 'player2',
         x: data.x,    
-        y: data.y
+        y: data.y,
+        direction: data.direction,
+        isMoving: data.isMoving,
+        flipX: data.flipX  // ← AÑADE ESTA LÍNEA
       }));
     }
   }

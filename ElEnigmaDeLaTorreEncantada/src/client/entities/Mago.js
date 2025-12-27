@@ -25,16 +25,22 @@ export class Mago{
     }
 
     andar_animacion(){
+        if(!this.sprite || !this.sprite.anims) return; // Proteger si el sprite o anims no existen
         if(!this.sprite.anims.isPlaying){
             if(this.idle === 'idle_Azul'){
-                this.sprite.play("andar_mago_Azul");
+                if(this.scene && this.scene.anims && this.scene.anims.exists("andar_mago_Azul")){
+                    this.sprite.play("andar_mago_Azul");
+                }
             } else if (this.idle === 'idle_Rojo'){
-                this.sprite.play("andar_mago_Rojo");
+                if(this.scene && this.scene.anims && this.scene.anims.exists("andar_mago_Rojo")){
+                    this.sprite.play("andar_mago_Rojo");
+                }
             }
         }
     }
 
     andar_animacion_parar(){
+        if(!this.sprite || !this.sprite.anims) return; // Proteger si el sprite o anims no existen
         if(this.sprite.anims.isPlaying){
             this.sprite.anims.stop();
             this.sprite.setTexture(this.idle);

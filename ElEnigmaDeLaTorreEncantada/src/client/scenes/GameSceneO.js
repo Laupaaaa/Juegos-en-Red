@@ -206,6 +206,7 @@ export class GameSceneO extends Phaser.Scene {
     }
 
     update(time, delta) {
+        if (!this.localPlayer || !this.remotePlayer) return;
         if (this.escKey.isDown && !this.escWasDown) {
             this.togglePause();
         }
@@ -232,11 +233,22 @@ export class GameSceneO extends Phaser.Scene {
         let moveCommand = new MoveMagoCommand(this.localPlayer, direccion, this.jumpKey.isDown);
         this.processor.process(moveCommand);
 
+        if(direccion!=='stop'){
+            this.localPlayer.andar_animacion();
+            if(direccion==='left') this.localPlayer.sprite.flipX = false;
+            else if(direccion==="right") this.localPlayer.sprite.flipX = true;
+        }else{
+            this.localPlayer.andar_animacion_parar();
+        }
+
         // Enviar posición del jugador local al servidor
         this.sendMessage({
             type: 'playerMove',
             x: this.localPlayer.sprite.x,
-            y: this.localPlayer.sprite.y
+            y: this.localPlayer.sprite.y,
+            direction: direccion,
+            isMoving: direccion !== 'stop',
+            flipX: this.localPlayer.sprite.flipX  // ← AÑADE ESTO
         });
 
 
@@ -817,8 +829,18 @@ export class GameSceneO extends Phaser.Scene {
         switch (data.type) {
             case 'movimientoJugador':
                 if (data.player === this.playerRole) return; // ignora sus propios mensajes
+                if (!this.remotePlayer) return; // Proteger si remotePlayer no existe aún
+                
                 this.remotePlayer.sprite.x = data.x;
-                this.remotePlayer.sprite.y = data.y;                break;
+                this.remotePlayer.sprite.y = data.y;
+                this.remotePlayer.sprite.flipX = data.flipX;
+                
+                if (data.isMoving && data.direction !== 'stop') {
+                    this.remotePlayer.andar_animacion();
+                } else {
+                    this.remotePlayer.andar_animacion_parar();
+                }
+                break;
             case 'gameOver':
                 this.endGame(data.winnerId);
                 break; 
