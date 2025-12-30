@@ -269,10 +269,10 @@ export default class SalaDeEspera extends Phaser.Scene {
             const InputConfig = [
                 {
                     playerId: 'player1',
-                    upKey: 'W',
-                    downKey: 'S',
-                    leftKey: 'A',
-                    rightKey: 'D',
+                    upKey: 'UP',
+                    downKey: 'DOWN',
+                    leftKey: 'LEFT',
+                    rightKey: 'RIGHT',
                     jump: 'SPACE'
                 },
                 // {

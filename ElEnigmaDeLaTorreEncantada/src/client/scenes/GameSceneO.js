@@ -223,7 +223,6 @@ export class GameSceneO extends Phaser.Scene {
         else if (this.cursors.right.isDown) direccion = 'right';
         else direccion = 'stop';
 
-
         this.escWasDown = this.escKey.isDown;
         this.lPulsada = false; //volver a poner a false si no ha habido overlap
         if (this.lkey.isDown || this.qkey.isDown) this.lPulsada = true;
@@ -252,56 +251,9 @@ export class GameSceneO extends Phaser.Scene {
             y: this.localPlayer.sprite.y,
             direction: direccion,
             isMoving: direccion !== 'stop',
-            flipX: this.localPlayer.sprite.flipX  // ← AÑADE ESTO
+            flipX: this.localPlayer.sprite.flipX 
         });
 
-
-        // this.inputMappings.forEach(mapping => {
-        //     const mago = this.players.get(mapping.playerId);
-        //     let direction = null;
-        //     let salto = false;
-        //     const walkSound = this.walkSounds.get(mapping.playerId);
-        //     let isMoving = false;
-        //     if (mapping.upKeyObj.isDown) {
-        //         direction = 'up';
-        //         isMoving = true;
-        //         mago.andar_animacion();
-        //     } else if (mapping.downKeyObj.isDown) {
-        //         direction = 'down';
-        //         isMoving = true;
-        //         mago.andar_animacion();
-        //     } else if (mapping.leftKeyObj.isDown) {
-        //         direction = 'left';
-        //         isMoving = true;
-        //         mago.sprite.flipX = false;
-        //         mago.andar_animacion();
-        //     } else if (mapping.rightKeyObj.isDown) {
-        //         direction = 'right';
-        //         isMoving = true;
-        //         mago.sprite.flipX = true;
-        //         mago.andar_animacion();
-        //     } else {
-        //         direction = 'stop';
-        //         mago.andar_animacion_parar();
-
-        //         if (walkSound && walkSound.isPlaying) {
-        //             walkSound.stop();
-        //         }
-        //     }
-
-        //     // salto solo si esta pequeño
-        //     if (mapping.jumpObj.isDown) {
-        //         if (!mago.estado_normal) {
-        //             salto = true;
-        //             mago.andar_animacion_parar();
-        //         }
-        //     }
-        //     if (isMoving && walkSound && !walkSound.isPlaying) {
-        //         walkSound.play();
-        //     }
-        //     let moveCommand = new MoveMagoCommand(mago, direction, salto);
-        //     this.processor.process(moveCommand);
-        // });
 
             //actualizar inventario en pantalla
             if(this.inventario[1]) this.uno.setAlpha(1); else this.uno.setAlpha(0.2); 
@@ -465,7 +417,7 @@ export class GameSceneO extends Phaser.Scene {
                 if (this.lPulsada) {
                     this.scene.pause();
                     this.scene.launch('LibreriaScene', {
-                        originalScene: 'GameScene',
+                        originalScene: 'GameSceneO',
                         pociones: this.inventario,
                         sound: this.sound,
                         jugador: id
@@ -494,47 +446,14 @@ export class GameSceneO extends Phaser.Scene {
             // Crear pocion de disminuir tamaño si se tienen las pociones necesarias
             this.physics.add.overlap(player.sprite, this.caldero, () => {
                 if (Phaser.Input.Keyboard.JustDown(this.lkey) || Phaser.Input.Keyboard.JustDown(this.qkey)) { // Comprobar que se ha pulsado la tecla L o Q para crear la pocion (si se mantiene pulsada la tecla no entrará varias veces a la función)
-                    let elemRecogidos = this.inventario.filter(elem => elem === true); // crear un segundo array con unicamente los elementos recogidos
-                    if ((elemRecogidos.length === 3) || (elemRecogidos.lenght === 4)) { // primero comprobar que se han recogido 3 elementos
-                        if (this.inventario[3] && this.inventario[5] && this.inventario[7]) { // comprobar que esos elementos recogidos son las pociones verde, azul y naranja 
-                            console.log("Poción de disminuir tamaño creada");
-                            this.calderoColl.disableBody(); // desactivar el collider del caldero para mientras estén pequeños puedan atravesarlo (causaba bugs: levitaba)
-                            if (this.sound) {
-                                this.sound.play('pequeño', { volume: 0.6 });
-                            }
-                            this.players.forEach(player => {
-                                player.estado_normal = false;
-                            });
-                        }
-                    } else {
-                        console.log("No tienes las pociones necesarias para crear la poción de disminuir tamaño");
-                        if (this.sound) {
-                            this.sound.play('explosion', { volume: 0.5 });
-                        }
-                        let aleatorio = Phaser.Math.Between(1, 2); // generar un número aleatorio entre 1 y 2 para elegir que jugador recibe daño
-                        if (aleatorio === 1) this.dañoJugLeft();
-                        else this.dañoJugRight();
-                    }
+                    this.sendMessage({
+                        type: 'usarCaldero',
+                        inventario:this.inventario
+                    });
 
-                    // volver a poner a false todos los elementos del inventario
-                    for (let i = 1; i < this.inventario.length - 2; i++) { // se salta la llave y las estrellas porque no se utilizan para crear la pocion
-                        this.inventario[i] = false;
-                        //actualizar inventario en pantalla
-                        switch(i) {
-                            case 1: this.uno.setAlpha(0.2); break;
-                            case 2: this.dos.setAlpha(0.2); break;
-                            case 3: this.tres.setAlpha(0.2); break;
-                            case 4: this.cuatro.setAlpha(0.2); break;  
-                            case 5: this.cinco.setAlpha(0.2); break;
-                            case 6: this.seis.setAlpha(0.2); break;
-                            case 7: this.siete.setAlpha(0.2); break;
-                            case 8: this.ocho.setAlpha(0.2); break;
-                            case 9: this.nueve.setAlpha(0.2); break;
-                            case 10: this.diez.setAlpha(0.2); break;
-                        }
-                    }
                 }
             });
+        
 
             // Abrir el cofre si se tiene la llave
             this.physics.add.overlap(player.sprite, this.cofre, () => {
@@ -790,7 +709,7 @@ export class GameSceneO extends Phaser.Scene {
         this.isPaused = isPaused;
         if (isPaused) {
             this.scene.pause();
-            this.scene.launch('PauseScene', { originalScene: 'GameScene' })
+            this.scene.launch('PauseScene', { originalScene: 'GameSceneO' })
         }
         if (this.bgm && this.bgm.isPlaying) {
             this.bgm.pause();
@@ -870,11 +789,13 @@ export class GameSceneO extends Phaser.Scene {
                 this.handleDisconnection();
                 break;      
                 
-            case 'daño': {
+            case 'daño': 
                 this.handleDaño(data);
                 break;
-            }
-
+            
+            case 'usarCaldero':
+                this.handleCaldero(data); 
+                break; 
             default:
                 console.log('Mensaje WebSocket desconocido:', data);
         }        
@@ -921,6 +842,46 @@ export class GameSceneO extends Phaser.Scene {
             this.endGame(data.player);
         }
     }
+
+    handleCaldero(data) {
+        // volver a poner a false todos los elementos del inventario
+        for (let i = 1; i < this.inventario.length - 2; i++) { // se salta la llave y las estrellas porque no se utilizan para crear la pocion
+            this.inventario[i] = false;
+        }
+        //actualizar inventario en pantalla
+        this.uno.setAlpha(0.2); 
+        this.dos.setAlpha(0.2); 
+        this.tres.setAlpha(0.2); 
+        this.cuatro.setAlpha(0.2);  
+        this.cinco.setAlpha(0.2);
+        this.seis.setAlpha(0.2);
+        this.siete.setAlpha(0.2); 
+        this.ocho.setAlpha(0.2); 
+        this.nueve.setAlpha(0.2); 
+        this.diez.setAlpha(0.2); 
+
+        if (data.exito) {
+            console.log("Poción de disminuir tamaño creada");
+            this.calderoColl.disableBody(); // desactivar el collider del caldero para mientras estén pequeños puedan atravesarlo (causaba bugs: levitaba)
+            if (this.sound) {
+                this.sound.play('pequeño', { volume: 0.6 });
+            }
+            this.players.forEach(player => {
+                player.estado_normal = false;
+            });
+        } else {
+            console.log("No tienes las pociones necesarias para crear la poción de disminuir tamaño");
+            if (this.sound) {
+                this.sound.play('explosion', { volume: 0.5 });
+            }
+
+            if (data.jugadorDañado === 1) {
+                this.dañoJugLeft();
+            } else {
+                this.dañoJugRight();
+            }
+        }
+    }    
 
     createMenuButton() {
         this.boton = this.add.image(500, 400, 'boton')

@@ -104,6 +104,39 @@ export function createGameRoomService() {
     }
   }
 
+
+  /** 
+   * Handle caldero usage event from a player
+   * @param {WebSocket} ws - Player's WebSocket
+   * @param {object} data - Inventario data
+   */ 
+  function handleCaldero(ws, data) {
+    const roomId = ws.roomId;
+    if (!roomId) return;
+    const room = rooms.get(roomId);
+    if (!room || !room.active) return;
+    
+    const inventario = data.inventario;
+    let resultado = {};
+
+    if (inventario[3] && inventario[5] && inventario[7]) { // comprobar que esos elementos recogidos son las pociones verde, azul y naranja 
+      console.log("Poción de disminuir tamaño creada");
+      resultado = { type: 'usarCaldero', exito: true };
+
+    } else {
+      console.log("No tienes las pociones necesarias para crear la poción de disminuir tamaño");
+
+      let aleatorio = Math.random()  < 0.5 ? 1 : 2; // generar un número aleatorio entre 1 y 2 para elegir que jugador recibe daño
+      const jugDañado = aleatorio === 1 ? room.player1 : room.player2;
+      resultado = { type: 'usarCaldero', exito: false, jugadorDañado: aleatorio};
+    }
+
+    // broadcasta a los dos jugadores con el resultado de usar el caldero
+    room.player1.ws.send(JSON.stringify(resultado));
+    room.player2.ws.send(JSON.stringify(resultado));
+
+  }
+
   /**
    * Handle player disconnection
    * @param {WebSocket} ws - Disconnected player's WebSocket
@@ -144,6 +177,7 @@ export function createGameRoomService() {
     createRoom,
     handlePlayerMove,
     handleDaño,
+    handleCaldero,
     handleDisconnect,
     getActiveRoomCount
   };

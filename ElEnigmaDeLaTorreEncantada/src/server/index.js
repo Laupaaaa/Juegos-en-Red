@@ -139,6 +139,10 @@ wss.on('connection', (ws) => {
           gameRoomService.handleDaño(ws, data);
           break;
 
+        case 'usarCaldero':
+          gameRoomService.handleCaldero(ws, data);
+          break;
+          
         default:
           console.log('Mensaje desconocido:', data.type);
       }
