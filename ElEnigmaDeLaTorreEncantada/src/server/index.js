@@ -135,8 +135,8 @@ wss.on('connection', (ws) => {
           gameRoomService.handlePlayerMove(ws, data);
           break;
 
-        case 'goal':
-          gameRoomService.handleGoal(ws, data.side);
+        case 'dañoJugador':
+          gameRoomService.handleDaño(ws, data);
           break;
 
         default:

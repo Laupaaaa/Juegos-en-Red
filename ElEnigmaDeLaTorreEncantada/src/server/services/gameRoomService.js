@@ -72,92 +72,35 @@ export function createGameRoomService() {
         y: data.y,
         direction: data.direction,
         isMoving: data.isMoving,
-        flipX: data.flipX  // ← AÑADE ESTA LÍNEA
+        flipX: data.flipX 
       }));
     }
   }
 
   /**
-   * Handle goal event from a player
+   * Handle damage event from a player
    * @param {WebSocket} ws - Player's WebSocket
-   * @param {string} side - Which side scored ('left' or 'right')
+   * @param {object} data - Damage data
    */
-  function handleGoal(ws, side) {
+  function handleDaño(ws, data) {
     const roomId = ws.roomId;
     if (!roomId) return;
 
     const room = rooms.get(roomId);
     if (!room || !room.active) return;
 
-    // Prevent duplicate goal detection (both clients send goal event)
-    // Only process goal if ball is active
-    if (!room.ballActive) {
-      return; // Ball not in play, ignore goal
-    }
-    room.ballActive = false; // Mark ball as inactive until relaunched
+    // conseguir el jugador que ha recibido el daño del data y actualizar su vida
+    const herido = data.player === room.player1 ? room.player1 : room.player2;
+    herido.state.vida = data.vida;
 
-    // Update scores
-    // When ball hits LEFT goal (x=0), player2 scores (player1 missed)
-    // When ball hits RIGHT goal (x=800), player1 scores (player2 missed)
-    if (side === 'left') {
-      room.player2.score++;
-    } else if (side === 'right') {
-      room.player1.score++;
-    }
-
-    // Broadcast score update to both players
-    const scoreUpdate = {
-      type: 'scoreUpdate',
-      player1Score: room.player1.score,
-      player2Score: room.player2.score
-    };
-
-    room.player1.ws.send(JSON.stringify(scoreUpdate));
-    room.player2.ws.send(JSON.stringify(scoreUpdate));
-
-    // Check win condition (first to 2)
-    if (room.player1.score >= 2 || room.player2.score >= 2) {
-      const winner = room.player1.score >= 2 ? 'player1' : 'player2';
-
-      const gameOverMsg = {
-        type: 'gameOver',
-        winner,
-        player1Score: room.player1.score,
-        player2Score: room.player2.score
-      };
-
-      room.player1.ws.send(JSON.stringify(gameOverMsg));
-      room.player2.ws.send(JSON.stringify(gameOverMsg));
-
-      // Mark room as inactive
-      room.active = false;
-    } else {
-      // Relaunch ball after 1 second delay
-      setTimeout(() => {
-        if (room.active) {
-          // Generate new ball direction
-          const angle = (Math.random() * 60 - 30) * (Math.PI / 180); // -30 to 30 degrees
-          const speed = 300;
-          const ballData = {
-            x: 400,
-            y: 300,
-            vx: speed * Math.cos(angle),
-            vy: speed * Math.sin(angle)
-          };
-
-          // Send ball relaunch to both players
-          const relaunchMsg = {
-            type: 'ballRelaunch',
-            ball: ballData
-          };
-
-          room.player1.ws.send(JSON.stringify(relaunchMsg));
-          room.player2.ws.send(JSON.stringify(relaunchMsg));
-
-          // Mark ball as active again
-          room.ballActive = true;
-        }
-      }, 1000);
+    // Reenviar el daño al oponente
+    const opponent = room.player1.ws === ws ? room.player2.ws : room.player1.ws;
+    if (opponent.readyState === 1) { // WebSocket.OPEN
+      opponent.send(JSON.stringify({
+        type: 'daño',
+        player: data.player,
+        vida: data.vida
+      }));
     }
   }
 
@@ -200,7 +143,7 @@ export function createGameRoomService() {
   return {
     createRoom,
     handlePlayerMove,
-    handleGoal,
+    handleDaño,
     handleDisconnect,
     getActiveRoomCount
   };

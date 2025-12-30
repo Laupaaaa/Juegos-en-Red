@@ -757,6 +757,15 @@ export class GameSceneO extends Phaser.Scene {
         player1.vida--;
         this.healthLeft.setText(player1.vida.toString());
         console.log('El jugador de la izquierda ha recibido daño');
+
+        // Avisar al servidor 
+        this.sendMessage({
+            type: 'dañoJugador',
+            player: 'player1',
+            vida: player1.vida
+        }); 
+
+        // comprobar si ha muerto
         if (player1.vida <= 0) this.endGame('player1');
     }
 
@@ -765,6 +774,15 @@ export class GameSceneO extends Phaser.Scene {
         player2.vida--;
         this.healthRight.setText(player2.vida.toString());
         console.log('El jugador de la derecha ha recibido daño');
+
+        // Avisar al servidor 
+        this.sendMessage({
+            type: 'dañoJugador',
+            player: 'player2',
+            vida: player2.vida
+        }); 
+
+        // comprobar si ha muerto        
         if (player2.vida <= 0) this.endGame('player2');
     }
 
@@ -850,7 +868,13 @@ export class GameSceneO extends Phaser.Scene {
                 break; 
             case 'playerDisconnected':
                 this.handleDisconnection();
-                break;       
+                break;      
+                
+            case 'daño': {
+                this.handleDaño(data);
+                break;
+            }
+
             default:
                 console.log('Mensaje WebSocket desconocido:', data);
         }        
@@ -879,6 +903,23 @@ export class GameSceneO extends Phaser.Scene {
         }).setOrigin(0.5);
 
         this.createMenuButton();
+    }
+
+    handleDaño(data){
+        const mago = this.players.get(data.player);
+        if (!mago) return;
+
+        mago.vida = data.vida;
+
+        if (data.player === 'player1') {
+            this.healthLeft.setText(data.vida.toString());
+        } else {
+            this.healthRight.setText(data.vida.toString());
+        }
+
+        if (mago.vida <= 0) {
+            this.endGame(data.player);
+        }
     }
 
     createMenuButton() {
