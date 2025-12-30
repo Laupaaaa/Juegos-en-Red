@@ -94,7 +94,7 @@ export default class SalaDeEspera extends Phaser.Scene {
 
     // Crear un sonido de pasos para cada jugador
     this.walkSounds.set('player1', this.sound.add('walk', { loop: true, volume: 0.3 }));
-    //this.walkSounds.set('player2', this.sound.add('walk', { loop: true, volume: 0.3 }));
+    this.walkSounds.set('player2', this.sound.add('walk', { loop: true, volume: 0.3 }));
 
     // Parar pasos cuando la escena se pause (ej. PauseScene) y limpiar sonidos al shutdown
     this.events.on('pause', () => {
@@ -261,10 +261,10 @@ export default class SalaDeEspera extends Phaser.Scene {
 
     setUpPlayers() {
             const leftMago = new Mago(this, 'player1', 50, 400, 'idle_Azul');
-            //const rightMago = new Mago(this, 'player2', 950, 400, 'idle_Rojo');
+            const rightMago = new Mago(this, 'player2', 950, 400, 'idle_Azul');
     
             this.players.set('player1', leftMago);
-            //this.players.set('player2', rightMago);
+            this.players.set('player2', rightMago);
     
             const InputConfig = [
                 {
@@ -275,14 +275,14 @@ export default class SalaDeEspera extends Phaser.Scene {
                     rightKey: 'RIGHT',
                     jump: 'SPACE'
                 },
-                // {
-                //     playerId: 'player2',
-                //     upKey: 'UP',
-                //     downKey: 'DOWN',
-                //     leftKey: 'LEFT',
-                //     rightKey: 'RIGHT',
-                //     jump: 'ENTER'
-                // }
+                {
+                    playerId: 'player2',
+                    upKey: 'W',
+                    downKey: 'S',
+                    leftKey: 'A',
+                    rightKey: 'D',
+                    jump: 'ENTER'
+                }
             ]
     
             //this.intputMappings = InputConfig; 
