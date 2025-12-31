@@ -143,6 +143,10 @@ wss.on('connection', (ws) => {
           gameRoomService.handleCaldero(ws, data);
           break;
           
+        case 'actualizarInventario':
+          gameRoomService.handleInventario(ws, data);
+          break;
+
         default:
           console.log('Mensaje desconocido:', data.type);
       }

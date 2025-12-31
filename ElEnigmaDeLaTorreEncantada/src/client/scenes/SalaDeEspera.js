@@ -261,10 +261,10 @@ export default class SalaDeEspera extends Phaser.Scene {
 
     setUpPlayers() {
             const leftMago = new Mago(this, 'player1', 50, 400, 'idle_Azul');
-            const rightMago = new Mago(this, 'player2', 950, 400, 'idle_Azul');
+            // const rightMago = new Mago(this, 'player2', 950, 400, 'idle_Azul');
     
             this.players.set('player1', leftMago);
-            this.players.set('player2', rightMago);
+            // this.players.set('player2', rightMago);
     
             const InputConfig = [
                 {
@@ -275,14 +275,14 @@ export default class SalaDeEspera extends Phaser.Scene {
                     rightKey: 'RIGHT',
                     jump: 'SPACE'
                 },
-                {
-                    playerId: 'player2',
-                    upKey: 'W',
-                    downKey: 'S',
-                    leftKey: 'A',
-                    rightKey: 'D',
-                    jump: 'ENTER'
-                }
+                // {
+                //     playerId: 'player2',
+                //     upKey: 'W',
+                //     downKey: 'S',
+                //     leftKey: 'A',
+                //     rightKey: 'D',
+                //     jump: 'ENTER'
+                // }
             ]
     
             //this.intputMappings = InputConfig; 

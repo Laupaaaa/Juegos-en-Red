@@ -66,9 +66,8 @@ export class LibreriaScene extends Phaser.Scene {
 
     update() {
         if (this.escKey.isDown && !this.escWasDown) {
-            
-            this.scene.stop();
             this.scene.resume(this.datos.originalScene, { pociones: this.datos.pociones });
+            this.scene.stop();
             // this.scene.get(this.datos.originalScene).resume(); 
         }
 

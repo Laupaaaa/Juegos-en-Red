@@ -86,6 +86,7 @@ export class GameSceneO extends Phaser.Scene {
         this.processor = new CommandProcessor();
         this.cofreAbierto = false;
         this.walkSounds = new Map(); // Map para guardar el sonido de cada jugador
+        this.visitLibreria = false;
 
         // Array de booleanos que representa que objetos han recogido entre ambos jugadores
         // Los objetos son: 0-llave, 1-libros, 2- pocion morada, 3- pocion verde, 4- pocion rosa, 5- pocion azul, 6- pocion amarilla, 7- pocion naranja, 8- velas, 9- bola de cristal, 10- planta, 11- estrella 1, 12- estrella 2
@@ -254,18 +255,26 @@ export class GameSceneO extends Phaser.Scene {
             flipX: this.localPlayer.sprite.flipX 
         });
 
+        // avisar al otro jugador si ha habido cambios en el inventario en la escena de la librería
+        if(this.visitLibreria){
+            this.sendMessage({
+                type: 'actualizarInventario',
+                inventario: this.inventario
+            });
+            this.visitLibreria = false;
+        }
 
-            //actualizar inventario en pantalla
-            if(this.inventario[1]) this.uno.setAlpha(1); else this.uno.setAlpha(0.2); 
-            if(this.inventario[2]) this.dos.setAlpha(1);else this.dos.setAlpha(0.2); 
-            if(this.inventario[3]) this.tres.setAlpha(1); else this.tres.setAlpha(0.2); 
-            if(this.inventario[4]) this.cuatro.setAlpha(1); else this.cuatro.setAlpha(0.2); 
-            if(this.inventario[5]) this.cinco.setAlpha(1); else this.cinco.setAlpha(0.2); 
-            if(this.inventario[6]) this.seis.setAlpha(1);else this.seis.setAlpha(0.2); 
-            if(this.inventario[7]) this.siete.setAlpha(1);else this.siete.setAlpha(0.2); 
-            if(this.inventario[8]) this.ocho.setAlpha(1);else this.ocho.setAlpha(0.2); 
-            if(this.inventario[9]) this.nueve.setAlpha(1);else this.nueve.setAlpha(0.2); 
-            if(this.inventario[10]) this.diez.setAlpha(1); else this.diez.setAlpha(0.2); 
+        //actualizar inventario en pantalla
+        if(this.inventario[1]) this.uno.setAlpha(1); else this.uno.setAlpha(0.2); 
+        if(this.inventario[2]) this.dos.setAlpha(1);else this.dos.setAlpha(0.2); 
+        if(this.inventario[3]) this.tres.setAlpha(1); else this.tres.setAlpha(0.2); 
+        if(this.inventario[4]) this.cuatro.setAlpha(1); else this.cuatro.setAlpha(0.2); 
+        if(this.inventario[5]) this.cinco.setAlpha(1); else this.cinco.setAlpha(0.2); 
+        if(this.inventario[6]) this.seis.setAlpha(1);else this.seis.setAlpha(0.2); 
+        if(this.inventario[7]) this.siete.setAlpha(1);else this.siete.setAlpha(0.2); 
+        if(this.inventario[8]) this.ocho.setAlpha(1);else this.ocho.setAlpha(0.2); 
+        if(this.inventario[9]) this.nueve.setAlpha(1);else this.nueve.setAlpha(0.2); 
+        if(this.inventario[10]) this.diez.setAlpha(1); else this.diez.setAlpha(0.2); 
 
             
     }
@@ -415,6 +424,7 @@ export class GameSceneO extends Phaser.Scene {
             // Abrir la librerí­a
             this.physics.add.overlap(player.sprite, this.estanteria, () => {
                 if (this.lPulsada) {
+                    this.visitLibreria = true;
                     this.scene.pause();
                     this.scene.launch('LibreriaScene', {
                         originalScene: 'GameSceneO',
@@ -718,7 +728,6 @@ export class GameSceneO extends Phaser.Scene {
     }
 
     resume(data) {
-        console.log("Resuming GameScene with data:", data);
         if (data && data.pociones) {
             this.inventario = data.pociones;
         }
@@ -727,9 +736,6 @@ export class GameSceneO extends Phaser.Scene {
             this.bgm.resume();
         }
 
-        this.inventario.forEach((item, index) => {
-            console.log(`Inventario[${index}]: ${item}`);
-        });
     }
 
     togglePause() {
@@ -796,6 +802,11 @@ export class GameSceneO extends Phaser.Scene {
             case 'usarCaldero':
                 this.handleCaldero(data); 
                 break; 
+
+            case 'Inventario':
+                this.inventario = data.inventario;
+                break;
+
             default:
                 console.log('Mensaje WebSocket desconocido:', data);
         }        
