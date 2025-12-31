@@ -17,11 +17,11 @@ export class ControlScene extends Phaser.Scene {
         this.titulo = this.add.image(500,120, 'titulo')
         this.titulo.setScale(0.25);
         this.boton1 = this.add.image(500,530, 'boton')
-        this.boton1.setScale(0.1);        
+        this.boton1.setScale(0.1);
         // this.boton2 = this.add.image(500,400, 'boton')
-        // this.boton2.setScale(0.1);        
+        // this.boton2.setScale(0.1);
         this.pergamino1 = this.add.image(250,380, 'pergamino')
-        this.pergamino1.setScale(1.8);        
+        this.pergamino1.setScale(1.8);
         this.pergamino2 = this.add.image(780,380, 'pergamino')
         this.pergamino2.setScale(1.8);
 
@@ -68,7 +68,7 @@ export class ControlScene extends Phaser.Scene {
             } else {
                 this.scene.stop();
                 this.scene.resume(data.originalScene);
-                this.scene.get(data.originalScene).resume(); 
+                this.scene.get(data.originalScene).resume();
             }
         });
     }

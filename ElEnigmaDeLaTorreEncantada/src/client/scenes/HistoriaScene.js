@@ -5,20 +5,20 @@ export class HistoriaScene extends Phaser.Scene {
         super('HistoriaScene');
     }
     preload(){
-        this.load.image('titulo', '/imagenes/pergaminoTitulo.png'); 
-        this.load.image('boton', '/imagenes/botonTexto.png'); 
-    }  
+        this.load.image('titulo', '/imagenes/pergaminoTitulo.png');
+        this.load.image('boton', '/imagenes/botonTexto.png');
+    }
 
     create() {
         this.titulo = this.add.image(500,120, 'titulo')
         this.titulo.setScale(0.25);
         this.boton1 = this.add.image(500,530, 'boton')
-        this.boton1.setScale(0.1);  
+        this.boton1.setScale(0.1);
         this.add.text(500, 120, 'El Enigma de la\nTorre Encantada', {
             fontSize: '56px',
             color: '#070707ff'
-        }).setOrigin(0.5);       
-        
+        }).setOrigin(0.5);
+
         this.add.text(500, 240, 'Historia', {
             fontSize: '50px',
             color: '#a7a7a7ff'
@@ -29,7 +29,7 @@ export class HistoriaScene extends Phaser.Scene {
             color: '#ffffffff',
         }).setOrigin(0.5)
 
-        
+
         const ReturnBtn = this.add.text(500, 530, 'Volver', {
             fontSize: '34px',
             color: '#000000ff',

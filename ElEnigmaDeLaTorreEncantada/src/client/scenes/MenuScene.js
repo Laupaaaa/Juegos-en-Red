@@ -12,9 +12,16 @@ export class MenuScene extends Phaser.Scene {
         this.load.image('boton', '/imagenes/botonTexto.png');
 
         this.load.audio('hover', '/sounds/hover.mp3');
+        this.load.audio('musicaMenu', '/sounds/música_MPrincipal.mp3');
     }
 
     create() {
+        // Play menu music if not already playing
+        let music = this.game.sound.get('musicaMenu');
+        if (!music || !music.isPlaying) {
+            this.game.sound.play('musicaMenu', { volume: 0.7, loop: true });
+        }
+
         this.fondo = this.add.image(500, 350, 'fondoM')
         this.fondo.setScale(0.8);
         this.titulo = this.add.image(500, 120, 'titulo')
@@ -29,6 +36,8 @@ export class MenuScene extends Phaser.Scene {
         this.boton4.setScale(0.1);
         this.boton5 = this.add.image(500, 500, 'boton')
         this.boton5.setScale(0.1);
+
+
 
         this.add.text(500, 120, 'El Enigma de la\nTorre Encantada', {
             fontSize: '56px',
@@ -46,6 +55,8 @@ export class MenuScene extends Phaser.Scene {
             })
             .on('pointerout', () => localBtn.setStyle({ fill: '#000000ff' }))
             .on('pointerdown', () => {
+                // Detener música de menú antes de cambiar de escena
+                if (this.sound) this.sound.stopByKey('musicaMenu');
                 this.scene.start('GameScene');
             });
 
@@ -117,8 +128,7 @@ export class MenuScene extends Phaser.Scene {
             this.updateConnectionDisplay(data);
         };
         connectionManager.addListener(this.connectionListener);
-            
-    }
+    }e
 
     updateConnectionDisplay(data) {
         // Solo actualizar si el texto existe (la escena está creada)

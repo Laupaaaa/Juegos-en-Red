@@ -5,25 +5,25 @@ export class CreditsScene extends Phaser.Scene {
         super('CreditsScene');
     }
     preload(){
-        this.load.image('titulo', '/imagenes/pergaminoTitulo.png'); 
-        this.load.image('pergamino', '/imagenes/pergamino.png'); 
-        this.load.image('boton', '/imagenes/botonTexto.png'); 
-    }  
+        this.load.image('titulo', '/imagenes/pergaminoTitulo.png');
+        this.load.image('pergamino', '/imagenes/pergamino.png');
+        this.load.image('boton', '/imagenes/botonTexto.png');
+    }
 
     create() {
         this.titulo = this.add.image(500,120, 'titulo')
         this.titulo.setScale(0.25);
         this.boton1 = this.add.image(500,530, 'boton')
-        this.boton1.setScale(0.1);        
-     
+        this.boton1.setScale(0.1);
+
         this.pergamino1 = this.add.image(500,380, 'pergamino')
-        this.pergamino1.setScale(2);        
+        this.pergamino1.setScale(2);
 
         this.add.text(500, 120, 'El Enigma de la\nTorre Encantada', {
             fontSize: '56px',
             color: '#000000ff'
-        }).setOrigin(0.5);       
-        
+        }).setOrigin(0.5);
+
         this.add.text(500, 245, 'Créditos', {
             fontSize: '50px',
             color: '#a7a7a7ff'

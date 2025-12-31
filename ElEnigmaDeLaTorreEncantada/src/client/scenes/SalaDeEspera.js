@@ -1,4 +1,4 @@
-import Phaser from "phaser";
+ import Phaser from "phaser";
 import { Mago } from '../entities/Mago'
 import { CommandProcessor } from '../command/commandProcessor';
 import { MoveMagoCommand } from '../command/MoveMagoCommand';
@@ -52,6 +52,7 @@ export default class SalaDeEspera extends Phaser.Scene {
     this.isPaused = false;
     this.escWasDown = false;
     this.processor = new CommandProcessor();
+    this.bgm = null;
   }
 
   create(){
@@ -87,10 +88,7 @@ export default class SalaDeEspera extends Phaser.Scene {
     //     repeat: -1
     // });
 
-    this.bgm = this.sound.add('bgm', { loop: true, volume: 0.5 });
-    if (!this.bgm.isPlaying) {
-        this.bgm.play();
-    }
+
 
     // Crear un sonido de pasos para cada jugador
     this.walkSounds.set('player1', this.sound.add('walk', { loop: true, volume: 0.3 }));
@@ -99,10 +97,16 @@ export default class SalaDeEspera extends Phaser.Scene {
     // Parar pasos cuando la escena se pause (ej. PauseScene) y limpiar sonidos al shutdown
     this.events.on('pause', () => {
         this.walkSounds.forEach(ws => { try { if (ws && ws.isPlaying) ws.stop(); } catch(err){ console.warn(err); } });
+        if (this.bgm && this.bgm.isPlaying) {
+            this.bgm.pause();
+        }
     });
     // Al resume no se reproduce automáticamente: el update() reanudará pasos si se pulsa mover
     this.events.on('resume', () => {
         // nada especial: update() volverá a reproducir cuando detecte movimiento
+        if (this.bgm && !this.bgm.isPlaying) {
+            this.bgm.resume();
+        }
     });
     // Asegurar limpieza cuando la escena se cierre definitivamente
     this.events.once('shutdown', () => {
@@ -112,14 +116,17 @@ export default class SalaDeEspera extends Phaser.Scene {
             try { if (ws) ws.destroy(); } catch(err){ console.warn(err); }
         });
         this.walkSounds.clear();
-        // parar BGM
-        try { if (this.bgm && (this.bgm.isPlaying || this.bgm.isPaused)) this.bgm.stop(); } catch(err){ console.warn(err); }
     });
 
     this.crearEscenario();
     this.crearBarreraInvisible();
     this.setUpPlayers();
     this.establecerColisiones();
+
+    // Stop menu music and play background music
+    this.game.sound.stopByKey('musicaMenu');
+    this.bgm = this.sound.add('bgm', { volume: 0.7, loop: true });
+    this.bgm.play();
 
     this.escKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
     
@@ -173,6 +180,9 @@ export default class SalaDeEspera extends Phaser.Scene {
 
     cancelButton.on('pointerdown', () => {
       this.leaveQueue();
+      if (this.bgm && this.bgm.isPlaying) {
+        this.bgm.stop();
+      }
       this.scene.start('MenuScene');
     });
 
@@ -306,9 +316,6 @@ export default class SalaDeEspera extends Phaser.Scene {
             this.scene.pause();
             this.scene.launch('PauseScene', { originalScene: 'GameScene' })
         }
-        if (this.bgm && this.bgm.isPlaying) {
-            this.bgm.pause();
-        }
 
     }
 
@@ -318,9 +325,6 @@ export default class SalaDeEspera extends Phaser.Scene {
             this.inventario = data.pociones;
         }
         this.isPaused = false;
-        if (this.bgm && this.bgm.isPaused) {
-            this.bgm.resume();
-        }
 
         this.inventario.forEach((item, index) => {
             console.log(`Inventario[${index}]: ${item}`);
