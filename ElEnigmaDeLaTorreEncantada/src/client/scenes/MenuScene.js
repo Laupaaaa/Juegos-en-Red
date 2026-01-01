@@ -13,6 +13,13 @@ export class MenuScene extends Phaser.Scene {
 
         this.load.audio('hover', '/sounds/hover.mp3');
         this.load.audio('musicaMenu', '/sounds/música_MPrincipal.mp3');
+
+        const font = new FontFace('Tagesschrift', 'url(/fuentes/Tagesschrift.ttf)');
+        font.load().then(function (loadedFont) {
+            document.fonts.add(loadedFont);
+        }).catch(function (error) {
+            console.error('Error loading font:', error);
+        });
     }
 
     create() {
@@ -41,11 +48,14 @@ export class MenuScene extends Phaser.Scene {
 
         this.add.text(500, 120, 'El Enigma de la\nTorre Encantada', {
             fontSize: '56px',
+            fontFamily: "Tagesschrift",
             color: '#000000ff',
-        }).setOrigin(0.5);
+        }).setOrigin(0.5)
+        .setAngle(-8); 
 
         const localBtn = this.add.text(500, 300, 'Local', {
             fontSize: '24px',
+            fontFamily: 'Tagesschrift',
             color: '#000000ff',
         }).setOrigin(0.5)
             .setInteractive({ useHandCursor: true })
@@ -62,6 +72,7 @@ export class MenuScene extends Phaser.Scene {
 
         const onlineBtn = this.add.text(500, 350, 'Online', {
             fontSize: '24px',
+            fontFamily: 'Tagesschrift',
             color: '#000000ff',
         }).setOrigin(0.5)
         .setInteractive({ useHandCursor: true })
@@ -77,6 +88,7 @@ export class MenuScene extends Phaser.Scene {
 
         const creditosBtn = this.add.text(500, 400, 'Créditos', {
             fontSize: '24px',
+            fontFamily: 'Tagesschrift',
             color: '#000000ff',
         }).setOrigin(0.5)
             .setInteractive({ useHandCursor: true })
@@ -92,6 +104,7 @@ export class MenuScene extends Phaser.Scene {
         const historiaBtn = this.add.text(500, 450, 'Historia', {
             fontSize: '24px',
             color: '#000000ff',
+            fontFamily: 'Tagesschrift',
         }).setOrigin(0.5)
             .setInteractive({ useHandCursor: true })
             .on('pointerover', () => {
@@ -105,6 +118,7 @@ export class MenuScene extends Phaser.Scene {
 
         const controlBtn = this.add.text(500, 500, 'Controles', {
             fontSize: '24px',
+            fontFamily: 'Tagesschrift',
             color: '#000000ff',
         }).setOrigin(0.5)
             .setInteractive({ useHandCursor: true })
@@ -120,7 +134,8 @@ export class MenuScene extends Phaser.Scene {
         // Indicador de conexión al servidor
         this.connectionText = this.add.text(500, 540, 'Servidor: Comprobando...', {
             fontSize: '18px',
-            color: '#ffff00'
+            color: '#ffff00',
+            fontFamily: 'Tagesschrift',
         }).setOrigin(0.5);
 
         // Listener para cambios de conexión

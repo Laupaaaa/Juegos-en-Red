@@ -148,24 +148,28 @@ export default class SalaDeEspera extends Phaser.Scene {
     // Title
     this.add.text(width / 2, 100, 'Online Multiplayer', {
       fontSize: '48px',
+      fontFamily: 'Tagesschrift',
       color: '#ffffff'
     }).setOrigin(0.5);
 
     // Status text
     this.statusText = this.add.text(width / 2, height / 2 - 50, 'Connecting to server...', {
       fontSize: '24px',
+      fontFamily: 'Tagesschrift',
       color: '#ffff00'
     }).setOrigin(0.5);
 
     // Player count text
     this.playerCountText = this.add.text(width / 2, height / 2 + 20, '', {
       fontSize: '20px',
+      fontFamily: 'Tagesschrift',
       color: '#00ff00'
     }).setOrigin(0.5);
 
     // Cancel button
     const cancelButton = this.add.text(width / 2, height - 100, 'Volver', {
       fontSize: '24px',
+      fontFamily: 'Tagesschrift',
       color: '#000000ff',
       padding: { x: 20, y: 10 }
     }).setOrigin(0.5).setInteractive();

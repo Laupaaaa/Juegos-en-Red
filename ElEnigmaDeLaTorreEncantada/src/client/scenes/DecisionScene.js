@@ -26,28 +26,33 @@ export class DecisionScene extends Phaser.Scene {
         if (aleatorio === 1){
             this.add.text(500, 100, 'El jugador 1 ha recogido', {
                 fontSize: '32px',
+            fontFamily: 'Tagesschrift',
                 color: '#000000ff',
             }).setOrigin(0.5);
         } else if (aleatorio === 2){
             this.add.text(500, 100, 'El jugador 2 ha recogido', {
                 fontSize: '32px',
-                color: '#000000ff',
+             fontFamily: 'Tagesschrift',
+               color: '#000000ff',
             }).setOrigin(0.5);
         }
 
         this.add.text(500, 150, 'el Elixir de la Vida Eterna,', {
             fontSize: '32px',
-            color: '#000000ff',
+             fontFamily: 'Tagesschrift',
+           color: '#000000ff',
         }).setOrigin(0.5);
 
         this.add.text(500, 320, 'ahora deberá elegir:', {
             fontSize: '32px',
+            fontFamily: 'Tagesschrift',
             color: '#ffffffff',
         }).setOrigin(0.5);
 
         const btn1 = this.add.text(280, 420, 'Compartir el elixir', {
             fontSize: '24px',
-            color: '#000000ff',
+              fontFamily: 'Tagesschrift',
+          color: '#000000ff',
         }).setOrigin(0.5)
         .setInteractive({ useHandCursor: true })
         .on('pointerover', () => {
@@ -60,6 +65,7 @@ export class DecisionScene extends Phaser.Scene {
 
         const btn2 = this.add.text(730, 420, 'Beber el elixir', {
             fontSize: '24px',
+            fontFamily: 'Tagesschrift',
             color: '#000000ff',
         }).setOrigin(0.5)
         .setInteractive({ useHandCursor: true })

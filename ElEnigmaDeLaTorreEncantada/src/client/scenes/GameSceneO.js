@@ -174,11 +174,13 @@ export class GameSceneO extends Phaser.Scene {
         //Mostrar vidas
         this.healthLeft = this.add.text(50, 30, '3', {
             fontSize: '48px',
+            fontFamily: 'Tagesschrift',
             color: '#ff0000ff'
         });
 
         this.healthRight = this.add.text(900, 30, '3', {
             fontSize: '48px',
+            fontFamily: 'Tagesschrift',
             color: '#ff0000ff'
         });
 
@@ -186,7 +188,7 @@ export class GameSceneO extends Phaser.Scene {
         const localPlayerText = this.playerRole === 'player1' ? 'Eres el Jugador 1 (Azul)' : 'Eres el Jugador 2 (Rojo)';
         this.add.text(500, 40, localPlayerText, {
             fontSize: '24px',
-            color: '#ffffffff',
+            fontFamily: 'Tagesschrift',
         }).setOrigin(0.5);  
 
 
@@ -664,13 +666,16 @@ export class GameSceneO extends Phaser.Scene {
 
         const texto = id === 'player1' ? 'El jugador 1\n  ha muerto' : ' El jugador 2\n  ha muerto';
         this.add.text(500, 250, texto, {
+            fontFamily: 'Tagesschrift',
             fontSize: '64px',
             color: ' #ff0000ff',
 
-        }).setOrigin(0.5);
+        }).setOrigin(0.5)
+        .setAngle(-5); 
 
         const menuBtn = this.add.text(500, 450, 'Menú', {
             fontSize: '30px',
+            fontFamily: 'Tagesschrift',
             color: '#000000ff'
         }).setOrigin(0.5)
             .setInteractive({ useHandCursor: true })
@@ -825,11 +830,13 @@ export class GameSceneO extends Phaser.Scene {
         this.titulo.setScale(0.3, 0.25);
 
         this.add.text(500, 200, 'Fallo por desconexión', {
+            fontFamily: 'Tagesschrift',
             fontSize: '40px',
             color: '#000000ff'
         }).setOrigin(0.5);
 
         this.add.text(500, 250, 'La partida ha finalizado', {
+            fontFamily: 'Tagesschrift',
             fontSize: '40px',
             color: '#000000ff'
         }).setOrigin(0.5);
@@ -899,6 +906,7 @@ export class GameSceneO extends Phaser.Scene {
         this.boton.setScale(0.15, 0.1);
 
         const menuBtn = this.add.text(500, 400, 'Volver al Menú', {
+            fontFamily: 'Tagesschrift',
             fontSize: '30px',
             color: '#ffffff',
         }).setOrigin(0.5)

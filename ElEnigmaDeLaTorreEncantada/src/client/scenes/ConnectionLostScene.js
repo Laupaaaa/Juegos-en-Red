@@ -35,19 +35,22 @@ export class ConnectionLostScene extends Phaser.Scene {
         this.add.text(500, 180, 'CONEXIÓN PERDIDA', {
             fontSize: '48px',
             color: '#c90000ff',
+            fontFamily: 'Tagesschrift',
             fontStyle: 'bold'
         }).setOrigin(0.5);
 
         // Mensaje
         this.statusText = this.add.text(500, 320, 'Intentando reconectar...', {
             fontSize: '24px',
+            fontFamily: 'Tagesschrift',
             color: '#ffffffff'
         }).setOrigin(0.5);
 
-        // Contador de intentos
+        // Contador de intentos 
         this.attemptCount = 0;
         this.attemptText = this.add.text(500, 390, 'Intentos: 0', {
             fontSize: '18px',
+            fontFamily: 'Tagesschrift',
             color: '#ffffff'
         }).setOrigin(0.5);
 

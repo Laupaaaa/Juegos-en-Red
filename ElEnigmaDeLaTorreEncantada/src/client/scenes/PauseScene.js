@@ -25,11 +25,13 @@ export class PauseScene extends Phaser.Scene{
 
         this.add.text(500, 200, 'Juego Pausado', {
             fontSize: '60px', 
+            fontFamily: 'Tagesschrift',
             color:'#000000ff'
         }).setOrigin(0.5);
 
         const resumeBtn = this.add.text(500, 350, 'Volver', {
             fontSize: '32px',
+            fontFamily: 'Tagesschrift',
             color: '#000000ff',
         }).setOrigin(0.5)
         .setInteractive({ useHandCursor: true })
@@ -46,6 +48,7 @@ export class PauseScene extends Phaser.Scene{
 
         const menuBtn = this.add.text(500, 400, 'Menú', {
              fontSize: '32px',
+            fontFamily: 'Tagesschrift',
              color: '#000000ff',
          }).setOrigin(0.5)
          .setInteractive({ useHandCursor: true })
@@ -62,6 +65,7 @@ export class PauseScene extends Phaser.Scene{
          
          const controlBtn = this.add.text(500, 450, 'Controles', {
              fontSize: '32px',
+            fontFamily: 'Tagesschrift',
              color: '#000000ff',
          }).setOrigin(0.5)
          .setInteractive({ useHandCursor: true })

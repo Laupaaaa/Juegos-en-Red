@@ -27,37 +27,45 @@ export class ControlScene extends Phaser.Scene {
 
         this.add.text(500, 120, 'El Enigma de la\nTorre Encantada', {
             fontSize: '56px',
+            fontFamily: 'Tagesschrift',
             color: '#000000ff'
-        }).setOrigin(0.5);
+        }).setOrigin(0.5)
+        .setAngle(-8);
 
         this.add.text(500, 240, 'Controles', {
             fontSize: '45px',
+            fontFamily: 'Tagesschrift',
             color: '#a7a7a7ff'
         }).setOrigin(0.5);
 
         this.add.text(250, 310, 'Jugador 1:', {
             fontSize: '32px',
-            color: '#9be3ffff',
+             fontFamily: 'Tagesschrift',
+           color: '#9be3ffff',
         }).setOrigin(0.5);
 
-        this.add.text(260, 400, 'Moverse:\n W-Arriba\n A-Izquierda\n S-Abajo\n D-Derecha\n SPACE-Saltar\n Q-Interactuar', {
+        this.add.text(260, 400, 'W-Arriba\n A-Izquierda\n S-Abajo\n D-Derecha\n SPACE-Saltar\n Q-Interactuar', {
             fontSize: '20px',
+            fontFamily: 'Tagesschrift',
             color: '#ffffffff',
         }).setOrigin(0.5);
 
         this.add.text(750, 310, 'Jugador 2:', {
             fontSize: '32px',
             color: 'rgba(255, 99, 99, 1)',
+            fontFamily: 'Tagesschrift',
         }).setOrigin(0.5);
 
-        this.add.text(790, 400, 'Moverse:\n Flechas-Arriba\n Flechas-Izquierda\n Flechas-Abajo\n Flechas-Derecha\n ENTER-Saltar\n L-Interactuar', {
+        this.add.text(780, 400, 'Flechas-Arriba\n Flechas-Izquierda\n Flechas-Abajo\n Flechas-Derecha\n ENTER-Saltar\n L-Interactuar', {
             fontSize: '20px',
+            fontFamily: 'Tagesschrift',
             color: '#ffffffff',
         }).setOrigin(0.5);
 
         const ReturnBtn = this.add.text(500, 530, 'Volver', {
             fontSize: '34px',
-            color: '#000000ff',
+             fontFamily: 'Tagesschrift',
+           color: '#000000ff',
         }).setOrigin(0.5)
         .setInteractive({ useHandCursor: true })
         .on('pointerover', () => ReturnBtn.setStyle({ fill: '#00ff88ff' }))

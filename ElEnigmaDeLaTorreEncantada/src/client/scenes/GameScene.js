@@ -161,11 +161,13 @@ export class GameScene extends Phaser.Scene {
 
         this.healthLeft = this.add.text(50, 30, '3', {
             fontSize: '48px',
+            fontFamily: 'Tagesschrift',
             color: '#ff0000ff'
         });
 
         this.healthRight = this.add.text(900, 30, '3', {
             fontSize: '48px',
+            fontFamily: 'Tagesschrift',
             color: '#ff0000ff'
         });
 
@@ -704,13 +706,16 @@ console.log("Holaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
 
         const texto = id === 'player1' ? 'El jugador 1\n  ha muerto' : ' El jugador 2\n  ha muerto';
         this.add.text(500, 250, texto, {
-            fontSize: '64px',
+             fontFamily: 'Tagesschrift',
+           fontSize: '64px',
             color: ' #ff0000ff',
 
-        }).setOrigin(0.5);
+        }).setOrigin(0.5)
+        .setAngle(-5);
 
         const menuBtn = this.add.text(500, 450, 'Menú', {
             fontSize: '30px',
+            fontFamily: 'Tagesschrift',
             color: '#000000ff'
         }).setOrigin(0.5)
             .setInteractive({ useHandCursor: true })

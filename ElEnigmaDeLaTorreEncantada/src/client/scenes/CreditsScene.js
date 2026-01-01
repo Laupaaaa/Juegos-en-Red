@@ -21,36 +21,44 @@ export class CreditsScene extends Phaser.Scene {
 
         this.add.text(500, 120, 'El Enigma de la\nTorre Encantada', {
             fontSize: '56px',
+            fontFamily: 'Tagesschrift',
             color: '#000000ff'
-        }).setOrigin(0.5);
+        }).setOrigin(0.5)
+        .setAngle(-8);
 
         this.add.text(500, 245, 'Créditos', {
             fontSize: '50px',
+            fontFamily: 'Tagesschrift',
             color: '#a7a7a7ff'
         }).setOrigin(0.5);
 
         this.add.text(500, 310, 'Paula Ortiz Fernández', {
             fontSize: '24px',
             color: '#91ffffff',
+            fontFamily: 'Tagesschrift',
         }).setOrigin(0.5)
 
-        this.add.text(500, 350, 'Daniel Corvacho Anes', {
+        this.add.text(500, 355, 'Daniel Corbacho Anes', {
             fontSize: '24px',
             color: '#fff132ff',
+            fontFamily: 'Tagesschrift',
         }).setOrigin(0.5)
 
         this.add.text(500, 400, 'Alejandro Hernández Ruiz', {
             fontSize: '24px',
             color: '#d7acffff',
+            fontFamily: 'Tagesschrift',
         }).setOrigin(0.5)
 
         this.add.text(500, 450, 'Ángel Bermúdez Fariñas', {
             fontSize: '24px',
             color: '#ffceadff',
+            fontFamily: 'Tagesschrift',
         }).setOrigin(0.5)
 
         const ReturnBtn = this.add.text(500, 530, 'Volver', {
             fontSize: '34px',
+            fontFamily: 'Tagesschrift',
             color: '#000000ff',
         }).setOrigin(0.5)
         .setInteractive({ useHandCursor: true })
