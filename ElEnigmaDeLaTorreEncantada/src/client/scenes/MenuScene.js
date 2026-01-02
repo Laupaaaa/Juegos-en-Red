@@ -23,11 +23,9 @@ export class MenuScene extends Phaser.Scene {
     }
 
     create() {
-        // Play menu music if not already playing
-        let music = this.game.sound.get('musicaMenu');
-        if (!music || !music.isPlaying) {
-            this.game.sound.play('musicaMenu', { volume: 0.7, loop: true });
-        }
+        // Ensure no duplicate menu music plays (stop existing then play)
+        try { if (this.sound) this.sound.stopByKey('musicaMenu'); } catch(err){ console.warn(err); }
+        this.game.sound.play('musicaMenu', { volume: 0.7, loop: true });
 
         this.fondo = this.add.image(500, 350, 'fondoM')
         this.fondo.setScale(0.8);
@@ -82,6 +80,7 @@ export class MenuScene extends Phaser.Scene {
             })
             .on('pointerout', () => onlineBtn.setStyle({ fill: '#000000ff' }))
             .on('pointerdown', async() => {
+                this.scene.stop();
                 this.scene.start('SalaDeEspera');
             });
 
@@ -98,6 +97,7 @@ export class MenuScene extends Phaser.Scene {
             })
             .on('pointerout', () => creditosBtn.setStyle({ fill: '#000000ff' }))
             .on('pointerdown', () => {
+                this.scene.stop();
                 this.scene.start('CreditsScene');
             });
 
@@ -113,6 +113,7 @@ export class MenuScene extends Phaser.Scene {
             })
             .on('pointerout', () => historiaBtn.setStyle({ fill: '#000000ff' }))
             .on('pointerdown', () => {
+                this.scene.stop();
                 this.scene.start('HistoriaScene');
             });
 
@@ -128,6 +129,7 @@ export class MenuScene extends Phaser.Scene {
             })
             .on('pointerout', () => controlBtn.setStyle({ fill: '#000000ff' }))
             .on('pointerdown', () => {
+                this.scene.stop();
                 this.scene.start('ControlScene', { originalScene: 'MenuScene' });
             });
 
@@ -143,7 +145,7 @@ export class MenuScene extends Phaser.Scene {
             this.updateConnectionDisplay(data);
         };
         connectionManager.addListener(this.connectionListener);
-    }e
+    }
 
     updateConnectionDisplay(data) {
         // Solo actualizar si el texto existe (la escena está creada)

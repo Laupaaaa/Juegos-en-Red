@@ -147,6 +147,11 @@ wss.on('connection', (ws) => {
           gameRoomService.handleInventario(ws, data);
           break;
 
+        case 'playerDisconnected':
+          console.log("Se va a desconectar");
+          gameRoomService.handleDisconnect(ws);
+          break;
+
         default:
           console.log('Mensaje desconocido:', data.type);
       }
@@ -156,9 +161,9 @@ wss.on('connection', (ws) => {
   });
 
   ws.on('close', () => {
-    console.log('Cliente WebSocket desconectado');
-    matchmakingService.leaveQueue(ws);
-    gameRoomService.handleDisconnect(ws);
+    console.log('Cliente WebSocket desconectado'); // Limpiar de colas y salas
+    matchmakingService.leaveQueue(ws); // Asegurarse de que el jugador salga de la cola si estaba en ella
+    gameRoomService.handleDisconnect(ws); // Manejar desconexión en sala de juego
   });
 
   ws.on('error', (error) => {

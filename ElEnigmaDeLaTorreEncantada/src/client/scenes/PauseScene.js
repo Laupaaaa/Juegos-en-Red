@@ -58,6 +58,18 @@ export class PauseScene extends Phaser.Scene{
         })
           .on('pointerout', () => menuBtn.setStyle({ fill: '#000000ff' }))
           .on('pointerdown', () => {
+              // Si venimos de la escena online, avisar al servidor para notificar desconexión
+              try {
+                  if (data && data.originalScene === 'GameSceneO') {
+                      const origScene = this.scene.get('GameSceneO');
+                      if (origScene && origScene.ws && origScene.ws.readyState === WebSocket.OPEN) {
+                          origScene.ws.send(JSON.stringify({ type: 'playerDisconnected' }));
+                          // Cerrar la conexión después de un breve retraso para asegurar envío
+                          setTimeout(() => { try { origScene.ws.close(); } catch(e){ console.warn(e); } }, 50);
+                      }
+                  }
+              } catch(err) { console.warn(err); }
+
               this.scene.start('MenuScene');
               this.scene.stop(data.originalScene);
           });
@@ -75,7 +87,8 @@ export class PauseScene extends Phaser.Scene{
         })
           .on('pointerout', () => controlBtn.setStyle({ fill: '#000000ff' }))
           .on('pointerdown', () => {
-              this.scene.start('ControlScene', { originalScene: 'GameScene' }); 
+              // Pasar la escena original para que Controles pueda volver correctamente (GameScene o GameSceneO)
+              this.scene.start('ControlScene', { originalScene: data && data.originalScene ? data.originalScene : 'GameScene' }); 
           });
     }
 }

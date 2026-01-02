@@ -65,6 +65,7 @@ export class CreditsScene extends Phaser.Scene {
         .on('pointerover', () => ReturnBtn.setStyle({ fill: '#00ff88ff' }))
         .on('pointerout', () => ReturnBtn.setStyle({ fill: '#000000ff' }))
         .on('pointerdown', () => {
+            try { if (this.sound) this.sound.stopByKey('musicaMenu'); } catch(err){ console.warn(err); }
             this.scene.start('MenuScene');
         });
     }

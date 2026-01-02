@@ -97,6 +97,7 @@ export class GameSceneO extends Phaser.Scene {
         this.roomId = data.roomId;
         this.localPlayer = null;
         this.remotePlayer = null;
+        this.estrella = false;
     }
 
     create() {
@@ -575,10 +576,12 @@ export class GameSceneO extends Phaser.Scene {
                 this.boton1.setTexture('botonCR');
                 this.inventario[10 + n] = false; // quitar la estrella del inventario
                 this.once.setAlpha(0.2); // actualizar inventario en pantalla
+                this.estrella = true;
             } else {
                 this.boton2.setTexture('botonCR');
                 this.inventario[10 + n] = false; // quitar la estrella del inventario
                 this.doce.setAlpha(0.2); // actualizar inventario en pantalla
+                this.estrella = true;
             }
         }
     }
@@ -682,7 +685,16 @@ export class GameSceneO extends Phaser.Scene {
             .on('pointerover', () => menuBtn.setStyle({ fill: '#02ff89ff' }))
             .on('pointerout', () => menuBtn.setStyle({ fill: '#000000ff' }))
             .on('pointerdown', () => {
-                this.scene.start('MenuScene');
+                if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+                this.ws.send(JSON.stringify({ type: 'playerDisconnected' }) );
+                    setTimeout(() => {
+                        this.ws.close();
+                    }, 100); // cerrar la conexión después de un breve retraso
+                
+            }
+            this.scene.stop("GameSceneO");
+            this.scene.stop("PauseScene");
+            this.scene.start('MenuScene');
             });
     }
 
@@ -915,8 +927,17 @@ export class GameSceneO extends Phaser.Scene {
         .on('pointerout', () => menuBtn.setColor('#ffffff'))
         .on('pointerdown', () => {
             if (this.ws && this.ws.readyState === WebSocket.OPEN) {
-                this.ws.close();
+
+                this.ws.send(JSON.stringify({ type: 'playerDisconnected' }) );
+                console.log("Cerrando conexión WebSocket...");
+                    setTimeout(() => {
+                        this.ws.close();
+                        console.log("Conexión WebSocket cerrada.");
+                    }, 100); // cerrar la conexión después de un breve retraso
+                
             }
+            this.scene.stop("GameSceneO");
+            this.scene.stop("PauseScene");
             this.scene.start('MenuScene');
         });
     }

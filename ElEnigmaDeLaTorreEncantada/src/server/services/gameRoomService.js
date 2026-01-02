@@ -111,12 +111,12 @@ export function createGameRoomService() {
    * @param {object} data - Inventario data
    */ 
   function handleCaldero(ws, data) {
-    const roomId = ws.roomId;
-    if (!roomId) return;
+    const roomId = ws.roomId; // obtener el id de la sala del jugador que usa el caldero
+    if (!roomId) return; 
     const room = rooms.get(roomId);
     if (!room || !room.active) return;
     
-    const inventario = data.inventario;
+    const inventario = data.inventario; 
     let resultado = {};
 
     if (inventario[3] && inventario[5] && inventario[7]) { // comprobar que esos elementos recogidos son las pociones verde, azul y naranja 
@@ -135,6 +135,23 @@ export function createGameRoomService() {
     room.player1.ws.send(JSON.stringify(resultado));
     room.player2.ws.send(JSON.stringify(resultado));
 
+  }
+
+  function handleCampoFuerza(ws,data){
+    const roomId = ws.roomId;
+    if (!roomId) return;
+    const room = rooms.get(roomId);
+    if (!room || !room.active) return;
+
+    // Avisar al otro jugador que se ha activado el campo de fuerza
+    const player_1 = room.player1.ws === ws ? room.player1 : room.player2;
+    const player_2 = room.player1.ws === ws ? room.player2.ws : room.player1.ws; // Obtener el oponente
+
+    player_1.estrella = data.estrella === true;
+
+    if(player_1.estrella && player_2.estrella ){
+      return;
+    }
   }
 
   /**
@@ -157,6 +174,8 @@ export function createGameRoomService() {
       }));
     }
   }
+
+  
 
   /**
    * Handle player disconnection

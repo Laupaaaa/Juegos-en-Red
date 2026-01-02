@@ -72,6 +72,8 @@ export class ControlScene extends Phaser.Scene {
         .on('pointerout', () => ReturnBtn.setStyle({ fill: '#000000ff' }))
         .on('pointerdown', () => {
             if(data.originalScene === 'MenuScene'){
+                try { if (this.sound) this.sound.stopByKey('musicaMenu'); } catch(err){ console.warn(err); }
+                this.scene.stop();
                 this.scene.start('MenuScene');
             } else {
                 this.scene.stop();
