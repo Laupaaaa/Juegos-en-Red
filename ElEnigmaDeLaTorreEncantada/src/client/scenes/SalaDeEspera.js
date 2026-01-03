@@ -7,6 +7,8 @@ export default class SalaDeEspera extends Phaser.Scene {
   constructor() {
     super({ key: 'SalaDeEspera' });
     this.ws = null;
+    this.roomCode = null;
+    this.isInRoom = false;
   }
 
   preload() {
@@ -53,6 +55,7 @@ export default class SalaDeEspera extends Phaser.Scene {
     this.escWasDown = false;
     this.processor = new CommandProcessor();
     this.bgm = null;
+    
   }
 
   create(){
@@ -135,6 +138,47 @@ export default class SalaDeEspera extends Phaser.Scene {
       color: '#ffffff'
     }).setOrigin(0.5);
 
+    this.add.text(width / 2, height / 2 - 100, 'Código de sala: ', {
+      fontSize: '32px',
+      fontFamily: 'Tagesschrift',
+      color: '#ffffff'
+    }).setOrigin(0.5);
+
+    this.roomCodeText = this.add.text(width / 2, height / 2 - 50, '', {
+      fontSize: '28px',
+      fontFamily: 'Tagesschrift',
+      color: '#ffff00',
+      backgroundColor: '#000000',
+      padding: { x: 20, y: 10 }
+    }).setOrigin(0.5);
+
+    this.add.text(width / 2, height / 2 + 20, 'O únete a otra torre...', {
+      fontSize: '24px',
+      fontFamily: 'Tagesschrift',
+      color: '#ffffff'
+    }).setOrigin(0.5);
+
+    this.createCodeInput(width / 2, height / 2 + 70);
+
+    this.botonUnirse = this.add.image(width / 2, height /2 + 120, 'boton');
+    this.botonUnirse.setScale(0.05, 0.1);
+
+    this.unirseText = this.add.text(width / 2, height / 2 + 120, 'Unirse', {
+      fontSize: '28px',
+      fontFamily: 'Tagesschrift',
+      color: '#000000ff'
+    }).setOrigin(0.5).setInteractive();
+
+    this.unirseText.on('pointerover', () => {
+      this.unirseText.setStyle({ fill: '#ff0000' });
+    });
+
+    this.unirseText.on('pointerout', () => {
+      this.unirseText.setStyle({ fill: '#000000ff' });
+    }); 
+    this.unirseText.on('pointerdown', () => this.unirseSala());
+    
+
     // Status text
     this.statusText = this.add.text(width / 2, height / 2 - 50, 'Connecting to server...', {
       fontSize: '24px',
@@ -177,6 +221,139 @@ export default class SalaDeEspera extends Phaser.Scene {
     this.connectToServer();
   }
 
+  createCodeInput(x, y) {
+    const inputElement = document.createElement('input');
+    inputElement.type = 'text';
+    inputElement.id = 'roomCodeInput';
+    inputElement.placeholder = 'Código de sala';
+    inputElement.maxLength = 6;
+    inputElement.style.cssText = `
+      position: absolute;
+      width: 200px;
+      height: 40px;
+      font-size: 24px;
+      text-align: center;
+      font-family: Tagesschrift, arial;
+      text-transform: uppercase;
+      border: 3px solid #ffffff;
+      background-color: #222222;
+      color: #ffffff;
+      border-radius: 5px;
+      outline: none;
+      z-index: 9999;`;
+
+      inputElement.addEventListener('input', () => {
+        // Use the element reference directly to avoid typing issues on EventTarget
+        inputElement.value = inputElement.value.toUpperCase();
+      });
+
+      inputElement.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          this.unirseSala();
+        } 
+      });
+
+      document.body.appendChild(inputElement);
+
+      // Position relative to canvas to avoid page offsets
+      const inputWidth = 200;
+      const inputHeight = 40;
+      const positionInput = () => {
+        const rect = this.game.canvas.getBoundingClientRect();
+        inputElement.style.left = `${Math.round(rect.left + x - inputWidth / 2)}px`;
+        inputElement.style.top = `${Math.round(rect.top + y - inputHeight / 2)}px`;
+      };
+
+      positionInput();
+      window.addEventListener('resize', positionInput);
+      window.addEventListener('scroll', positionInput);
+
+      this.events.once('shutdown', () => {
+        window.removeEventListener('resize', positionInput);
+        window.removeEventListener('scroll', positionInput);
+        inputElement.remove();
+      });
+
+      this.codeInput = inputElement;
+  }
+
+  handleServerMessage(data) {
+    switch (data.type) {
+      case 'queueStatus':
+        this.playerCountText.setText(`Jugadores en cola: ${data.position}/2`);
+        break;
+
+      case 'roomInfo':
+        // Show room code to the creator
+        if (data.code) {
+          this.roomCode = data.code;
+          this.roomId = data.roomId;
+          this.roomCodeText.setText(data.code);
+          this.statusText.setText(`Sala creada: ${data.code}`);
+          this.statusText.setColor('#00ff00');
+        }
+        break;
+
+      case 'joinRoomResult':
+        if (data.success) {
+          this.roomCode = data.code;
+          this.roomId = data.roomId;
+          this.roomCodeText.setText(data.code);
+          this.statusText.setText('Unido a la sala.');
+          this.statusText.setColor('#00ff00');
+        } else {
+          this.statusText.setText(data.message || 'No se pudo unir a la sala.');
+          this.statusText.setColor('#ff0000');
+        }
+        break;
+
+      case 'gameStart':
+        // Prevent duplicate start events
+        if (this.gameStarted) return;
+        this.gameStarted = true;
+        // If server provides the code, show it before starting
+        if (data.code) {
+          this.roomCode = data.code;
+          this.roomCodeText.setText(data.code);
+        }
+        console.log('Game starting!', data);
+        // Store game data and transition to multiplayer game scene
+        this.scene.start('GameSceneO', {
+          ws: this.ws,
+          playerRole: data.role,
+          roomId: data.roomId,
+          initialBall: data.ball
+        });
+        break;
+
+      default:
+        console.log('Unknown message type:', data.type);
+    }
+  }
+
+  unirseSala() {
+    const code = this.codeInput.value.trim().toUpperCase();
+    if(!code){
+      this.statusText.setText('Por favor, introduce un código de sala.');
+      this.statusText.setColor('#ff0000');
+      return;
+    }
+
+    if(code.length !== 6){
+      this.statusText.setText('El código de sala debe tener 6 caracteres.');
+      this.statusText.setColor('#ff0000');
+      return;
+    }
+
+    if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+      this.ws.send(JSON.stringify({ type: 'joinRoom', code: code }));
+      this.statusText.setText('Intentando unirse a la sala...');
+      this.statusText.setColor('#ffff00');
+    } else {
+      this.statusText.setText('No conectado al servidor. Error de conextión.');
+      this.statusText.setColor('#ff0000');
+    }
+  }
   update(){
     this.inputMappings.forEach(mapping => {
       const mago = this.players.get(mapping.playerId);
@@ -327,7 +504,7 @@ export default class SalaDeEspera extends Phaser.Scene {
 
       this.ws.onopen = () => {
         console.log('Connected to WebSocket server');
-        this.statusText.setText('Esperando a tu compañero...');
+        //this.statusText.setText('Esperando a tu compañero...');
 
         // Join matchmaking queue
         this.ws.send(JSON.stringify({ type: 'joinQueue' }));
@@ -362,27 +539,7 @@ export default class SalaDeEspera extends Phaser.Scene {
     }
   }
 
-  handleServerMessage(data) {
-    switch (data.type) {
-      case 'queueStatus':
-        this.playerCountText.setText(`Jugadores en cola: ${data.position}/2`);
-        break;
 
-      case 'gameStart':
-        console.log('Game starting!', data);
-        // Store game data and transition to multiplayer game scene
-        this.scene.start('GameSceneO', {
-          ws: this.ws,
-          playerRole: data.role,
-          roomId: data.roomId,
-          initialBall: data.ball
-        });
-        break;
-
-      default:
-        console.log('Unknown message type:', data.type);
-    }
-  }
 
   leaveQueue() {
     if (this.ws && this.ws.readyState === WebSocket.OPEN) {

@@ -131,6 +131,21 @@ wss.on('connection', (ws) => {
           matchmakingService.leaveQueue(ws);
           break;
 
+        case 'joinRoom': {
+          const { code } = data;
+          const result = gameRoomService.joinRoom(code, ws);
+          // Send ack back to requester
+          ws.send(JSON.stringify({
+            type: 'joinRoomResult',
+            success: result.success,
+            message: result.message,
+            playerNumber: result.playerNumber,
+            roomId: result.room ? result.room.id : null,
+            code: result.room ? result.room.code : code
+          }));
+          break;
+        }
+
         case 'playerMove':
           gameRoomService.handlePlayerMove(ws, data);
           break;

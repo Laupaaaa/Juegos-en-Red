@@ -8,13 +8,12 @@ export function createGameRoomService() {
 
 function generateRoomCode() {
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    let code = '';
+    let code;
     do {
-
+      code = '';
       for (let i = 0; i < 6; i++) {
         code += characters.charAt(Math.floor(Math.random() * characters.length)); // seleccionar un caracter aleatorio
       }
-
     } while (roomsByCode.has(code)); // asegurar que el código es único
 
     return code;
@@ -23,44 +22,42 @@ function generateRoomCode() {
   /**
    * Create a new game room with two players
    * @param {WebSocket} player1Ws - Player 1's WebSocket
-   * @param {WebSocket} player2Ws - Player 2's WebSocket
-   * @returns {string} Room ID
+   * @returns {object} Room ID and room code
    */
-  function createRoom(/*player1Ws, player2Ws*/hostWs) {
+  function createRoom(player1Ws) {
     const roomId = `room_${nextRoomId++}`;
-    const roomCode = generateRoomCode();
+    const code = generateRoomCode();
 
     const room = {
       id: roomId,
-      host: null,
       player1: {
-        ws: player1Ws,
+        ws: null,
         score: 0
       },
       player2: {
-        ws: player2Ws,
+        ws: null,
         score: 0
       },
       active: true,
       ballActive: true, // Track if ball is in play (prevents duplicate goals)
-      code: roomCode,
+      code: code,
       status: 'waiting' // 'waiting', 'playing', 'ended'
 
     };
 
     rooms.set(roomId, room);
-    roomsByCode.set(roomCode, roomId);
+    roomsByCode.set(code, roomId);
     // Initial player states
     // room.player1.state = { x: 50, y: 400, vx: 0, vy: 0 };
     // room.player2.state = { x: 950, y: 400, vx: 0, vy: 0 };
 
-    joinRoom(roomId, hostWs); //El host se une automaticamente a la sala
-    room.host = hostWs; // Asignar el host de la sala
+    joinRoom(code, player1Ws); //El creador se une automaticamente a la sala
     // Store room ID on WebSocket for quick lookup
     // player1Ws.roomId = roomId;
     // player2Ws.roomId = roomId;
 
-    return {roomId, roomCode};
+    const results = {roomId: roomId, code: code}
+    return results;
   }
 
   function findRoomByCode(code) {
@@ -81,18 +78,32 @@ function generateRoomCode() {
 
     if (!room.player1.ws) {
       room.player1.ws = playerWs;
+      room.player1.state = {x:50 , y:400, vx: 0, vy: 0};
       playerWs.roomId = room.id;
-      return {success: true, playerNumber: 1, message: 'Te has unido como Jugador 1', room: room};
+
+      return {success: true,
+              playerNumber: 1,
+              message: 'Te has unido como Jugador 1',
+              room: room};
+
     } else if (!room.player2.ws) {
       room.player2.ws = playerWs;
+      room.player2.state = {x:950 , y:400, vx: 0, vy: 0};
       playerWs.roomId = room.id;
+
+      room.status = 'playing'; 
 
       broadcastToRoom(room.id, {
         type: 'startGame',
+        roomId: room.id,
         message: 'La partida ha comenzado'
       });
 
-      return {success: true, playerNumber: 2, message: 'Te has unido como Jugador 2', room: room};
+      return {success: true,
+              playerNumber: 2, 
+              message: 'Te has unido como Jugador 2', 
+              room: room};
+
     } else {
       return {success: false, message: 'La sala está llena'};
     }
@@ -107,41 +118,29 @@ function generateRoomCode() {
 
     if (room.player1.ws === playerWs) {
       room.player1.ws = null;
+      room.player1.state = null;
     } else if (room.player2.ws === playerWs) { 
       room.player2.ws = null;
+      room.player2.state = null;
     }
     playerWs.roomId = null;
 
     // If both players have left, delete the room
     if (!room.player1.ws && !room.player2.ws) {
+      room.active = false;
       rooms.delete(roomId);
       roomsByCode.delete(room.code);
     } else {
       // Notify remaining player that opponent has left
       broadcastToRoom(roomId, {
-        type: 'opponentLeft',
-        message: 'Tu oponente ha abandonado la partida'
+        type: 'playerDisconnected',
+        message: 'Tu compañero ha abandonado la partida'
       });
     } 
     return true;
   }
 
-  function startGame(hostWs) { 
-    const roomId = hostWs.roomId;
-    if (!roomId) return {success: false, message: 'No estás en una sala'};
-
-    const room = rooms.get(roomId);
-    if (!room || !room.active) return {success: false, message: 'Sala no encontrada o inactiva'};
-    if (room.host !== hostWs) return {success: false, message: 'Solo el host puede iniciar la partida'};
-    if (!room.player1.ws || !room.player2.ws) return {success: false, message: 'Se necesitan dos jugadores para iniciar la partida'};
-
-    room.status = 'playing';
-    broadcastToRoom(roomId, {
-      type: 'gameStarted',
-      message: 'La partida ha comenzado'
-    });
-    return {success: true, message: 'Partida iniciada'};
-  }
+  
 
   function broadcastToRoom(roomId, message) {
     const room = rooms.get(roomId);
@@ -166,6 +165,19 @@ function generateRoomCode() {
       }
     };
   }
+
+  // function startGame(roomId) {
+  //   const room = rooms.get(roomId);
+  //   if (!room || !room.active) return {success: false, message: 'Sala no encontrada o inactiva'};
+  //   if (room.status !== 'waiting') return {success: false, message: 'La partida ya ha comenzado o finalizado'};
+  //   room.status = 'playing';
+  //   broadcastToRoom(roomId, {
+  //     type: 'startGame',
+  //     roomId: roomId,
+  //     message: 'La partida ha comenzado'
+  //   });
+  //   return {success: true};
+  // }
   
   /**
    * Handle player movement from a player
@@ -382,7 +394,7 @@ function generateRoomCode() {
     findRoomByCode,
     joinRoom,
     leaveRoom,
-    startGame,
+    //startGame,
     getRoomInfo,
     createRoom,
     handlePlayerMove,

@@ -46,8 +46,27 @@ export function createMatchmakingService(gameRoomService) {
       const player1 = queue.shift();
       const player2 = queue.shift();
 
-      // Create a game room
-      const roomId = gameRoomService.createRoom(player1.ws, player2.ws);
+      // Create a game room and send code to creator
+      const roomInfo = gameRoomService.createRoom(player1.ws);
+      player1.ws.send(JSON.stringify({
+        type: 'roomInfo',
+        roomId: roomInfo.roomId,
+        code: roomInfo.code,
+        players: { player1: true, player2: false }
+      }));
+
+      // Have player2 join by code
+      const joinResult = gameRoomService.joinRoom(roomInfo.code, player2.ws);
+
+      // Notify player2 about join result (success or failure)
+      player2.ws.send(JSON.stringify({
+        type: 'joinRoomResult',
+        success: joinResult.success,
+        message: joinResult.message,
+        playerNumber: joinResult.playerNumber,
+        roomId: roomInfo.roomId,
+        code: roomInfo.code
+      }));
 
       // Generate random ball direction
       const angle = (Math.random() * 60 - 30) * (Math.PI / 180); // -30 to 30 degrees
@@ -59,18 +78,20 @@ export function createMatchmakingService(gameRoomService) {
         vy: speed * Math.sin(angle)
       };
 
-      // Notify both players
+      // Notify both players that the game is starting (include code for clients)
       player1.ws.send(JSON.stringify({
         type: 'gameStart',
         role: 'player1',
-        roomId,
+        roomId: roomInfo.roomId,
+        code: roomInfo.code,
         ball: ballData
       }));
 
       player2.ws.send(JSON.stringify({
         type: 'gameStart',
         role: 'player2',
-        roomId,
+        roomId: roomInfo.roomId,
+        code: roomInfo.code,
         ball: ballData
       }));
     }
