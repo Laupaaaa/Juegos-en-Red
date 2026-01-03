@@ -86,7 +86,7 @@ export class GameSceneO extends Phaser.Scene {
         this.processor = new CommandProcessor();
         this.cofreAbierto = false;
         this.walkSounds = new Map(); // Map para guardar el sonido de cada jugador
-        this.visitLibreria = false;
+        // this.visitLibreria = false;
 
         // Array de booleanos que representa que objetos han recogido entre ambos jugadores
         // Los objetos son: 0-llave, 1-libros, 2- pocion morada, 3- pocion verde, 4- pocion rosa, 5- pocion azul, 6- pocion amarilla, 7- pocion naranja, 8- velas, 9- bola de cristal, 10- planta, 11- estrella 1, 12- estrella 2
@@ -266,25 +266,16 @@ export class GameSceneO extends Phaser.Scene {
         });
 
         // avisar al otro jugador si ha habido cambios en el inventario en la escena de la librería
-        if(this.visitLibreria){
-            this.sendMessage({
-                type: 'actualizarInventario',
-                inventario: this.inventario
-            });
-            this.visitLibreria = false;
-        }
+        // if(this.visitLibreria){
+        //     this.sendMessage({
+        //         type: 'actualizarInventario',
+        //         inventario: this.inventario
+        //     });
+        //     this.visitLibreria = false;
+        // }
 
         //actualizar inventario en pantalla
-        if(this.inventario[1]) this.uno.setAlpha(1); else this.uno.setAlpha(0.2); 
-        if(this.inventario[2]) this.dos.setAlpha(1);else this.dos.setAlpha(0.2); 
-        if(this.inventario[3]) this.tres.setAlpha(1); else this.tres.setAlpha(0.2); 
-        if(this.inventario[4]) this.cuatro.setAlpha(1); else this.cuatro.setAlpha(0.2); 
-        if(this.inventario[5]) this.cinco.setAlpha(1); else this.cinco.setAlpha(0.2); 
-        if(this.inventario[6]) this.seis.setAlpha(1);else this.seis.setAlpha(0.2); 
-        if(this.inventario[7]) this.siete.setAlpha(1);else this.siete.setAlpha(0.2); 
-        if(this.inventario[8]) this.ocho.setAlpha(1);else this.ocho.setAlpha(0.2); 
-        if(this.inventario[9]) this.nueve.setAlpha(1);else this.nueve.setAlpha(0.2); 
-        if(this.inventario[10]) this.diez.setAlpha(1); else this.diez.setAlpha(0.2); 
+        this.actualizarInventarioEnPantalla();
 
             
     }
@@ -434,13 +425,14 @@ export class GameSceneO extends Phaser.Scene {
             // Abrir la librerí­a
             this.physics.add.overlap(player.sprite, this.estanteria, () => {
                 if (this.lPulsada) {
-                    this.visitLibreria = true;
+                    // this.visitLibreria = true;
                     this.scene.pause();
                     this.scene.launch('LibreriaScene', {
                         originalScene: 'GameSceneO',
                         pociones: this.inventario,
                         sound: this.sound,
-                        jugador: id
+                        jugador: id,
+                        ws : this.ws
                     });
                 }
             });
@@ -535,6 +527,19 @@ export class GameSceneO extends Phaser.Scene {
         this.diez = this.add.image(700, 520, 'plantaR').setAlpha(0.2).setScale(0.5);
         this.once = this.add.image(750, 520, 'estrellaR').setAlpha(0.2);
         this.doce = this.add.image(800, 520, 'estrellaR').setAlpha(0.2);
+    }
+
+    actualizarInventarioEnPantalla() {        
+        if(this.inventario[1]) this.uno.setAlpha(1); else this.uno.setAlpha(0.2); 
+        if(this.inventario[2]) this.dos.setAlpha(1);else this.dos.setAlpha(0.2); 
+        if(this.inventario[3]) this.tres.setAlpha(1); else this.tres.setAlpha(0.2); 
+        if(this.inventario[4]) this.cuatro.setAlpha(1); else this.cuatro.setAlpha(0.2); 
+        if(this.inventario[5]) this.cinco.setAlpha(1); else this.cinco.setAlpha(0.2); 
+        if(this.inventario[6]) this.seis.setAlpha(1);else this.seis.setAlpha(0.2); 
+        if(this.inventario[7]) this.siete.setAlpha(1);else this.siete.setAlpha(0.2); 
+        if(this.inventario[8]) this.ocho.setAlpha(1);else this.ocho.setAlpha(0.2); 
+        if(this.inventario[9]) this.nueve.setAlpha(1);else this.nueve.setAlpha(0.2); 
+        if(this.inventario[10]) this.diez.setAlpha(1); else this.diez.setAlpha(0.2); 
     }
 
     abrirCofre() {
@@ -765,8 +770,10 @@ export class GameSceneO extends Phaser.Scene {
     }
 
     resume(data) {
+        console.log("Resumiendo GameSceneO con datos:", data);
         if (data && data.pociones) {
             this.inventario = data.pociones;
+            //this.visitLibreria = true; // para avisar en el update que se ha vuelto de la librería y hay que enviar el inventario al otro jugador
         }
         this.isPaused = false;
         if (this.bgm && this.bgm.isPaused) {
@@ -842,6 +849,8 @@ export class GameSceneO extends Phaser.Scene {
 
             case 'Inventario':
                 this.inventario = data.inventario;
+                this.actualizarInventarioEnPantalla();
+                console.log("Inventario actualizado desde el servidor", this.inventario);
                 break;
 
             case 'botonCF':

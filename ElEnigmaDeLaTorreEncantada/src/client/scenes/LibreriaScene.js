@@ -66,6 +66,9 @@ export class LibreriaScene extends Phaser.Scene {
 
     update() {
         if (this.escKey.isDown && !this.escWasDown) {
+            if (this.datos.ws && this.datos.ws.readyState === WebSocket.OPEN) {
+                this.datos.ws.send(JSON.stringify({ type: 'actualizarInventario', inventario: this.datos.pociones}));
+            }
             this.scene.resume(this.datos.originalScene, { pociones: this.datos.pociones });
             this.scene.stop();
             // this.scene.get(this.datos.originalScene).resume(); 
