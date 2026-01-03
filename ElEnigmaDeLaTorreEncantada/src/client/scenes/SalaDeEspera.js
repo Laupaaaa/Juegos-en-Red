@@ -100,6 +100,12 @@ export default class SalaDeEspera extends Phaser.Scene {
         this.walkSounds.forEach(ws => {
             try { if (ws && ws.isPlaying) ws.stop(); } catch(err){ console.warn(err); }
             try { if (ws) ws.destroy(); } catch(err){ console.warn(err); }
+            try{
+              if(this.bgm){
+                this.bgm.stop();
+                this.bgm.destroy();
+              }
+            }catch (err){ console.warn(err); }
         });
         this.walkSounds.clear();
     });
@@ -317,6 +323,10 @@ export default class SalaDeEspera extends Phaser.Scene {
           this.roomCodeText.setText(data.code);
         }
         console.log('Game starting!', data);
+        if (this.bgm){
+          this.bgm.stop();
+          this.bgm.destroy();
+        }
         // Store game data and transition to multiplayer game scene
         this.scene.start('GameSceneO', {
           ws: this.ws,

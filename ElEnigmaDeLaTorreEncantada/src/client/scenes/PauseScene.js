@@ -69,6 +69,7 @@ export class PauseScene extends Phaser.Scene{
                       }
                   }
               } catch(err) { console.warn(err); }
+              try{this.game.sound.stopByKey('bgm');}catch(e){console.warn(e);}
 
               this.scene.start('MenuScene');
               this.scene.stop(data.originalScene);

@@ -255,6 +255,17 @@ export class GameSceneO extends Phaser.Scene {
             this.localPlayer.andar_animacion_parar();
         }
 
+        const localWalk= this.walkSounds.get(this.playerRole);
+        if(direccion!=='stop'){
+            if(localWalk && !localWalk.isPlaying){
+                localWalk.play();
+            }
+        } else {
+            if(localWalk && localWalk.isPlaying){
+                localWalk.stop();
+            }
+        }
+
         // Enviar posición del jugador local al servidor
         this.sendMessage({
             type: 'playerMove',
@@ -818,10 +829,20 @@ export class GameSceneO extends Phaser.Scene {
 
     handleServerMessage(data) {
         switch (data.type) {
-            case 'movimientoJugador':
-                if (data.player === this.playerRole) return; // ignora sus propios mensajes
-                if (!this.remotePlayer) return; // Proteger si remotePlayer no existe aún
-                
+            case 'movimientoJugador': {
+                // Ignorar mensajes que reflejan el propio movimiento local
+                if (data.player === this.playerRole) break;
+                if (!this.remotePlayer) break;
+
+                const remoteWalk = this.walkSounds.get(data.player);
+                if (data.isMoving && data.direction !== 'stop') {
+                    if (remoteWalk && !remoteWalk.isPlaying) {
+                        remoteWalk.play();
+                    }
+                } else if (remoteWalk && remoteWalk.isPlaying) {
+                    remoteWalk.stop();
+                }
+
                 this.remotePlayer.sprite.x = data.x;
                 this.remotePlayer.sprite.y = data.y;
                 this.remotePlayer.sprite.flipX = data.flipX;
@@ -832,6 +853,7 @@ export class GameSceneO extends Phaser.Scene {
                     this.remotePlayer.andar_animacion_parar();
                 }
                 break;
+            }
             case 'gameOver':
                 this.endGame(data.winnerId);
                 break; 
