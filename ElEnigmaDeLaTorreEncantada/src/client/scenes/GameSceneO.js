@@ -98,6 +98,7 @@ export class GameSceneO extends Phaser.Scene {
         this.localPlayer = null;
         this.remotePlayer = null;
         this.estrella = false;
+        this.lOponente = false;
     }
 
     create() {
@@ -229,7 +230,13 @@ export class GameSceneO extends Phaser.Scene {
 
         this.escWasDown = this.escKey.isDown;
         this.lPulsada = false; //volver a poner a false si no ha habido overlap
-        if (this.lkey.isDown || this.qkey.isDown) this.lPulsada = true;
+        this.lOponente = false;
+        if (this.lkey.isDown || this.qkey.isDown) {
+            this.lPulsada = true;
+            this.sendMessage({
+                type: 'lPulsada'  
+            });
+        }
 
         // Comprobar si alguno de los jugadores está saltando
         this.players.forEach(mago => {
@@ -499,12 +506,16 @@ export class GameSceneO extends Phaser.Scene {
 
             // pulsar botones para desactivar el campo de fuerza
             this.physics.add.overlap(player.sprite, this.boton1, () => {
-                this.boton1Activado = true;
-                this.abrirCampoFuerza();
+                this.sendMessage({
+                    type: 'botonCampoFuerza',
+                    boton: 1
+                });
             });
             this.physics.add.overlap(player.sprite, this.boton2, () => {
-                this.boton2Activado = true;
-                this.abrirCampoFuerza();
+                this.sendMessage({
+                    type: 'botonCampoFuerza',
+                    boton: 2
+                });
             });
 
         });
@@ -586,17 +597,26 @@ export class GameSceneO extends Phaser.Scene {
         }
     }
 
-    abrirCampoFuerza() {
+    comprobarCampoFuerza() {
         if (this.boton1.texture.key === 'botonCR' && this.boton2.texture.key === 'botonCR') { //comprobar que ambos botones tienen la estrella colocada
-            if (this.qkey.isDown && this.lkey.isDown && this.boton1Activado && this.boton2Activado) { // comprobar que ambos jugadores están pulsando su tecla correspondiente
-                console.log("Campo de fuerza desactivado");
-                if (this.sound) {
-                    this.sound.play('puerta', { volume: 0.7 });
-                }
-                this.campoFuerza.destroy();
-                this.crearPuertaFinal();
-            }
+            if ((this.lOponente || this.qkey.isDown) && this.lkey.isDown && this.boton1Activado && this.boton2Activado) { // comprobar que ambos jugadores están pulsando la L (permitir tambien la q por si está jugando en ambas ventanas)
+                this.sendMessage({
+                    type: 'desactivarCampoFuerza'
+                });
+                this.abrirCampoFuerza();
+            }   
         }
+    }
+
+    abrirCampoFuerza() {
+        console.log("Campo de fuerza desactivado");
+        if (this.sound) {
+            this.sound.play('puerta', { volume: 0.7 });
+        }
+        this.campoFuerza.destroy();
+        this.crearPuertaFinal();
+        
+    
     }
 
     crearPuertaFinal() {
@@ -823,6 +843,21 @@ export class GameSceneO extends Phaser.Scene {
             case 'Inventario':
                 this.inventario = data.inventario;
                 break;
+
+            case 'botonCF':
+                if (data.b === 1) this.boton1Activado = true;
+                else if (data.b === 2) this.boton2Activado = true;
+                console.log("Botón campo de fuerza " + data.b + " activado");
+                this.comprobarCampoFuerza();
+                break;
+
+            case 'desactivarCF':
+                this.abrirCampoFuerza();
+                break;
+
+            case 'lOponente':
+                this.lOponente = data.valor;
+                break; 
 
             default:
                 console.log('Mensaje WebSocket desconocido:', data);

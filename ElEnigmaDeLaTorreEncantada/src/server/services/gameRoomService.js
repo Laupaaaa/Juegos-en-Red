@@ -175,7 +175,61 @@ export function createGameRoomService() {
     }
   }
 
-  
+/**
+   * Handle force field button press from a player
+   * @param {WebSocket} ws - Player's WebSocket
+   * @param {object} data - Button data
+   */
+  function handleBotonCampoFuerza(ws, data) {
+    const roomId = ws.roomId;
+    if (!roomId) return;
+    const room = rooms.get(roomId);
+    if (!room || !room.active) return;
+
+    // Avisar a ambos jugadores que se ha pulsado un boton 
+    const resultado = { type: 'botonCF', b: data.boton };
+    room.player1.ws.send(JSON.stringify(resultado));
+    room.player2.ws.send(JSON.stringify(resultado));
+  }
+
+  /**
+   * Handle force field deactivation from a player
+   * @param {WebSocket} ws - Player's WebSocket
+   */
+  function handleDesactivarCampoFuerza(ws) {
+    const roomId = ws.roomId;
+    if (!roomId) return;
+    const room = rooms.get(roomId);
+    if (!room || !room.active) return;
+
+    // Avisar al oponente que se ha desactivado el campo de fuerza
+    const opponent = room.player1.ws === ws ? room.player2.ws : room.player1.ws;
+    if (opponent.readyState === 1) { // WebSocket.OPEN
+      opponent.send(JSON.stringify({
+        type: 'desactivarCF'
+      }));
+    }
+  }
+
+  /**
+   * Handle 'L' key press from a player
+   * @param {WebSocket} ws - Player's WebSocket
+   */
+  function handleLPulsada(ws) {
+    const roomId = ws.roomId;
+    if (!roomId) return;
+    const room = rooms.get(roomId);
+    if (!room || !room.active) return;
+
+    // Avisar al otro jugador que se ha pulsado la L
+    const opponent = room.player1.ws === ws ? room.player2.ws : room.player1.ws;
+    if (opponent.readyState === 1) { // WebSocket.OPEN
+      opponent.send(JSON.stringify({
+        type: 'lOponente',
+        valor: true
+      }));
+    }
+  }
 
   /**
    * Handle player disconnection
@@ -219,6 +273,9 @@ export function createGameRoomService() {
     handleDaño,
     handleCaldero,
     handleInventario, 
+    handleBotonCampoFuerza,
+    handleDesactivarCampoFuerza,
+    handleLPulsada,
     handleDisconnect,
     getActiveRoomCount
   };

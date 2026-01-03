@@ -151,6 +151,18 @@ wss.on('connection', (ws) => {
           console.log("Se va a desconectar");
           gameRoomService.handleDisconnect(ws);
           break;
+          
+        case 'botonCampoFuerza':
+          gameRoomService.handleBotonCampoFuerza(ws, data);
+          break;
+
+        case 'desactivarCampoFuerza':
+          gameRoomService.handleDesactivarCampoFuerza(ws);
+          break;
+
+        case 'lPulsada':
+          gameRoomService.handleLPulsada(ws);
+          break;
 
         default:
           console.log('Mensaje desconocido:', data.type);
