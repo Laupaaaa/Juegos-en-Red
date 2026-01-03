@@ -72,23 +72,6 @@ export default class SalaDeEspera extends Phaser.Scene {
       repeat: -1
     });
 
-    // this.anims.create({
-    //     key: 'andar_mago_Rojo',
-    //     frames: [
-    //         { key: 'idle_Rojo' },
-    //         { key: 'andarRojo_2' },
-    //         { key: 'andarRojo_3' },
-    //         { key: 'andarRojo_4' },
-    //         { key: 'andarRojo_5' },
-    //         { key: 'andarRojo_6' },
-    //         { key: 'andarRojo_7' },
-    //         { key: 'andarRojo_8' }
-    //     ],
-    //     frameRate: 10,
-    //     repeat: -1
-    // });
-
-
 
     // Crear un sonido de pasos para cada jugador
     this.walkSounds.set('player1', this.sound.add('walk', { loop: true, volume: 0.3 }));
