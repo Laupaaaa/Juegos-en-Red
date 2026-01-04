@@ -250,14 +250,28 @@ export default class SalaDeEspera extends Phaser.Scene {
       volverButton.setStyle({ fill: '#000000ff' });
     });
 
-    volverButton.on('pointerdown', () => { {
+    // volverButton.on('pointerdown', () => { {
+    //   if(!this.tituloCola.visible){
+    //     this.leaveQueue();
+    //     this.mostrarBotones();
+    //     this.statusText.setText('');
+    //   } else {
+        
+    //   this.leaveQueue();
+    //   if(this.bgm && this.bgm.isPlaying){
+    //     this.bgm.stop();
+    //   } 
+    //   this.scene.start('MenuScene');}
+
+    // }});
+
+    volverButton.on('pointerdown', () => {
       this.leaveQueue();
       if(this.bgm && this.bgm.isPlaying){
         this.bgm.stop();
-      } 
+      }
       this.scene.start('MenuScene');
-    }});
-
+    });
   }
 
   createCodeInput(x, y) {

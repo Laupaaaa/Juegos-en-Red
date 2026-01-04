@@ -35,16 +35,18 @@ function generateRoomCode() {
       id: roomId,
       player1: {
         ws: null,
-        score: 0
+        score: 0,
+        state: null
       },
       player2: {
         ws: null,
-        score: 0
+        score: 0,
+        state: null
       },
       active: true,
       ballActive: true, // Track if ball is in play (prevents duplicate goals)
       code: code,
-      status: 'decision' // 'decision', 'waiting', 'playing', 'ended'
+      status: 'waiting' // 'decision', 'waiting', 'playing', 'ended'
 
     };
 
@@ -54,13 +56,15 @@ function generateRoomCode() {
     // room.player1.state = { x: 50, y: 400, vx: 0, vy: 0 };
     // room.player2.state = { x: 950, y: 400, vx: 0, vy: 0 };
 
-    joinRoom(code, player1Ws); //El creador se une automaticamente a la sala
+    const joinResult = joinRoom(code, player1Ws); //El creador se une automaticamente a la sala
     // Store room ID on WebSocket for quick lookup
     // player1Ws.roomId = roomId;
     // player2Ws.roomId = roomId;
 
-    const results = {roomId: roomId, code: code}
-    return results;
+    if (!joinResult.success) {
+      console.error('Error al unir al creador a la sala:', joinResult.message);
+    }
+    return { roomId: roomId, code: code };
   }
 
   function findRoomByCode(code) {
@@ -84,6 +88,8 @@ function generateRoomCode() {
       room.player1.state = {x:50 , y:400, vx: 0, vy: 0};
       playerWs.roomId = room.id;
 
+      console.log(`Jugador 1 se ha unido a la sala ${room.id}`);
+
       return {success: true,
               playerNumber: 1,
               message: 'Te has unido como Jugador 1',
@@ -96,15 +102,20 @@ function generateRoomCode() {
 
       room.status = 'playing'; 
 
+      console.log(`Jugador 2 se ha unido a la sala ${room.id}. La partida comienza.`);
+
       broadcastToRoom(room.id, {
         type: 'startGame',
         roomId: room.id,
+        roomCode: room.code,
         message: 'La partida ha comenzado'
       });
 
       return {success: true,
               playerNumber: 2, 
               message: 'Te has unido como Jugador 2', 
+              code: room.code,
+              id: room.id,
               room: room};
 
     } else {
@@ -148,6 +159,7 @@ function generateRoomCode() {
   function broadcastToRoom(roomId, message) {
     const room = rooms.get(roomId);
     if (!room) return;
+
     [room.player1.ws, room.player2.ws].forEach(ws => {
       if (ws && ws.readyState === 1) { // WebSocket.OPEN
         ws.send(JSON.stringify(message));
@@ -158,6 +170,7 @@ function generateRoomCode() {
   function getRoomInfo(code) {
     const room = findRoomByCode(code);
     if (!room) return null;
+
     return {
       id: room.id,
       code: room.code,
@@ -177,6 +190,7 @@ function generateRoomCode() {
     broadcastToRoom(roomId, {
       type: 'startGame',
       roomId: roomId,
+      roomCode: room.code,
       message: 'La partida ha comenzado'
     });
     return {success: true};
