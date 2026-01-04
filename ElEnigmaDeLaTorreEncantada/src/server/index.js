@@ -183,6 +183,10 @@ wss.on('connection', (ws) => {
           gameRoomService.handlePuertaFinal(ws, data);
           break;
 
+        case 'escenaFinal':
+          gameRoomService.handleEscenaFinal(ws, data);
+          break; 
+
         default:
           console.log('Mensaje desconocido:', data.type);
       }

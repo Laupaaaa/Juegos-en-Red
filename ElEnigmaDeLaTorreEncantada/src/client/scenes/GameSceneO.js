@@ -99,6 +99,7 @@ export class GameSceneO extends Phaser.Scene {
         this.remotePlayer = null;
         this.estrella = false;
         this.lOponente = false;
+        this.desactivado = [false, false]; // Saber que jugador ha pasado por la puerta final
     }
 
     create() {
@@ -631,8 +632,6 @@ export class GameSceneO extends Phaser.Scene {
         }
         this.campoFuerza.destroy();
         this.crearPuertaFinal();
-        
-    
     }
 
     crearPuertaFinal() {
@@ -640,24 +639,22 @@ export class GameSceneO extends Phaser.Scene {
         this.puertaFinal.setImmovable(true);
         this.puertaFinal.body.allowGravity = false; 
         this.puertaFinal.setAlpha(0.0); 
-        this.desactivado = [false, false]; // array para saber si cada jugador ha llegado a la puerta final
         this.physics.add.overlap(this.players.get('player1').sprite, this.puertaFinal, () => {
             this.sendMessage({
                 type: 'jugadorEnPuertaFinal',
                 player: 'player1',
-                desactivado: this.desactivado
             });
         });
         this.physics.add.overlap(this.players.get('player2').sprite, this.puertaFinal, () => {
             this.sendMessage({
                 type: 'jugadorEnPuertaFinal',
                 player: 'player2',
-                desactivado: this.desactivado
             });
         });  
     }       
 
-    entrarPuertaFinal(desactivado) {
+    entrarPuertaFinal(desactivado, ganador) {
+        console.log("Desactivado:", desactivado); 
         if (desactivado[0] && desactivado[1]) { //cambiar de escena solo si ambos jugadores han llegado a la puerta final
             // Parar y destruir sonidos de pasos
             this.walkSounds.forEach(ws => {
@@ -670,7 +667,8 @@ export class GameSceneO extends Phaser.Scene {
             // Fallback: parar cualquier instancia por clave
             if (this.sound) this.sound.stopByKey('walk');
             if (this.sound) this.sound.stopByKey('bgm');
-            this.scene.start('DecisionScene');
+
+            this.scene.start('DecisionScene', {eleccion: ganador, jugador: this.playerRole, ws: this.ws});
         }
     }
     
@@ -694,7 +692,7 @@ export class GameSceneO extends Phaser.Scene {
         });
         this.physics.pause();
 
-        // Detener la mÃºsica de fondo
+        // Detener la musica de fondo
         if (this.bgm && this.bgm.isPlaying) {
             this.bgm.stop();
         }
@@ -888,6 +886,14 @@ export class GameSceneO extends Phaser.Scene {
                 this.handlePuertaFinal(data);
                 break;
 
+            case 'final':
+                console.log("final");
+                if (data.escena === 1) this.scene.start('FinalM1Scene');
+                else if (data.escena === 2) this.scene.start('FinalM2Scene');
+                else this.scene.start('FinalBScene');
+                this.scene.stop('DecisionScene'); 
+                break; 
+
             default:
                 console.log('Mensaje WebSocket desconocido:', data);
         }        
@@ -981,19 +987,20 @@ export class GameSceneO extends Phaser.Scene {
         let walkS;
         if (data.jugador === 'player1') {
             this.players.get('player1').sprite.disableBody(true, true);
-            data.desactivado[0] = true; // el personaje ya ha entrado por la puerta y ha desaparecido
+            this.desactivado[0] = true; // el personaje ya ha entrado por la puerta y ha desaparecido
             walkS = this.walkSounds.get('player1');
 
         } else {
             this.players.get('player2').sprite.disableBody(true, true);
-            data.desactivado[1] = true; // el personaje ya ha entrado por la puerta y ha desaparecido
+            this.desactivado[1] = true; // el personaje ya ha entrado por la puerta y ha desaparecido
             walkS = this.walkSounds.get('player2');
         }
 
         if (walkS) {
             try { if (walkS.isPlaying) walkS.stop(); } catch(err){ console.warn(err); }
         } 
-        this.entrarPuertaFinal(data.desactivado);
+        
+        this.entrarPuertaFinal(this.desactivado, data.ganador);
     }
 
     createMenuButton() {

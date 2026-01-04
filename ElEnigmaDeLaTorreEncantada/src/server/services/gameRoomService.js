@@ -365,11 +365,25 @@ function generateRoomCode() {
     const room = rooms.get(roomId);
     if (!room || !room.active) return;
 
+    // generar un jugador aleatorio que será el que pueda elegir
+      let aleatorio = Math.random()  < 0.5 ? 1 : 2; 
     // Avisar a ambos jugadores que un jugador ha llegado a la puerta final
-    const resultado = { type: 'puertaFinal', jugador: data.player, desactivado: data.desactivado };
+    const resultado = { type: 'puertaFinal', jugador: data.player, desactivado: data.desactivado, ganador: aleatorio};
     room.player1.ws.send(JSON.stringify(resultado));
     room.player2.ws.send(JSON.stringify(resultado));
-  
+  }
+
+  function handleEscenaFinal(ws, data){
+    console.log(" escena final"); 
+    const roomId = ws.roomId;
+    if (!roomId) return;
+    const room = rooms.get(roomId);
+    if (!room || !room.active) return;
+
+    // avisar a ambos jugadores que tienen que cambiar de escena
+    const resultado = { type: 'final', escena: data.escena};
+    room.player1.ws.send(JSON.stringify(resultado));
+    room.player2.ws.send(JSON.stringify(resultado));
   }
 
   /**
@@ -424,6 +438,7 @@ function generateRoomCode() {
     handleDesactivarCampoFuerza,
     handleLPulsada,
     handlePuertaFinal,
+    handleEscenaFinal, 
     handleDisconnect,
     getActiveRoomCount
   };
