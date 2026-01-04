@@ -123,6 +123,25 @@ wss.on('connection', (ws) => {
       const data = JSON.parse(message);
 
       switch (data.type) {
+        case `createRoom`:
+          const roomInfo = gameRoomService.createRoom(ws);
+          if(roomInfo.success){
+            ws.send(JSON.stringify({
+              type: 'roomInfo',
+              roomId: roomInfo.roomId,
+              code: roomInfo.code,
+              message: 'Sala creada exitosamente'
+          }));
+          console.log(`Sala creada con código: ${roomInfo.code}`);
+          }else{
+            ws.send(JSON.stringify({
+              type:'error',
+              message: 'Error al crear la sala de juego: ' + roomInfo.message
+            }));
+            console.error('Error al crear la sala de juego:', roomInfo.message);
+          }
+          break;
+        
         case 'joinQueue':
           matchmakingService.joinQueue(ws);
           break;
@@ -186,6 +205,8 @@ wss.on('connection', (ws) => {
         case 'escenaFinal':
           gameRoomService.handleEscenaFinal(ws, data);
           break; 
+
+        
 
         default:
           console.log('Mensaje desconocido:', data.type);

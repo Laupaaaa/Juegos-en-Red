@@ -56,15 +56,16 @@ function generateRoomCode() {
     // room.player1.state = { x: 50, y: 400, vx: 0, vy: 0 };
     // room.player2.state = { x: 950, y: 400, vx: 0, vy: 0 };
 
-    const joinResult = joinRoom(code, player1Ws); //El creador se une automaticamente a la sala
+    const joinResult = joinRoom(code, player1Ws, true); //El creador se une automaticamente a la sala
     // Store room ID on WebSocket for quick lookup
     // player1Ws.roomId = roomId;
     // player2Ws.roomId = roomId;
 
     if (!joinResult.success) {
       console.error('Error al unir al creador a la sala:', joinResult.message);
+      return null;
     }
-    return { roomId: roomId, code: code };
+    return { roomId: roomId, code: code, success: true  };
   }
 
   function findRoomByCode(code) {
@@ -77,7 +78,7 @@ function generateRoomCode() {
     return rooms.get(roomId);
   }
 
-  function joinRoom(code, playerWs) {
+  function joinRoom(code, playerWs, silent = false) {
     const room = findRoomByCode(code);
     if (!room || !room.active) return {success: false, message: 'Sala no encontrada o inactiva'};
     if (room.status !== 'waiting') return {success: false, message: 'La partida ya ha comenzado'};
@@ -104,12 +105,15 @@ function generateRoomCode() {
 
       console.log(`Jugador 2 se ha unido a la sala ${room.id}. La partida comienza.`);
 
-      broadcastToRoom(room.id, {
-        type: 'startGame',
-        roomId: room.id,
-        roomCode: room.code,
-        message: 'La partida ha comenzado'
-      });
+      if(!silent){
+        
+        broadcastToRoom(room.id, {
+          type: 'startGame',
+          roomId: room.id,
+          roomCode: room.code,
+          message: 'La partida ha comenzado'
+        });
+    }
 
       return {success: true,
               playerNumber: 2, 

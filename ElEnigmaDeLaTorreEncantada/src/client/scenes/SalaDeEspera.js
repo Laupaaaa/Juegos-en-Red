@@ -125,9 +125,11 @@ export default class SalaDeEspera extends Phaser.Scene {
 
     this.escKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
     
-    this.crearInterfaz();
+    
     // Connect to WebSocket server
     this.connectToServer();
+    console.log("codigo:", this.roomCode);
+    this.crearInterfaz();
   }
 
   crearInterfaz(){
@@ -151,32 +153,56 @@ export default class SalaDeEspera extends Phaser.Scene {
       color: '#ffffff'
     }).setOrigin(0.5);
 
-    this.tituloTorre = this.add.text(width / 2, 140, 'Tu torre: ', {
+    // this.tituloTorre = this.add.text(width / 2, 140, 'Tu torre: ', {
+    //   fontSize: '24px',
+    //   fontFamily: 'Tagesschrift',
+    //   color: '#ffffff'
+    // }).setOrigin(0.5);
+
+    this.roomCodeText = this.add.text(width / 2, 150, '', {
+      fontSize: '28px',
+      fontFamily: 'Tagesschrift',
+      color: '#ffffff',
+    }).setOrigin(0.5);
+
+    // ============ CREAR SALA PRIVADA ============
+
+    this.tituloCrearSala = this.add.text(width / 2, 300, 'Crear torre', {
       fontSize: '24px',
       fontFamily: 'Tagesschrift',
       color: '#ffffff'
     }).setOrigin(0.5);
 
-    this.roomCodeText = this.add.text(width / 2, 170, '------', {
+    this.botonCrearSala = this.add.image(width / 2, 340, 'boton');
+    this.botonCrearSala.setScale(0.05, 0.1);
+
+    this.crearSalaText = this.add.text(width / 2, 340, 'Crear', {
       fontSize: '28px',
       fontFamily: 'Tagesschrift',
-      color: 'ffffff',
-    }).setOrigin(0.5);
+      color: '#000000ff'
+    }).setOrigin(0.5).setInteractive();
 
+    this.crearSalaText.on('pointerover', () => {
+      this.crearSalaText.setStyle({ fill: '#ff0000' });
+    });
+    this.crearSalaText.on('pointerout', () => {
+      this.crearSalaText.setStyle({ fill: '#000000ff' });
+    });
+    this.crearSalaText.on('pointerdown', () => this.crearSala());
 
     // ============ UNIRTE A LA COLA (SALA ALEATORIA) ============
 
-    this.tituloCola = this.add.text(width / 2, 210, 'Únete a una torre...', {
+    this.tituloCola = this.add.text(width / 2, 200, 'Únete a una torre...', {
       fontSize: '24px',
       fontFamily: 'Tagesschrift',
       color: '#ffffff'
     }).setOrigin(0.5);
 
     //boton unirse a la cola
-    this.botonUnirseCola = this.add.image(width / 2, 270, 'boton');
+    this.botonUnirseCola = this.add.image(width / 2, 240, 'boton');
     this.botonUnirseCola.setScale(0.05, 0.1);
 
-    this.unirseColaText = this.add.text(width / 2, 270, 'Torre', {
+    this.unirseColaText = this.add.text(width / 2, 240, 'Torre', {
       fontSize: '28px',
       fontFamily: 'Tagesschrift',
       color: '#000000ff'
@@ -200,18 +226,18 @@ export default class SalaDeEspera extends Phaser.Scene {
 
     // ============ UNIRTE A UNA SALA (CÓDIGO) ============ 
 
-    this.tituloCodigo = this.add.text(width / 2, 330, 'O únete con código', {
+    this.tituloCodigo = this.add.text(width / 2, 400, 'O únete con código', {
       fontSize: '24px',
       fontFamily: 'Tagesschrift',
       color: '#ffffff'
     }).setOrigin(0.5);
 
-    this.createCodeInput(width/2, 390);
+    this.createCodeInput(width/2 - 80, 440);
 
-    this.botonUnirseCodigo = this.add.image(width / 2,450, 'boton');
+    this.botonUnirseCodigo = this.add.image(width / 2 + 110,440, 'boton');
     this.botonUnirseCodigo.setScale(0.05, 0.1);
 
-    this.unirseCodigoText = this.add.text(width / 2, 450, 'Unirse', {
+    this.unirseCodigoText = this.add.text(width / 2 + 110, 440, 'Unirse', {
       fontSize: '28px',
       fontFamily: 'Tagesschrift',
       color: '#000000ff'
@@ -341,8 +367,9 @@ export default class SalaDeEspera extends Phaser.Scene {
         // Show room code to the creator
         if (data.code) {
           this.roomCode = data.code;
+          this.roomCodeText.setText(`Tu torre: ${data.code}`);
+          this.roomCodeText.setColor('#ffffff');
           this.roomId = data.roomId;
-          this.roomCodeText.setText(data.code);
           this.statusText.setText(`Sala creada: ${data.code}`);
           this.statusText.setColor('#00ff00');
         }
@@ -353,6 +380,7 @@ export default class SalaDeEspera extends Phaser.Scene {
           this.roomCode = data.code;
           this.roomId = data.roomId;
           this.roomCodeText.setText(data.code);
+          this.roomCodeText.setColor('#ffffff');
           this.statusText.setText('Unido a la sala.');
           this.statusText.setColor('#00ff00');
         } else {
@@ -369,7 +397,8 @@ export default class SalaDeEspera extends Phaser.Scene {
         
         if (data.code) {
           this.roomCode = data.code;
-          this.roomCodeText.setText(data.code);
+          this.roomCodeText.setText(`Torre: ${data.code}`);
+          this.roomCodeText.setColor('#ffffff');
         }
         this.statusText.setText('¡Partida iniciando!');
         this.statusText.setColor('#00ff00');
@@ -388,8 +417,34 @@ export default class SalaDeEspera extends Phaser.Scene {
         });
         break;
 
+      case 'error':
+          this.statusText.setText(data.message || 'Error del servidor.');
+          this.statusText.setColor('#ff0000');
+          this.mostrarBotones();
+          break;
+
       default:
         console.log('Unknown message type:', data.type);
+    }
+  }
+
+  crearSala(){
+    if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+      if(this.roomCode){
+        this.statusText.setText('Ya has creado una sala.');
+        this.statusText.setColor('#ff0000');
+        return;
+      }
+
+      this.ws.send(JSON.stringify({ type: 'createRoom' }));
+
+      this.ocultarBotones();
+
+      this.statusText.setText('Creando sala...');
+      this.statusText.setColor('#ffff00');
+    } else {
+      this.statusText.setText('No conectado al servidor. Error de conextión.');
+      this.statusText.setColor('#ff0000');
     }
   }
 
@@ -409,6 +464,11 @@ export default class SalaDeEspera extends Phaser.Scene {
   }
 
   ocultarBotones() {
+    this.tituloCrearSala.setVisible(false);
+    this.botonCrearSala.setVisible(false);
+    this.crearSalaText.setVisible(false);
+    this.crearSalaText.disableInteractive();
+
     this.tituloCola.setVisible(false);
     this.botonUnirseCola.setVisible(false);
     this.unirseColaText.setVisible(false);
@@ -427,6 +487,11 @@ export default class SalaDeEspera extends Phaser.Scene {
   }
 
   mostrarBotones() {
+    this.tituloCrearSala.setVisible(true);
+    this.botonCrearSala.setVisible(true);
+    this.crearSalaText.setVisible(true);
+    this.crearSalaText.setInteractive();
+
     this.tituloCola.setVisible(true);
     this.botonUnirseCola.setVisible(true);
     this.unirseColaText.setVisible(true);
@@ -617,7 +682,6 @@ export default class SalaDeEspera extends Phaser.Scene {
 
       this.ws.onopen = () => {
         console.log('Connected to WebSocket server');
-        //this.statusText.setText('Esperando a tu compañero...');
         this.statusText.setText('Conectado al servidor.');
         this.statusText.setColor('#00ff00');
 

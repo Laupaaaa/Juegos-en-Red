@@ -48,6 +48,21 @@ export function createMatchmakingService(gameRoomService) {
 
       // Create a game room and send code to creator
       const roomInfo = gameRoomService.createRoom(player1.ws);
+
+      
+      if(!roomInfo.success){
+        console.error('Error al crear la sala de juego:', roomInfo.message);
+        queue.unshift(player2, player1); // Re-add players to the front of the queue
+        return;
+      }
+
+      const joinResult = gameRoomService.joinRoom(roomInfo.code, player2.ws, true);
+
+      if (!joinResult.success) {
+        console.error('Error al unir al segundo jugador a la sala:', joinResult.message);
+        return;
+      }
+
       player1.ws.send(JSON.stringify({
         type: 'roomInfo',
         roomId: roomInfo.roomId,
@@ -56,7 +71,6 @@ export function createMatchmakingService(gameRoomService) {
       }));
 
       // Have player2 join by code
-      const joinResult = gameRoomService.joinRoom(roomInfo.code, player2.ws);
 
       // Notify player2 about join result (success or failure)
       player2.ws.send(JSON.stringify({
