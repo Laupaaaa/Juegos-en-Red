@@ -668,7 +668,7 @@ export class GameSceneO extends Phaser.Scene {
             if (this.sound) this.sound.stopByKey('walk');
             if (this.sound) this.sound.stopByKey('bgm');
 
-            this.scene.start('DecisionScene', {eleccion: ganador, jugador: this.playerRole, ws: this.ws});
+            this.scene.start('DecisionScene', {eleccion: ganador, jugador: this.playerRole, ws: this.ws, modo:'online'});
         }
     }
     

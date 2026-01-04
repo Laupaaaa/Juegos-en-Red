@@ -641,7 +641,7 @@ console.log("Holaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
             // Fallback: parar cualquier instancia por clave
             if (this.sound) this.sound.stopByKey('walk');
             if (this.sound) this.sound.stopByKey('bgm');
-            this.scene.start('DecisionScene');
+            this.scene.start('DecisionScene', {modo: 'local'});
         }
     }
     
