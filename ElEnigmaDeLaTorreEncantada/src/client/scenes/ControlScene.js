@@ -20,10 +20,12 @@ export class ControlScene extends Phaser.Scene {
         this.boton1.setScale(0.1);
         // this.boton2 = this.add.image(500,400, 'boton')
         // this.boton2.setScale(0.1);
-        this.pergamino1 = this.add.image(250,380, 'pergamino')
-        this.pergamino1.setScale(1.8);
-        this.pergamino2 = this.add.image(780,380, 'pergamino')
-        this.pergamino2.setScale(1.8);
+        this.pergamino1 = this.add.image(220,380, 'pergamino')
+        this.pergamino1.setScale(1.3, 1.8);
+        this.pergamino2 = this.add.image(500,380, 'pergamino')
+        this.pergamino2.setScale(1.3,1.8);        
+        this.pergamino3 = this.add.image(780,380, 'pergamino')
+        this.pergamino3.setScale(1.3,1.8);
 
         this.add.text(500, 120, 'El Enigma de la\nTorre Encantada', {
             fontSize: '56px',
@@ -38,25 +40,37 @@ export class ControlScene extends Phaser.Scene {
             color: '#a7a7a7ff'
         }).setOrigin(0.5);
 
-        this.add.text(250, 310, 'Jugador 1:', {
+        this.add.text(220, 310, 'Jugador 1:', {
             fontSize: '32px',
              fontFamily: 'Tagesschrift',
            color: '#9be3ffff',
         }).setOrigin(0.5);
 
-        this.add.text(260, 400, 'W-Arriba\n A-Izquierda\n S-Abajo\n D-Derecha\n SPACE-Saltar\n Q-Interactuar', {
+        this.add.text(230, 400, 'W-Arriba\n A-Izquierda\n S-Abajo\n D-Derecha\n SPACE-Saltar\n Q-Interactuar', {
             fontSize: '20px',
             fontFamily: 'Tagesschrift',
             color: '#ffffffff',
         }).setOrigin(0.5);
 
-        this.add.text(750, 310, 'Jugador 2:', {
+        this.add.text(500, 310, 'Jugador 2:', {
             fontSize: '32px',
             color: 'rgba(255, 99, 99, 1)',
             fontFamily: 'Tagesschrift',
         }).setOrigin(0.5);
 
-        this.add.text(780, 400, 'Flechas-Arriba\n Flechas-Izquierda\n Flechas-Abajo\n Flechas-Derecha\n ENTER-Saltar\n L-Interactuar', {
+        this.add.text(520, 400, 'Flechas-Arriba\n Flechas-Izquierda\n Flechas-Abajo\n Flechas-Derecha\n ENTER-Saltar\n L-Interactuar', {
+            fontSize: '20px',
+            fontFamily: 'Tagesschrift',
+            color: '#ffffffff',
+        }).setOrigin(0.5);
+
+        this.add.text(750, 310, 'Online:', {
+            fontSize: '32px',
+            color: 'rgba(141, 116, 255, 1)',
+            fontFamily: 'Tagesschrift',
+        }).setOrigin(0.5);
+
+        this.add.text(800, 400, 'Flechas-Arriba\n Flechas-Izquierda\n Flechas-Abajo\n Flechas-Derecha\n SPACE-Saltar\n L-Interactuar', {
             fontSize: '20px',
             fontFamily: 'Tagesschrift',
             color: '#ffffffff',
