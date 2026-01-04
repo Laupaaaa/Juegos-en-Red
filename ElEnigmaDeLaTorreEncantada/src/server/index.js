@@ -179,6 +179,10 @@ wss.on('connection', (ws) => {
           gameRoomService.handleLPulsada(ws);
           break;
 
+        case 'jugadorEnPuertaFinal':
+          gameRoomService.handlePuertaFinal(ws, data);
+          break;
+
         default:
           console.log('Mensaje desconocido:', data.type);
       }

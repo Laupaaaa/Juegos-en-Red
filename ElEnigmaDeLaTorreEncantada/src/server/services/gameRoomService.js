@@ -257,16 +257,17 @@ function generateRoomCode() {
     
     const inventario = data.inventario; 
     let resultado = {};
-
-    if (inventario[3] && inventario[5] && inventario[7]) { // comprobar que esos elementos recogidos son las pociones verde, azul y naranja 
-      console.log("Poción de disminuir tamaño creada");
-      resultado = { type: 'usarCaldero', exito: true };
-
+    let elemRecogidos = inventario.filter(elem => elem === true); // crear un segundo array con unicamente los elementos recogidos
+    if (elemRecogidos.length === 3 || elemRecogidos.length === 4) {
+      if (inventario[3] && inventario[5] && inventario[7]) { // comprobar que esos elementos recogidos son las pociones verde, azul y naranja 
+        console.log("Poción de disminuir tamaño creada");
+        resultado = { type: 'usarCaldero', exito: true };
+      }
     } else {
-      console.log("No tienes las pociones necesarias para crear la poción de disminuir tamaño");
-
+      if (inventario.length < 3) console.log('Te faltan ingredientes para crear una poción');
+      else if (inventario.length > 4) console.log('Tienes demasiados ingredientes en el inventario');
+      else console.log('No tienes los ingredientes necesarios para crear la poción de disminuir tamaño');
       let aleatorio = Math.random()  < 0.5 ? 1 : 2; // generar un número aleatorio entre 1 y 2 para elegir que jugador recibe daño
-      const jugDañado = aleatorio === 1 ? room.player1 : room.player2;
       resultado = { type: 'usarCaldero', exito: false, jugadorDañado: aleatorio};
     }
 
@@ -354,6 +355,24 @@ function generateRoomCode() {
   }
 
   /**
+   * Handle player reaching the final door
+   * @param {WebSocket} ws - Player's WebSocket
+   * @param {object} data - Jugador data
+   */
+  function handlePuertaFinal(ws, data) {
+    const roomId = ws.roomId;
+    if (!roomId) return;
+    const room = rooms.get(roomId);
+    if (!room || !room.active) return;
+
+    // Avisar a ambos jugadores que un jugador ha llegado a la puerta final
+    const resultado = { type: 'puertaFinal', jugador: data.player, desactivado: data.desactivado };
+    room.player1.ws.send(JSON.stringify(resultado));
+    room.player2.ws.send(JSON.stringify(resultado));
+  
+  }
+
+  /**
    * Handle player disconnection
    * @param {WebSocket} ws - Disconnected player's WebSocket
    */
@@ -404,6 +423,7 @@ function generateRoomCode() {
     handleBotonCampoFuerza,
     handleDesactivarCampoFuerza,
     handleLPulsada,
+    handlePuertaFinal,
     handleDisconnect,
     getActiveRoomCount
   };

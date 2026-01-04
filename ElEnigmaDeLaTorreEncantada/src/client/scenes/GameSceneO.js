@@ -640,24 +640,20 @@ export class GameSceneO extends Phaser.Scene {
         this.puertaFinal.setImmovable(true);
         this.puertaFinal.body.allowGravity = false; 
         this.puertaFinal.setAlpha(0.0); 
-        let desactivado = [false, false]; // array para controlar que ambos jugadores han llegado a la puerta final
+        this.desactivado = [false, false]; // array para saber si cada jugador ha llegado a la puerta final
         this.physics.add.overlap(this.players.get('player1').sprite, this.puertaFinal, () => {
-            this.players.get('player1').sprite.disableBody(true, true);
-            desactivado[0] = true; // el personaje ya ha entrado por la puerta y ha desaparecido
-            this.entrarPuertaFinal(desactivado);
-            const ws1 = this.walkSounds.get('player1');
-            if (ws1) {
-                try { if (ws1.isPlaying) ws1.stop(); } catch(err){ console.warn(err); }
-            }
+            this.sendMessage({
+                type: 'jugadorEnPuertaFinal',
+                player: 'player1',
+                desactivado: this.desactivado
+            });
         });
         this.physics.add.overlap(this.players.get('player2').sprite, this.puertaFinal, () => {
-            this.players.get('player2').sprite.disableBody(true, true);
-            desactivado[1] = true;
-            this.entrarPuertaFinal(desactivado);
-            const ws2 = this.walkSounds.get('player2');
-            if (ws2) {
-                try { if (ws2.isPlaying) ws2.stop(); } catch(err){ console.warn(err); }
-            }
+            this.sendMessage({
+                type: 'jugadorEnPuertaFinal',
+                player: 'player2',
+                desactivado: this.desactivado
+            });
         });  
     }       
 
@@ -738,7 +734,7 @@ export class GameSceneO extends Phaser.Scene {
         const player1 = this.players.get('player1');
         player1.vida--;
         this.healthLeft.setText(player1.vida.toString());
-        console.log('El jugador de la izquierda ha recibido daño');
+        console.log('El jugador 1 ha recibido daño');
 
         // Avisar al servidor 
         this.sendMessage({
@@ -755,7 +751,7 @@ export class GameSceneO extends Phaser.Scene {
         const player2 = this.players.get('player2');
         player2.vida--;
         this.healthRight.setText(player2.vida.toString());
-        console.log('El jugador de la derecha ha recibido daño');
+        console.log('El jugador 2 ha recibido daño');
 
         // Avisar al servidor 
         this.sendMessage({
@@ -781,7 +777,6 @@ export class GameSceneO extends Phaser.Scene {
     }
 
     resume(data) {
-        console.log("Resumiendo GameSceneO con datos:", data);
         if (data && data.pociones) {
             this.inventario = data.pociones;
             //this.visitLibreria = true; // para avisar en el update que se ha vuelto de la librería y hay que enviar el inventario al otro jugador
@@ -878,7 +873,6 @@ export class GameSceneO extends Phaser.Scene {
             case 'botonCF':
                 if (data.b === 1) this.boton1Activado = true;
                 else if (data.b === 2) this.boton2Activado = true;
-                console.log("Botón campo de fuerza " + data.b + " activado");
                 this.comprobarCampoFuerza();
                 break;
 
@@ -889,6 +883,10 @@ export class GameSceneO extends Phaser.Scene {
             case 'lOponente':
                 this.lOponente = data.valor;
                 break; 
+
+            case 'puertaFinal':
+                this.handlePuertaFinal(data);
+                break;
 
             default:
                 console.log('Mensaje WebSocket desconocido:', data);
@@ -978,6 +976,25 @@ export class GameSceneO extends Phaser.Scene {
             }
         }
     }    
+
+    handlePuertaFinal(data) {
+        let walkS;
+        if (data.jugador === 'player1') {
+            this.players.get('player1').sprite.disableBody(true, true);
+            data.desactivado[0] = true; // el personaje ya ha entrado por la puerta y ha desaparecido
+            walkS = this.walkSounds.get('player1');
+
+        } else {
+            this.players.get('player2').sprite.disableBody(true, true);
+            data.desactivado[1] = true; // el personaje ya ha entrado por la puerta y ha desaparecido
+            walkS = this.walkSounds.get('player2');
+        }
+
+        if (walkS) {
+            try { if (walkS.isPlaying) walkS.stop(); } catch(err){ console.warn(err); }
+        } 
+        this.entrarPuertaFinal(data.desactivado);
+    }
 
     createMenuButton() {
         this.boton = this.add.image(500, 400, 'boton')
