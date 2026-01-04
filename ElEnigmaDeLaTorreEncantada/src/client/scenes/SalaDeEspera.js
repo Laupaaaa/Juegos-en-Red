@@ -144,8 +144,6 @@ export default class SalaDeEspera extends Phaser.Scene {
     this.pergamino = this.add.image(width / 2, 100, 'pergaminoTitulo')
     this.pergamino.setScale(0.25, 0.20);
 
-    this.boton = this.add.image(width / 2, height - 100, 'boton')
-    this.boton.setScale(0.05, 0.1);
     // Title
     this.titulo = this.add.text(width / 2, 100, 'Online Multiplayer', {
       fontSize: '48px',
@@ -168,17 +166,17 @@ export default class SalaDeEspera extends Phaser.Scene {
 
     // ============ UNIRTE A LA COLA (SALA ALEATORIA) ============
 
-    this.tituloCola = this.add.text(width / 2, 240, 'Únete a una torre...', {
+    this.tituloCola = this.add.text(width / 2, 210, 'Únete a una torre...', {
       fontSize: '24px',
       fontFamily: 'Tagesschrift',
       color: '#ffffff'
     }).setOrigin(0.5);
 
     //boton unirse a la cola
-    this.botonUnirseCola = this.add.image(width / 2, 300, 'boton');
+    this.botonUnirseCola = this.add.image(width / 2, 270, 'boton');
     this.botonUnirseCola.setScale(0.05, 0.1);
 
-    this.unirseColaText = this.add.text(width / 2, 300, 'Torre', {
+    this.unirseColaText = this.add.text(width / 2, 270, 'Torre', {
       fontSize: '28px',
       fontFamily: 'Tagesschrift',
       color: '#000000ff'
@@ -202,18 +200,18 @@ export default class SalaDeEspera extends Phaser.Scene {
 
     // ============ UNIRTE A UNA SALA (CÓDIGO) ============ 
 
-    this.tituloCodigo = this.add.text(width / 2, 360, 'O únete con código', {
+    this.tituloCodigo = this.add.text(width / 2, 330, 'O únete con código', {
       fontSize: '24px',
       fontFamily: 'Tagesschrift',
       color: '#ffffff'
     }).setOrigin(0.5);
 
-    this.createCodeInput(width/2, 420);
+    this.createCodeInput(width/2, 390);
 
-    this.botonUnirseCodigo = this.add.image(width / 2,480, 'boton');
+    this.botonUnirseCodigo = this.add.image(width / 2,450, 'boton');
     this.botonUnirseCodigo.setScale(0.05, 0.1);
 
-    this.unirseCodigoText = this.add.text(width / 2, 480, 'Unirse', {
+    this.unirseCodigoText = this.add.text(width / 2, 450, 'Unirse', {
       fontSize: '28px',
       fontFamily: 'Tagesschrift',
       color: '#000000ff'
@@ -229,16 +227,16 @@ export default class SalaDeEspera extends Phaser.Scene {
 
     this.unirseCodigoText.on('pointerdown', () => this.unirseSala());
 
-    this.statusText = this.add.text(width / 2, 530, '', {
+    this.statusText = this.add.text(width / 2, height / 2, '', {
       fontSize: '20px',
       fontFamily: 'Tagesschrift',
       color: '#ff0000'
     }).setOrigin(0.5);
       
-    const botonVolver = this.add.image(width/2, height - 80, 'boton');
+    const botonVolver = this.add.image(width/2, 520, 'boton');
     botonVolver.setScale(0.05, 0.1);
 
-    const volverButton = this.add.text(width / 2, height - 80, 'Volver', {
+    const volverButton = this.add.text(width / 2, 520, 'Volver', {
       fontSize: '28px',
       fontFamily: 'Tagesschrift',
       color: '#000000ff'
@@ -253,7 +251,7 @@ export default class SalaDeEspera extends Phaser.Scene {
     });
 
     volverButton.on('pointerdown', () => { {
-      //this.leaveQueue();
+      this.leaveQueue();
       if(this.bgm && this.bgm.isPlaying){
         this.bgm.stop();
       } 
