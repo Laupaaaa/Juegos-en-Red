@@ -8,7 +8,10 @@ export default class SalaDeEspera extends Phaser.Scene {
     super({ key: 'SalaDeEspera' });
     this.ws = null;
     this.roomCode = null;
+    this.roomId = null;
+    this.gameStarted = false;
     this.isInRoom = false;
+    this.enCola = false;
   }
 
   preload() {
@@ -122,109 +125,141 @@ export default class SalaDeEspera extends Phaser.Scene {
 
     this.escKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
     
+    this.crearInterfaz();
+    // Connect to WebSocket server
+    this.connectToServer();
+  }
 
-    // this.add.text(500, 350, 'Esperando a otros jugadores...', {
-    //   fontSize: '32px',
-    //   color: '#000000ff',
-    // }).setOrigin(0.5);
+  crearInterfaz(){
+    // Aquí puedes crear los elementos de la interfaz de usuario necesarios
+
+    /*this.add.text(500, 350, 'Esperando a otros jugadores...', {
+      fontSize: '32px',
+      color: '#000000ff',
+    }).setOrigin(0.5);*/
 
     const width = this.cameras.main.width;
     const height = this.cameras.main.height;
 
-    this.titulo = this.add.image(width / 2, 100, 'pergaminoTitulo')
-    this.titulo.setScale(0.25, 0.20);
+    this.pergamino = this.add.image(width / 2, 100, 'pergaminoTitulo')
+    this.pergamino.setScale(0.25, 0.20);
+
     this.boton = this.add.image(width / 2, height - 100, 'boton')
-    this.boton.setScale(0.05, 0.1); 
-
-
+    this.boton.setScale(0.05, 0.1);
     // Title
-    this.add.text(width / 2, 100, 'Online Multiplayer', {
+    this.titulo = this.add.text(width / 2, 100, 'Online Multiplayer', {
       fontSize: '48px',
       fontFamily: 'Tagesschrift',
       color: '#ffffff'
     }).setOrigin(0.5);
 
-    this.add.text(width / 2, height / 2 - 100, 'Código de sala: ', {
-      fontSize: '32px',
-      fontFamily: 'Tagesschrift',
-      color: '#ffffff'
-    }).setOrigin(0.5);
-
-    this.roomCodeText = this.add.text(width / 2, height / 2 - 50, '', {
-      fontSize: '28px',
-      fontFamily: 'Tagesschrift',
-      color: '#ffff00',
-      backgroundColor: '#000000',
-      padding: { x: 20, y: 10 }
-    }).setOrigin(0.5);
-
-    this.add.text(width / 2, height / 2 + 20, 'O únete a otra torre...', {
+    this.tituloTorre = this.add.text(width / 2, 140, 'Tu torre: ', {
       fontSize: '24px',
       fontFamily: 'Tagesschrift',
       color: '#ffffff'
     }).setOrigin(0.5);
 
-    this.createCodeInput(width / 2, height / 2 + 70);
+    this.roomCodeText = this.add.text(width / 2, 170, '------', {
+      fontSize: '28px',
+      fontFamily: 'Tagesschrift',
+      color: 'ffffff',
+    }).setOrigin(0.5);
 
-    this.botonUnirse = this.add.image(width / 2, height /2 + 120, 'boton');
-    this.botonUnirse.setScale(0.05, 0.1);
 
-    this.unirseText = this.add.text(width / 2, height / 2 + 120, 'Unirse', {
+    // ============ UNIRTE A LA COLA (SALA ALEATORIA) ============
+
+    this.tituloCola = this.add.text(width / 2, 240, 'Únete a una torre...', {
+      fontSize: '24px',
+      fontFamily: 'Tagesschrift',
+      color: '#ffffff'
+    }).setOrigin(0.5);
+
+    //boton unirse a la cola
+    this.botonUnirseCola = this.add.image(width / 2, 300, 'boton');
+    this.botonUnirseCola.setScale(0.05, 0.1);
+
+    this.unirseColaText = this.add.text(width / 2, 300, 'Torre', {
       fontSize: '28px',
       fontFamily: 'Tagesschrift',
       color: '#000000ff'
     }).setOrigin(0.5).setInteractive();
 
-    this.unirseText.on('pointerover', () => {
-      this.unirseText.setStyle({ fill: '#ff0000' });
+    this.unirseColaText.on('pointerover', () => {
+      this.unirseColaText.setStyle({ fill: '#ff0000' });
     });
 
-    this.unirseText.on('pointerout', () => {
-      this.unirseText.setStyle({ fill: '#000000ff' });
-    }); 
-    this.unirseText.on('pointerdown', () => this.unirseSala());
-    
+    this.unirseColaText.on('pointerout', () => {
+      this.unirseColaText.setStyle({ fill: '#000000ff' });
+    });
 
-    // Status text
-    this.statusText = this.add.text(width / 2, height / 2 - 50, 'Connecting to server...', {
+    this.unirseColaText.on('pointerdown', () => this.unirseCola());
+
+    /*this.estadoColaText = this.add.text(width / 2, height / 2 - 50, 'Conectando al servidor...', {
       fontSize: '24px',
       fontFamily: 'Tagesschrift',
       color: '#ffff00'
-    }).setOrigin(0.5);
+    }).setOrigin(0.5);*/
 
-    // Player count text
-    this.playerCountText = this.add.text(width / 2, height / 2 + 20, '', {
-      fontSize: '20px',
-      fontFamily: 'Tagesschrift',
-      color: '#00ff00'
-    }).setOrigin(0.5);
+    // ============ UNIRTE A UNA SALA (CÓDIGO) ============ 
 
-    // Cancel button
-    const cancelButton = this.add.text(width / 2, height - 100, 'Volver', {
+    this.tituloCodigo = this.add.text(width / 2, 360, 'O únete con código', {
       fontSize: '24px',
       fontFamily: 'Tagesschrift',
-      color: '#000000ff',
-      padding: { x: 20, y: 10 }
+      color: '#ffffff'
+    }).setOrigin(0.5);
+
+    this.createCodeInput(width/2, 420);
+
+    this.botonUnirseCodigo = this.add.image(width / 2,480, 'boton');
+    this.botonUnirseCodigo.setScale(0.05, 0.1);
+
+    this.unirseCodigoText = this.add.text(width / 2, 480, 'Unirse', {
+      fontSize: '28px',
+      fontFamily: 'Tagesschrift',
+      color: '#000000ff'
     }).setOrigin(0.5).setInteractive();
 
-    cancelButton.on('pointerover', () => {
-      cancelButton.setColor('#ff0000');
+    this.unirseCodigoText.on('pointerover', () => {
+      this.unirseCodigoText.setStyle({ fill: '#ff0000' });
     });
 
-    cancelButton.on('pointerout', () => {
-      cancelButton.setColor('#000000ff');
+    this.unirseCodigoText.on('pointerout', () => {
+      this.unirseCodigoText.setStyle({ fill: '#000000ff' });
+    }); 
+
+    this.unirseCodigoText.on('pointerdown', () => this.unirseSala());
+
+    this.statusText = this.add.text(width / 2, 530, '', {
+      fontSize: '20px',
+      fontFamily: 'Tagesschrift',
+      color: '#ff0000'
+    }).setOrigin(0.5);
+      
+    const botonVolver = this.add.image(width/2, height - 80, 'boton');
+    botonVolver.setScale(0.05, 0.1);
+
+    const volverButton = this.add.text(width / 2, height - 80, 'Volver', {
+      fontSize: '28px',
+      fontFamily: 'Tagesschrift',
+      color: '#000000ff'
+    }).setOrigin(0.5).setInteractive();
+
+    volverButton.on('pointerover', () => {
+      volverButton.setStyle({ fill: '#ff0000' });
     });
 
-    cancelButton.on('pointerdown', () => {
-      this.leaveQueue();
-      if (this.bgm && this.bgm.isPlaying) {
+    volverButton.on('pointerout', () => {
+      volverButton.setStyle({ fill: '#000000ff' });
+    });
+
+    volverButton.on('pointerdown', () => { {
+      //this.leaveQueue();
+      if(this.bgm && this.bgm.isPlaying){
         this.bgm.stop();
-      }
+      } 
       this.scene.start('MenuScene');
-    });
+    }});
 
-    // Connect to WebSocket server
-    this.connectToServer();
   }
 
   createCodeInput(x, y) {
@@ -286,7 +321,8 @@ export default class SalaDeEspera extends Phaser.Scene {
   handleServerMessage(data) {
     switch (data.type) {
       case 'queueStatus':
-        this.playerCountText.setText(`Jugadores en cola: ${data.position}/2`);
+        this.statusText.setText(`Jugadores en cola: ${data.position}/2`);
+        this.statusText.setColor('#ffff00');
         break;
 
       case 'roomInfo':
@@ -313,31 +349,85 @@ export default class SalaDeEspera extends Phaser.Scene {
         }
         break;
 
+      case 'startGame':
       case 'gameStart':
-        // Prevent duplicate start events
+        // Prevenir eventos duplicados
         if (this.gameStarted) return;
         this.gameStarted = true;
-        // If server provides the code, show it before starting
+        
         if (data.code) {
           this.roomCode = data.code;
           this.roomCodeText.setText(data.code);
         }
-        console.log('Game starting!', data);
+        this.statusText.setText('¡Partida iniciando!');
+        this.statusText.setColor('#00ff00');
+
+        console.log('Partida iniciando!', data);
         if (this.bgm){
           this.bgm.stop();
           this.bgm.destroy();
         }
-        // Store game data and transition to multiplayer game scene
+        // transicion a la escena del juego
         this.scene.start('GameSceneO', {
           ws: this.ws,
           playerRole: data.role,
-          roomId: data.roomId,
+          roomId: data.roomId || this.roomId,
           initialBall: data.ball
         });
         break;
 
       default:
         console.log('Unknown message type:', data.type);
+    }
+  }
+
+  unirseCola() {
+    if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+      this.enCola = true;
+      this.ws.send(JSON.stringify({ type: 'joinQueue' }));
+
+      this.ocultarBotones();
+
+      this.statusText.setText('Buscando partida...');
+      this.statusText.setColor('#ffff00');
+    } else {
+      this.statusText.setText('No conectado al servidor. Error de conextión.');
+      this.statusText.setColor('#ff0000');
+    }
+  }
+
+  ocultarBotones() {
+    this.tituloCola.setVisible(false);
+    this.botonUnirseCola.setVisible(false);
+    this.unirseColaText.setVisible(false);
+    this.unirseColaText.disableInteractive();
+
+
+    this.tituloCodigo.setVisible(false);
+    this.codeInput.style.display = 'none';
+    this.botonUnirseCodigo.setVisible(false);
+    this.unirseCodigoText.setVisible(false);
+    this.unirseCodigoText.disableInteractive();
+
+    if(this.codeInput){
+      this.codeInput.style.display = 'none';
+    }
+  }
+
+  mostrarBotones() {
+    this.tituloCola.setVisible(true);
+    this.botonUnirseCola.setVisible(true);
+    this.unirseColaText.setVisible(true);
+    this.unirseColaText.setInteractive();
+
+    this.tituloCodigo.setVisible(true);
+    this.codeInput.style.display = 'block';
+    this.botonUnirseCodigo.setVisible(true);
+    this.unirseCodigoText.setVisible(true);
+    this.unirseCodigoText.setInteractive();
+
+    if(this.codeInput){
+      this.codeInput.style.display = 'block';
     }
   }
 
@@ -359,6 +449,7 @@ export default class SalaDeEspera extends Phaser.Scene {
       this.ws.send(JSON.stringify({ type: 'joinRoom', code: code }));
       this.statusText.setText('Intentando unirse a la sala...');
       this.statusText.setColor('#ffff00');
+
     } else {
       this.statusText.setText('No conectado al servidor. Error de conextión.');
       this.statusText.setColor('#ff0000');
@@ -515,9 +606,15 @@ export default class SalaDeEspera extends Phaser.Scene {
       this.ws.onopen = () => {
         console.log('Connected to WebSocket server');
         //this.statusText.setText('Esperando a tu compañero...');
+        this.statusText.setText('Conectado al servidor.');
+        this.statusText.setColor('#00ff00');
+
+        this.time.delayedCall(500, () => {
+          this.statusText.setText('');
+        });
 
         // Join matchmaking queue
-        this.ws.send(JSON.stringify({ type: 'joinQueue' }));
+        //this..send(JSON.stringify({ type: 'joinQueue' }));
       };
 
       this.ws.onmessage = (event) => {

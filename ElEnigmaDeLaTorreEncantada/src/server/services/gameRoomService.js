@@ -16,6 +16,9 @@ function generateRoomCode() {
       }
     } while (roomsByCode.has(code)); // asegurar que el código es único
 
+    if(code !== null){
+      console.log("Código de sala generado: " + code);
+    }
     return code;
   }
 
@@ -41,7 +44,7 @@ function generateRoomCode() {
       active: true,
       ballActive: true, // Track if ball is in play (prevents duplicate goals)
       code: code,
-      status: 'waiting' // 'waiting', 'playing', 'ended'
+      status: 'decision' // 'decision', 'waiting', 'playing', 'ended'
 
     };
 
@@ -166,18 +169,18 @@ function generateRoomCode() {
     };
   }
 
-  // function startGame(roomId) {
-  //   const room = rooms.get(roomId);
-  //   if (!room || !room.active) return {success: false, message: 'Sala no encontrada o inactiva'};
-  //   if (room.status !== 'waiting') return {success: false, message: 'La partida ya ha comenzado o finalizado'};
-  //   room.status = 'playing';
-  //   broadcastToRoom(roomId, {
-  //     type: 'startGame',
-  //     roomId: roomId,
-  //     message: 'La partida ha comenzado'
-  //   });
-  //   return {success: true};
-  // }
+  function startGame(roomId) {
+    const room = rooms.get(roomId);
+    if (!room || !room.active) return {success: false, message: 'Sala no encontrada o inactiva'};
+    if (room.status !== 'waiting') return {success: false, message: 'La partida ya ha comenzado o finalizado'};
+    room.status = 'playing';
+    broadcastToRoom(roomId, {
+      type: 'startGame',
+      roomId: roomId,
+      message: 'La partida ha comenzado'
+    });
+    return {success: true};
+  }
   
   /**
    * Handle player movement from a player
@@ -427,7 +430,7 @@ function generateRoomCode() {
     findRoomByCode,
     joinRoom,
     leaveRoom,
-    //startGame,
+    startGame,
     getRoomInfo,
     createRoom,
     handlePlayerMove,
