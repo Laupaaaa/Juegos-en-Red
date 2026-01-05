@@ -107,12 +107,21 @@ function generateRoomCode() {
 
       if(!silent){
         
-        broadcastToRoom(room.id, {
+        room.player1.ws.send(JSON.stringify({
           type: 'startGame',
           roomId: room.id,
+          role: 'player1',
           roomCode: room.code,
           message: 'La partida ha comenzado'
-        });
+        }));
+
+        room.player2.ws.send(JSON.stringify({
+          type: 'startGame',
+          roomId: room.id,
+          role: 'player2',
+          roomCode: room.code,
+          message: 'La partida ha comenzado'
+        }));
     }
 
       return {success: true,

@@ -82,8 +82,8 @@ export class DecisionScene extends Phaser.Scene {
                 btn1.on('pointerout', () => btn1.setStyle({ fill: '#000000ff' }))
                 btn1.on('pointerdown', () => {
                     if (data.ws && data.ws.readyState === WebSocket.OPEN) {
-                        console.log("ebviando final"); 
-                        data.ws.send(JSON.stringify({type: 'escenaFinal', escena: 1}));
+                        console.log("enviando final"); 
+                        data.ws.send(JSON.stringify({type: 'escenaFinal', escena: 3}));
                     }
                 });
 
