@@ -49,6 +49,7 @@ export default class SalaDeEspera extends Phaser.Scene {
     this.roomCode = null;
     this.roomId = null;
     this.gameStarted = false;
+    
 
     if(this.roomCodeText && this.roomCodeText.active){
       this.roomCodeText.setText('');
@@ -315,11 +316,11 @@ export default class SalaDeEspera extends Phaser.Scene {
     // }});
 
     volverButton.on('pointerdown', () => {
-      this.leaveQueue();
+      this.shutdown();
       if(this.bgm && this.bgm.isPlaying){
         this.bgm.stop();
       }
-      this.resetState();
+      //this.resetState();
       this.scene.start('MenuScene');
     });
   }
@@ -763,16 +764,6 @@ export default class SalaDeEspera extends Phaser.Scene {
 
 
   leaveQueue() {
-    if (this.ws && this.ws.readyState === WebSocket.OPEN) {
-      this.ws.send(JSON.stringify({ type: 'leaveQueue' }));
-      //this.ws.close();
-      this.resetState();
-      this.mostrarBotones();
-    }
-  }
-
-  cleanup(){
-
     if (this.ws){
       this.ws.onopen = null;
       this.ws.onmessage = null;
@@ -791,10 +782,11 @@ export default class SalaDeEspera extends Phaser.Scene {
     }
 
     this.resetState();
+    
   }
 
+
   shutdown() {
-    this.cleanup();
     this.leaveQueue();
   }
 

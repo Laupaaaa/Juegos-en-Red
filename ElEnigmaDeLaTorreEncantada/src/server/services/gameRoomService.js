@@ -433,11 +433,17 @@ function generateRoomCode() {
 
     // Only notify the other player if the game is still active
     // If the game already ended (room.active = false), don't send disconnect message
+    
     if (room.active) {
-      const opponent = room.player1.ws === ws ? room.player2.ws : room.player1.ws;
+      const secondPlayer = room.player1.ws === ws ? room.player2.ws : room.player1.ws;    
 
-      if (opponent.readyState === 1) { // WebSocket.OPEN
-        opponent.send(JSON.stringify({
+      if(!secondPlayer){
+        console.log(`Room ${room.id}: disconnect with no opponent.`);
+        return;
+      }
+
+      if (secondPlayer.readyState === 1) { // WebSocket.OPEN
+        secondPlayer.send(JSON.stringify({
           type: 'playerDisconnected'
         }));
       }
