@@ -7,11 +7,7 @@ export default class SalaDeEspera extends Phaser.Scene {
   constructor() {
     super({ key: 'SalaDeEspera' });
     this.ws = null;
-    this.roomCode = null;
-    this.roomId = null;
-    this.gameStarted = false;
-    this.isInRoom = false;
-    this.enCola = false;
+    
   }
 
   preload() {
@@ -49,6 +45,24 @@ export default class SalaDeEspera extends Phaser.Scene {
         this.load.audio('walk', '/sounds/walk.mp3');
   }
 
+  resetState() {
+    this.roomCode = null;
+    this.roomId = null;
+    this.gameStarted = false;
+
+    if(this.roomCodeText && this.roomCodeText.active){
+      this.roomCodeText.setText('');
+    }
+
+    if(this.statusText && this.statusText.active){
+      this.statusText.setText('');
+    }
+
+    if(this.codeInput && document.body.contains(this.codeInput)){
+      this.codeInput.value = '';
+    }
+  }
+
   init(){
     this.walkSounds = new Map(); // Map para guardar el sonido de cada jugador
 
@@ -58,8 +72,11 @@ export default class SalaDeEspera extends Phaser.Scene {
     this.escWasDown = false;
     this.processor = new CommandProcessor();
     this.bgm = null;
-    
-  }
+
+    this.roomCode = null;
+    this.roomId = null;
+    this.gameStarted = false;
+    }
 
   create(){
     this.anims.create({
@@ -188,7 +205,9 @@ export default class SalaDeEspera extends Phaser.Scene {
     this.crearSalaText.on('pointerout', () => {
       this.crearSalaText.setStyle({ fill: '#000000ff' });
     });
-    this.crearSalaText.on('pointerdown', () => this.crearSala());
+    this.crearSalaText.on('pointerdown', () => {
+      this.resetState();
+      this.crearSala()});
 
     // ============ UNIRTE A LA COLA (SALA ALEATORIA) ============
 
@@ -216,7 +235,9 @@ export default class SalaDeEspera extends Phaser.Scene {
       this.unirseColaText.setStyle({ fill: '#000000ff' });
     });
 
-    this.unirseColaText.on('pointerdown', () => this.unirseCola());
+    this.unirseColaText.on('pointerdown', () => {
+      this.resetState();
+      this.unirseCola()});
 
     /*this.estadoColaText = this.add.text(width / 2, height / 2 - 50, 'Conectando al servidor...', {
       fontSize: '24px',
@@ -251,7 +272,9 @@ export default class SalaDeEspera extends Phaser.Scene {
       this.unirseCodigoText.setStyle({ fill: '#000000ff' });
     }); 
 
-    this.unirseCodigoText.on('pointerdown', () => this.unirseSala());
+    this.unirseCodigoText.on('pointerdown', () => {
+      //this.resetState();
+      this.unirseSala()});
 
     this.statusText = this.add.text(width / 2, height / 2, '', {
       fontSize: '20px',
@@ -296,6 +319,7 @@ export default class SalaDeEspera extends Phaser.Scene {
       if(this.bgm && this.bgm.isPlaying){
         this.bgm.stop();
       }
+      this.resetState();
       this.scene.start('MenuScene');
     });
   }
@@ -384,6 +408,8 @@ export default class SalaDeEspera extends Phaser.Scene {
           this.statusText.setText('Unido a la sala.');
           this.statusText.setColor('#00ff00');
         } else {
+          this.resetState();
+          this.mostrarBotones();
           this.statusText.setText(data.message || 'No se pudo unir a la sala.');
           this.statusText.setColor('#ff0000');
         }
@@ -418,6 +444,7 @@ export default class SalaDeEspera extends Phaser.Scene {
         break;
 
       case 'error':
+        this.resetState();
           this.statusText.setText(data.message || 'Error del servidor.');
           this.statusText.setColor('#ff0000');
           this.mostrarBotones();
@@ -450,7 +477,6 @@ export default class SalaDeEspera extends Phaser.Scene {
 
   unirseCola() {
     if (this.ws && this.ws.readyState === WebSocket.OPEN) {
-      this.enCola = true;
       this.ws.send(JSON.stringify({ type: 'joinQueue' }));
 
       this.ocultarBotones();
@@ -676,6 +702,18 @@ export default class SalaDeEspera extends Phaser.Scene {
     connectToServer() {
     try {
       // Connect to WebSocket server (same host as web server)
+
+      if(this.ws){
+        if(this.ws.readyState === WebSocket.OPEN || this.ws.readyState === WebSocket.CONNECTING){
+          console.log('WebSocket already connected or connecting');
+          this.ws.onopen = null;
+          this.ws.onmessage = null;
+          this.ws.onerror = null;
+          this.ws.onclose = null;
+          this.ws.close();
+        }
+        this.ws = null;
+      }
       const wsUrl = `ws://${window.location.host}/ws`;
 
       this.ws = new WebSocket(wsUrl);
@@ -710,7 +748,7 @@ export default class SalaDeEspera extends Phaser.Scene {
 
       this.ws.onclose = () => {
         console.log('WebSocket connection closed');
-        if (this.scene.isActive('LobbyScene')) {
+        if (this.scene.isActive('SalaDeEspera')) {
           this.statusText.setText('Connection lost!');
           this.statusText.setColor('#ff0000');
         }
@@ -727,11 +765,36 @@ export default class SalaDeEspera extends Phaser.Scene {
   leaveQueue() {
     if (this.ws && this.ws.readyState === WebSocket.OPEN) {
       this.ws.send(JSON.stringify({ type: 'leaveQueue' }));
-      this.ws.close();
+      //this.ws.close();
+      this.resetState();
+      this.mostrarBotones();
     }
   }
 
+  cleanup(){
+
+    if (this.ws){
+      this.ws.onopen = null;
+      this.ws.onmessage = null;
+      this.ws.onerror = null;
+      this.ws.onclose = null;
+      if(this.ws.readyState === WebSocket.OPEN){
+        this.ws.send(JSON.stringify({ type: 'leaveQueue' }));
+        this.ws.close();
+      }
+      this.ws = null;
+    }
+
+    if(this.codeInput && document.body.contains(this.codeInput)){
+      this.codeInput.remove();
+      this.codeInput = null;
+    }
+
+    this.resetState();
+  }
+
   shutdown() {
+    this.cleanup();
     this.leaveQueue();
   }
 

@@ -6,6 +6,8 @@ export function createGameRoomService() {
   const roomsByCode = new Map(); // roomCode -> roomId
   let nextRoomId = 1;
 
+
+
 function generateRoomCode() {
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     let code;
@@ -63,6 +65,8 @@ function generateRoomCode() {
 
     if (!joinResult.success) {
       console.error('Error al unir al creador a la sala:', joinResult.message);
+      rooms.delete(roomId);
+      roomsByCode.delete(code);
       return null;
     }
     return { roomId: roomId, code: code, success: true  };
@@ -441,6 +445,7 @@ function generateRoomCode() {
 
     // Clean up room
     room.active = false;
+    roomsByCode.delete(room.code);
     rooms.delete(roomId);
   }
 
