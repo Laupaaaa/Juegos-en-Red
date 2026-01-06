@@ -435,13 +435,15 @@ export default class SalaDeEspera extends Phaser.Scene {
           this.bgm.stop();
           this.bgm.destroy();
         }
-        // transicion a la escena del juego
+        const username = sessionStorage.getItem('currentUsername') || 'Jugador';
         this.scene.start('GameSceneO', {
           ws: this.ws,
           playerRole: data.role,
           roomId: data.roomId || this.roomId,
-          initialBall: data.ball
+          initialBall: data.ball,
+          username: username
         });
+        this.ws.onmessage = null;
         break;
 
       case 'error':

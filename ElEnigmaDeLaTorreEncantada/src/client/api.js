@@ -123,6 +123,67 @@ export async function deleteUser(userId) {
   console.log("Usuario eliminado correctamente."); 
 }
 
+/**
+ * Realiza login de un usuario
+ * @param {string} username - Nombre de usuario
+ * @returns {Promise<object>} - Usuario logeado
+ */
+export async function loginUser(username) {
+  const response = await fetch(`${API_BASE_URL}/api/users/login`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ username })
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || 'Error al iniciar sesión');
+  }
+
+  console.log("Login exitoso.");
+  return await response.json();
+}
+
+/**
+ * Realiza logout de un usuario
+ * @param {string} username - Nombre de usuario
+ * @returns {Promise<object>} - Confirmación de logout
+ */
+export async function logoutUser(username) {
+  const response = await fetch(`${API_BASE_URL}/api/users/logout`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ username })
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || 'Error al cerrar sesión');
+  }
+
+  console.log("Logout exitoso.");
+  return await response.json();
+}
+
+/**
+ * Obtiene la lista de usuarios actualmente logeados
+ * @returns {Promise<Array>} - Array de usuarios logeados
+ */
+export async function getLoggedInUsers() {
+  const response = await fetch(`${API_BASE_URL}/api/users/logged-in`);
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || 'Error al obtener usuarios logeados');
+  }
+
+  return await response.json();
+}
+
 // ==================== MENSAJES ====================
 
 /**

@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { loginUser } from '../api.js';
 
 export class LoginScene extends Phaser.Scene {
     constructor() {
@@ -23,33 +24,42 @@ export class LoginScene extends Phaser.Scene {
         }
 
         if (loginButton) {
-            loginButton.addEventListener('click', () => {
-                console.log('Click en login');
-                const username = usernameInput.value;
-                const password = passwordInput.value;
+            loginButton.addEventListener('click', async () => {
+                const username = usernameInput.value.trim();
 
-                console.log('Username:', username, 'Password:', password);
+                if (username === '') {
+                    alert('Por favor ingresa un usuario');
+                    return;
+                }
 
-                if (username !== '' && password !== '') {
-                    console.log('Login exitoso, iniciando MenuScene');
+                try {
+                    // Login en el servidor
+                    await loginUser(username);
+                    console.log('Login exitoso:', username);
                     
-                    // Ocultar el formulario
+                    // Guardar usuario en sessionStorage
+                    sessionStorage.setItem('currentUsername', username);
+                    
+                    // Ocultar formulario y limpiar
                     if (loginForm) {
                         loginForm.classList.remove('active');
                     }
+                    usernameInput.value = '';
+                    passwordInput.value = '';
 
+                    // Ir al menú
                     this.time.delayedCall(500, () => {
                         this.scene.start('MenuScene');
                     });
-                } else {
-                    console.log('Campos vacíos');
-                    alert('Por favor completa todos los campos');
+                } catch (error) {
+                    console.error('Error en login:', error.message);
+                    alert('Error: ' + error.message);
                 }
             });
         }
 
-        if (passwordInput) {
-            passwordInput.addEventListener('keypress', (e) => {
+        if (usernameInput) {
+            usernameInput.addEventListener('keypress', (e) => {
                 if (e.key === 'Enter') {
                     loginButton.click();
                 }

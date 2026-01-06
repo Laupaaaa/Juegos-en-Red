@@ -38,18 +38,19 @@ function generateRoomCode() {
       player1: {
         ws: null,
         score: 0,
-        state: null
+        state: null,
+        username: null
       },
       player2: {
         ws: null,
         score: 0,
-        state: null
+        state: null,
+        username: null
       },
       active: true,
-      ballActive: true, // Track if ball is in play (prevents duplicate goals)
+      ballActive: true,
       code: code,
-      status: 'waiting' // 'decision', 'waiting', 'playing', 'ended'
-
+      status: 'waiting'
     };
 
     rooms.set(roomId, room);
@@ -463,6 +464,43 @@ function generateRoomCode() {
     return Array.from(rooms.values()).filter(room => room.active).length;
   }
 
+  function handleSetUsername(ws, data) {
+    const { username, playerRole } = data;
+    
+    for (const room of rooms.values()) {
+      if (room.active) {
+        const isPlayer1 = room.player1.ws === ws;
+        const isPlayer2 = room.player2.ws === ws;
+        
+        if (isPlayer1) {
+          room.player1.username = username;
+        } else if (isPlayer2) {
+          room.player2.username = username;
+        } else {
+          continue;
+        }
+
+        if (room.player1.username && room.player2.username) {
+          if (room.player1.ws && room.player1.ws.readyState === 1) {
+            room.player1.ws.send(JSON.stringify({
+              type: 'usernames',
+              player1: room.player1.username,
+              player2: room.player2.username
+            }));
+          }
+          if (room.player2.ws && room.player2.ws.readyState === 1) {
+            room.player2.ws.send(JSON.stringify({
+              type: 'usernames',
+              player1: room.player1.username,
+              player2: room.player2.username
+            }));
+          }
+        }
+        break;
+      }
+    }
+  }
+
   return {
     findRoomById,
     findRoomByCode,
@@ -481,6 +519,7 @@ function generateRoomCode() {
     handlePuertaFinal,
     handleEscenaFinal, 
     handleDisconnect,
-    getActiveRoomCount
+    getActiveRoomCount,
+    handleSetUsername
   };
 }

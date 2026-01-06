@@ -2,6 +2,8 @@
  * Servicio para gestionar la conexión con el servidor
  * Maneja el polling al endpoint /api/connected y detecta pérdidas de conexión
  */
+import { logoutUser } from '../api.js';
+
 export class ConnectionManager {
   constructor() {
     this.connectedCount = 0;
@@ -15,7 +17,19 @@ export class ConnectionManager {
     // Iniciar el polling automático
     this.startPolling();
 
-    window.addEventListener('beforeunload', () => {
+    window.addEventListener('beforeunload', async () => {
+      // Realizar logout al cerrar la ventana
+      const currentUsername = sessionStorage.getItem('currentUsername');
+      if (currentUsername) {
+        try {
+          await logoutUser(currentUsername);
+          console.log('Logout automático al cerrar la ventana');
+          sessionStorage.removeItem('currentUsername');
+          sessionStorage.removeItem('currentUser');
+        } catch (error) {
+          console.error('Error en logout automático:', error);
+        }
+      }
       this.stopPolling();
     });
   }

@@ -142,6 +142,10 @@ wss.on('connection', (ws) => {
           }
           break;
         
+        case 'setUsername':
+          gameRoomService.handleSetUsername(ws, data);
+          break;
+        
         case 'joinQueue':
           matchmakingService.joinQueue(ws);
           break;

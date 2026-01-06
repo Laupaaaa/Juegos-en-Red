@@ -10,19 +10,22 @@ import express from 'express';
 export function createUserRoutes(userController) {
   const router = express.Router();
 
-  // POST /api/users - Crear nuevo usuario
-  router.post('/', userController.create);
+  // POST /api/users/login - Realizar login
+  router.post('/login', userController.handleLogin);
 
-  // GET /api/users - Obtener todos los usuarios
+  // POST /api/users/logout - Realizar logout
+  router.post('/logout', userController.handleLogout);
+
+  // GET /api/users/logged-in - Obtener usuarios logeados
+  router.get('/logged-in', userController.getLoggedIn);
+
+  // GET /api/users - Obtener todos los usuarios logeados
   router.get('/', userController.getAll);
 
-  // GET /api/users/:id - Obtener un usuario por ID
+  // Otros endpoints (no implementados)
+  router.post('/', userController.create);
   router.get('/:id', userController.getById);
-
-  // PUT /api/users/:id - Actualizar un usuario
   router.put('/:id', userController.update);
-
-  // DELETE /api/users/:id - Eliminar un usuario
   router.delete('/:id', userController.remove);
 
   return router;

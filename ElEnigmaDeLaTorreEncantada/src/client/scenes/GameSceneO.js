@@ -85,21 +85,17 @@ export class GameSceneO extends Phaser.Scene {
         this.lPulsada = false;
         this.processor = new CommandProcessor();
         this.cofreAbierto = false;
-        this.walkSounds = new Map(); // Map para guardar el sonido de cada jugador
-        // this.visitLibreria = false;
-
-        // Array de booleanos que representa que objetos han recogido entre ambos jugadores
-        // Los objetos son: 0-llave, 1-libros, 2- pocion morada, 3- pocion verde, 4- pocion rosa, 5- pocion azul, 6- pocion amarilla, 7- pocion naranja, 8- velas, 9- bola de cristal, 10- planta, 11- estrella 1, 12- estrella 2
+        this.walkSounds = new Map();
         this.inventario = [false, false, false, false, false, false, false, false, false, false, false, false, false];
-    
         this.ws = data.ws;
-        this.playerRole = data.playerRole; // 'player1' or 'player2'    
+        this.playerRole = data.playerRole;
         this.roomId = data.roomId;
+        this.username = data.username || 'Jugador';
         this.localPlayer = null;
         this.remotePlayer = null;
         this.estrella = false;
         this.lOponente = false;
-        this.desactivado = [false, false]; // Saber que jugador ha pasado por la puerta final
+        this.desactivado = [false, false];
     }
 
     create() {
@@ -195,7 +191,6 @@ export class GameSceneO extends Phaser.Scene {
         }).setOrigin(0.5);  
 
 
-        // Asignar a cada jugador si es local o remoto
         if (this.playerRole === 'player1') {
             this.localPlayer = this.players.get('player1');
             this.remotePlayer = this.players.get('player2');
@@ -203,6 +198,20 @@ export class GameSceneO extends Phaser.Scene {
             this.localPlayer = this.players.get('player2');
             this.remotePlayer = this.players.get('player1');
         }
+
+        const localUsername = sessionStorage.getItem('currentUsername') || 'Jugador';
+        this.localUsername = localUsername;
+        this.remoteUsername = null;
+
+        this.ws.send(JSON.stringify({
+            type: 'setUsername',
+            username: localUsername,
+            playerRole: this.playerRole
+        }));
+
+        this.time.delayedCall(500, () => {
+            this.showUsernames();
+        });
 
         // Inputs
         this.cursors = this.input.keyboard.createCursorKeys();
@@ -822,6 +831,25 @@ export class GameSceneO extends Phaser.Scene {
 
     handleServerMessage(data) {
         switch (data.type) {
+            case 'usernames':
+                console.log('Recibidos usernames:', data);
+                if (this.playerRole === 'player1') {
+                    this.localUsername = data.player1;
+                    this.remoteUsername = data.player2;
+                } else {
+                    this.localUsername = data.player2;
+                    this.remoteUsername = data.player1;
+                }
+                break;
+
+            case 'setUsername':
+                console.log('Recibido username:', data);
+                if (data.playerRole !== this.playerRole) {
+                    this.remoteUsername = data.username;
+                    console.log('Username remoto actualizado:', this.remoteUsername);
+                }
+                break;
+
             case 'movimientoJugador': {
                 // Ignorar mensajes que reflejan el propio movimiento local
                 if (data.player === this.playerRole) break;
@@ -1038,6 +1066,44 @@ export class GameSceneO extends Phaser.Scene {
         }
     }
 
+    showUsernames() {
+        if (this.localPlayer) {
+            const localUsernameText = this.add.text(
+                this.localPlayer.sprite.x,
+                this.localPlayer.sprite.y - 100,
+                this.localUsername,
+                {
+                    fontSize: '18px',
+                    fontFamily: 'Arial',
+                    color: '#00ff00',
+                    fontStyle: 'bold'
+                }
+            ).setOrigin(0.5);
+            localUsernameText.setDepth(100);
+            this.time.delayedCall(3000, () => {
+                localUsernameText.destroy();
+            });
+        }
+
+        if (this.remotePlayer) {
+            const remoteUsername = this.remoteUsername || 'Oponente';
+            const remoteUsernameText = this.add.text(
+                this.remotePlayer.sprite.x,
+                this.remotePlayer.sprite.y - 100,
+                remoteUsername,
+                {
+                    fontSize: '18px',
+                    fontFamily: 'Arial',
+                    color: '#00ff00',
+                    fontStyle: 'bold'
+                }
+            ).setOrigin(0.5);
+            remoteUsernameText.setDepth(100);
+            this.time.delayedCall(3000, () => {
+                remoteUsernameText.destroy();
+            });
+        }
+    }
 
     shutdown() {
         if (this.ws && this.ws.readyState === WebSocket.OPEN) {

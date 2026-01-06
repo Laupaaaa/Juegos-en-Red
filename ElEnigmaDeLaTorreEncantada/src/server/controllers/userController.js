@@ -1,125 +1,103 @@
-/**
- * Controlador de usuarios usando closures
- * Este controlador maneja las peticiones HTTP relacionadas con usuarios
- * y utiliza el userService para las operaciones de datos
- *
- * Patrón: Inyección de dependencias - recibe el servicio como parámetro
- */
-
 export function createUserController(userService) {
   /**
-   * POST /api/users - Crear nuevo usuario
+   * POST /api/users/login - Realizar login
    */
-  async function create(req, res, next) {
+  async function handleLogin(req, res, next) {
     try {
-      // 1. Extraer datos del body: email, name, avatar, level
-      const { email, name, avatar, level } = req.body;
+      const { username } = req.body;
 
-      // 2. Validar que los campos requeridos estén presentes (email, name)
-      if (!email || !name) {
+      if (!username) {
         return res.status(400).json({
-          error: 'Los campos email y name son obligatorios'
+          error: 'El usuario es obligatorio'
         });
       }
 
-      // 3. Llamar a userService.createUser()
-      const newUser = userService.createUser({ email, name, avatar, level });
-
-      // 4. Retornar 201 con el usuario creado
-      res.status(201).json(newUser);
+      const result = userService.login(username);
+      res.status(200).json(result);
     } catch (error) {
-      // 5. Si hay error (ej: email duplicado), retornar 400
-      if (error.message === 'El email ya está registrado') {
-        return res.status(400).json({ error: error.message });
+      if (error.message === 'El usuario ya está logeado') {
+        return res.status(409).json({ error: error.message });
       }
       next(error);
     }
   }
 
   /**
-   * GET /api/users - Obtener todos los usuarios
+   * POST /api/users/logout - Realizar logout
+   */
+  async function handleLogout(req, res, next) {
+    try {
+      const { username } = req.body;
+
+      if (!username) {
+        return res.status(400).json({
+          error: 'El usuario es obligatorio'
+        });
+      }
+
+      const success = userService.logout(username);
+      if (!success) {
+        return res.status(400).json({
+          error: 'El usuario no está logeado'
+        });
+      }
+
+      res.status(200).json({ message: 'Logout exitoso' });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * GET /api/users/logged-in - Obtener usuarios logeados
+   */
+  async function getLoggedIn(req, res, next) {
+    try {
+      const loggedInUsers = userService.getLoggedInUsers();
+      res.status(200).json(loggedInUsers);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * GET /api/users - Obtener todos los usuarios logeados
    */
   async function getAll(req, res, next) {
     try {
-      // 1. Llamar a userService.getAllUsers()
-      const users = userService.getAllUsers(); 
-      // 2. Retornar 200 con el array de usuarios
-      res.status(200).json(users); 
-
+      const users = userService.getAllUsers();
+      res.status(200).json(users);
     } catch (error) {
       next(error);
     }
   }
 
   /**
-   * GET /api/users/:id - Obtener un usuario por ID
+   * GET /api/users/:id - Obtener un usuario por ID (no implementado)
    */
   async function getById(req, res, next) {
-    try {
-      // 1. Extraer el id de req.params
-      const { id } = req.params;
-
-      // 2. Llamar a userService.getUserById()
-      const user = userService.getUserById(id);
-
-      // 3. Si no existe, retornar 404
-      if (!user) {
-        return res.status(404).json({
-          error: 'Usuario no encontrado'
-        });
-      }
-
-      // 4. Si existe, retornar 200 con el usuario
-      res.status(200).json(user);
-    } catch (error) {
-      next(error);
-    }
+    res.status(404).json({ error: 'No implementado' });
   }
 
   /**
-   * PUT /api/users/:id - Actualizar un usuario
+   * POST /api/users - Crear nuevo usuario (no implementado)
+   */
+  async function create(req, res, next) {
+    res.status(404).json({ error: 'No implementado' });
+  }
+
+  /**
+   * PUT /api/users/:id - Actualizar un usuario (no implementado)
    */
   async function update(req, res, next) {
-    try {
-      // 1. Extraer el id de req.params
-      const {id} = req.params; 
-      // 2. Extraer los campos a actualizar del body
-      const { email, name, avatar, level } = req.body;
-      // 3. Llamar a userService.updateUser()
-      const user = userService.updateUser(id, {name, avatar, level})
-      // 4. Si no existe, retornar 404
-      if (!user) {
-        return res.status(404).json({
-          error: 'Usuario no encontrado. No se ha actualizado.'
-        });
-      }
-      // 5. Si existe, retornar 200 con el usuario actualizado
-      res.status(200).json(user);
-    } catch (error) {
-      next(error);
-    }
+    res.status(404).json({ error: 'No implementado' });
   }
 
   /**
-   * DELETE /api/users/:id - Eliminar un usuario
+   * DELETE /api/users/:id - Eliminar un usuario (no implementado)
    */
   async function remove(req, res, next) {
-    try {
-      // 1. Extraer el id de req.params
-      const {id} = req.params;
-      // 2. Llamar a userService.deleteUser()
-      const deleted = userService.deleteUser(id); 
-      // 3. Si no existía, retornar 404
-      if(!deleted){
-        return res.status(404).json({
-          error: 'Usuario no encontrado. No se ha eliminado.'
-        })
-      }
-      // 4. Si se eliminó, retornar 204 (No Content)
-      res.status(204); 
-    } catch (error) {
-      next(error);
-    }
+    res.status(404).json({ error: 'No implementado' });
   }
 
   // Exponer la API pública del controlador
@@ -128,6 +106,9 @@ export function createUserController(userService) {
     getAll,
     getById,
     update,
-    remove
+    remove,
+    handleLogin,
+    handleLogout,
+    getLoggedIn
   };
 }
