@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { LoginScene } from './scenes/LoginScene.js';
 import { MenuScene } from './scenes/MenuScene.js';
 import { GameScene } from './scenes/GameScene.js';
 import { PauseScene } from './scenes/PauseScene.js';
@@ -26,7 +27,10 @@ const config = {
             debug: false
         }
     },
-    scene: [ MenuScene, GameSceneO, GameScene, LibreriaScene,  PauseScene, CreditsScene, HistoriaScene, ControlScene, DecisionScene, FinalBScene, FinalM1Scene, FinalM2Scene, ConnectionLostScene, SalaDeEspera ],
+    dom: {
+        createContainer: true
+    },
+    scene: [ LoginScene, MenuScene, GameSceneO, GameScene, LibreriaScene,  PauseScene, CreditsScene, HistoriaScene, ControlScene, DecisionScene, FinalBScene, FinalM1Scene, FinalM2Scene, ConnectionLostScene, SalaDeEspera ],
     backgroundColor: '#47ddffff',
 }
 

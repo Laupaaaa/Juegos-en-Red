@@ -17,4 +17,57 @@
     }
     #game-container {
       box-shadow: 0 0 20px rgba(97, 209, 209);
-    }</style></head><body><div id="game-container"></div><script src="https://cdnjs.cloudflare.com/ajax/libs/phaser/3.70.0/phaser.min.js"></script><script src="bundle.js"></script></body></html>
+      position: relative;
+    }
+    #login-form {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(0, 0, 0, 0.95);
+      padding: 30px;
+      border-radius: 10px;
+      width: 350px;
+      z-index: 1000;
+      display: none;
+      font-family: "Tagesschrift", system-ui;
+    }
+    #login-form.active {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    #login-form h2 {
+      color: white;
+      text-align: center;
+      margin: 0 0 15px 0;
+      font-family: "Tagesschrift", system-ui;
+      font-size: 36px;
+    }
+    #login-form input {
+      padding: 12px;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      color: black;
+      font-family: "Tagesschrift", system-ui;
+    }
+    #login-form input::placeholder {
+      color: #999;
+      font-family: "Tagesschrift", system-ui;
+    }
+    #login-form button {
+      padding: 12px;
+      font-size: 16px;
+      background: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background 0.3s;
+      font-family: "Tagesschrift", system-ui;
+    }
+    #login-form button:hover {
+      background: #45a049;
+    }</style></head><body><div id="game-container"><div id="login-form" class="active"><h2>Login</h2><input id="username" placeholder="Usuario"> <input type="password" id="password" placeholder="Contraseña"> <button id="loginButton">Login</button></div></div><script src="https://cdnjs.cloudflare.com/ajax/libs/phaser/3.70.0/phaser.min.js"></script><script src="bundle.js"></script></body></html>
