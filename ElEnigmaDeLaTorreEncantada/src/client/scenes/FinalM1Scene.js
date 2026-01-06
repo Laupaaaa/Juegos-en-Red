@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { recordGameSession } from '../api.js';
 
 export class FinalM1Scene extends Phaser.Scene {
     constructor() {
@@ -12,6 +13,22 @@ export class FinalM1Scene extends Phaser.Scene {
     }
 
     create(){
+        // Obtener datos de la partida desde DecisionScene
+        const decisionScene = this.scene.get('DecisionScene');
+        this.gameScene = decisionScene?.gameScene;
+        this.gameMode = decisionScene?.gameMode || 'local';
+        this.gameDuration = this.gameScene?.gameStartTime ? Date.now() - this.gameScene.gameStartTime : 0;
+
+        // Registrar la partida si hay información disponible
+        if (this.gameScene && this.gameScene.gameStartTime) {
+            const duration = this.gameDuration;
+            const username = this.gameScene.username || 'JugadorLocal';
+            recordGameSession(username, duration, this.gameMode)
+                .then(stats => {
+                    console.log('📊 Partida registrada:', stats);
+                })
+                .catch(error => console.warn('⚠️ No se pudo registrar la partida:', error));
+        }
 
         this.fondo_1M = this.physics.add.image(500,300, 'fondo_1M');
         this.fondo_1M.setImmovable(true);
@@ -63,7 +80,11 @@ export class FinalM1Scene extends Phaser.Scene {
             .on('pointerdown', () => {
                 // Detener música de derrota antes de cambiar de escena
                 if (this.sound) this.sound.stopByKey('derrota');
-                this.scene.start('MenuScene');
+                this.scene.start('StatsScene', {
+                    username: this.gameScene?.username || 'JugadorLocal',
+                    mode: this.gameMode,
+                    duration: this.gameDuration
+                });
             })
 
     }

@@ -100,6 +100,86 @@ export function createUserController(userService) {
     res.status(404).json({ error: 'No implementado' });
   }
 
+  /**
+   * POST /api/users/:username/game-session - Registrar fin de partida
+   */
+  async function recordGameSession(req, res, next) {
+    try {
+      const { username } = req.params;
+      const { durationMs } = req.body;
+
+      if (!username) {
+        return res.status(400).json({
+          error: 'El usuario es obligatorio'
+        });
+      }
+
+      if (typeof durationMs !== 'number' || durationMs < 0) {
+        return res.status(400).json({
+          error: 'La duración debe ser un número positivo en milisegundos'
+        });
+      }
+
+      const result = userService.recordGameSession(username, durationMs);
+      res.status(200).json(result);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * GET /api/users/:username/stats - Obtener estadísticas de un usuario
+   */
+  async function getUserStats(req, res, next) {
+    try {
+      const { username } = req.params;
+
+      if (!username) {
+        return res.status(400).json({
+          error: 'El usuario es obligatorio'
+        });
+      }
+
+      const stats = userService.getUserGameStats(username);
+      
+      if (!stats) {
+        return res.status(404).json({
+          error: 'El usuario no tiene estadísticas registradas'
+        });
+      }
+
+      // Convertir milisegundos a segundos para la respuesta
+      res.status(200).json({
+        ...stats,
+        tiempoPromedio: (stats.tiempoPromedio / 1000).toFixed(2) + 's',
+        tiempoTotal: (stats.tiempoTotal / 1000).toFixed(2) + 's'
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * GET /api/users/stats/ranking - Obtener ranking de usuarios
+   */
+  async function getStatsRanking(req, res, next) {
+    try {
+      const limit = parseInt(req.query.limit) || 10;
+      const ranking = userService.getGameStatsRanking(limit);
+
+      // Convertir milisegundos a segundos para la respuesta
+      const rankingFormato = ranking.map(user => ({
+        ...user,
+        tiempoPromedio: (user.tiempoPromedio / 1000).toFixed(2) + 's',
+        tiempoTotal: (user.tiempoTotal / 1000).toFixed(2) + 's'
+      }));
+
+      res.status(200).json(rankingFormato);
+    } catch (error) {
+      next(error);
+    }
+  }
+
   // Exponer la API pública del controlador
   return {
     create,
@@ -109,6 +189,9 @@ export function createUserController(userService) {
     remove,
     handleLogin,
     handleLogout,
-    getLoggedIn
+    getLoggedIn,
+    recordGameSession,
+    getUserStats,
+    getStatsRanking
   };
 }

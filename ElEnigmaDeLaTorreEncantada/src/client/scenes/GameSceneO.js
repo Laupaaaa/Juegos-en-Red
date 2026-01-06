@@ -96,6 +96,11 @@ export class GameSceneO extends Phaser.Scene {
         this.estrella = false;
         this.lOponente = false;
         this.desactivado = [false, false];
+        this.gameStartTime = Date.now(); // Rastrear inicio de partida
+        this.gameMode = 'online'; // Modo online
+        this.llaveRecogida = false; // Flag para evitar que se recoja la llave múltiples veces
+        this.estrella1Recogida = false; // Flag para estrella 1
+        this.estrella2Recogida = false; // Flag para estrella 2
     }
 
     create() {
@@ -430,13 +435,22 @@ export class GameSceneO extends Phaser.Scene {
 
             // Conseguir la llave
             this.physics.add.overlap(player.sprite, this.llave, () => {
+                if (this.llaveRecogida) return; // Evitar que se ejecute múltiples veces
+                this.llaveRecogida = true;
+                
                 if (this.sound) {
                     this.sound.play('recogerLlave', { volume: 0.6 });
                 }
                 this.llave.destroy();
                 console.log("Llave conseguida");
                 this.inventario[0] = true; // marcar en el inventario que se ha conseguido la llave
-                this.cero.setAlpha(1); 
+                this.cero.setAlpha(1);
+                
+                // Sincronizar cambio de inventario con el otro jugador
+                this.ws.send(JSON.stringify({
+                    type: 'actualizarInventario',
+                    inventario: this.inventario
+                }));
             });
 
             let id; 
@@ -582,6 +596,13 @@ export class GameSceneO extends Phaser.Scene {
 
     recogerEstrella(n) {
         if (this.cofreAbierto) { // solo se puede recoger si el cofre está abierto (porque sino están ocultas)
+            // Flag para evitar ejecución múltiple
+            if (n === 1 && this.estrella1Recogida) return;
+            if (n === 2 && this.estrella2Recogida) return;
+            
+            if (n === 1) this.estrella1Recogida = true;
+            if (n === 2) this.estrella2Recogida = true;
+            
             console.log("Estrella " + n + " recogida");
             this.inventario[10 + n] = true; // marcar en el inventario que se ha conseguido la estrella (11 y 12 en el array)
             if (n === 1) {
@@ -591,6 +612,13 @@ export class GameSceneO extends Phaser.Scene {
                 this.estrella2.destroy();
                 this.doce.setAlpha(1.0); // actualizar inventario en pantalla
             }
+            
+            // Enviar actualización del inventario al otro jugador
+            this.ws.send(JSON.stringify({
+                type: 'actualizarInventario',
+                inventario: this.inventario
+            }));
+            
             this.players.forEach(player => {
                 this.time.delayedCall(4000, () => {
                     player.estado_normal = true;
@@ -620,6 +648,12 @@ export class GameSceneO extends Phaser.Scene {
                 this.doce.setAlpha(0.2); // actualizar inventario en pantalla
                 this.estrella = true;
             }
+            
+            // Enviar actualización del inventario al otro jugador
+            this.ws.send(JSON.stringify({
+                type: 'actualizarInventario',
+                inventario: this.inventario
+            }));
         }
     }
 
@@ -786,7 +820,12 @@ export class GameSceneO extends Phaser.Scene {
     resume(data) {
         if (data && data.pociones) {
             this.inventario = data.pociones;
-            //this.visitLibreria = true; // para avisar en el update que se ha vuelto de la librería y hay que enviar el inventario al otro jugador
+            
+            // Sincronizar cambios del inventario con el otro jugador
+            this.ws.send(JSON.stringify({
+                type: 'actualizarInventario',
+                inventario: this.inventario
+            }));
         }
         this.isPaused = false;
         if (this.bgm && this.bgm.isPaused) {
@@ -885,13 +924,49 @@ export class GameSceneO extends Phaser.Scene {
             case 'daño': 
                 this.handleDaño(data);
                 break;
-            
-            case 'usarCaldero':
-                this.handleCaldero(data); 
-                break; 
 
             case 'Inventario':
+                // cambios de inventario
+                const llaveAntesRecogida = this.inventario[0];
+                const estrella1AntesTenida = this.inventario[11];
+                const estrella2AntesTenida = this.inventario[12];
+                
                 this.inventario = data.inventario;
+                
+                // Si la llave fue recogida, destruirla en el cliente remoto
+                if (!llaveAntesRecogida && data.inventario[0] && this.llave) {
+                    console.log("Llave recogida por el otro jugador");
+                    this.llave.destroy();
+                }
+                
+                // Si la estrella 1 fue recogida (inventario[11] pasó de false a true)
+                if (!estrella1AntesTenida && data.inventario[11] && this.estrella1) {
+                    console.log("Estrella 1 recogida por el otro jugador");
+                    this.estrella1.destroy();
+                    this.once.setAlpha(1.0);
+                }
+                
+                // Si la estrella 2 fue recogida (inventario[12] pasó de false a true)
+                if (!estrella2AntesTenida && data.inventario[12] && this.estrella2) {
+                    console.log("Estrella 2 recogida por el otro jugador");
+                    this.estrella2.destroy();
+                    this.doce.setAlpha(1.0);
+                }
+                
+                // Si la estrella 1 fue colocada (inventario[11] pasó de true a false)
+                if (estrella1AntesTenida && !data.inventario[11]) {
+                    console.log("Estrella 1 colocada por el otro jugador");
+                    if (this.boton1) this.boton1.setTexture('botonCR');
+                    if (this.once) this.once.setAlpha(0.2);
+                }
+                
+                // Si la estrella 2 fue colocada (inventario[12] pasó de true a false)
+                if (estrella2AntesTenida && !data.inventario[12]) {
+                    console.log("Estrella 2 colocada por el otro jugador");
+                    if (this.boton2) this.boton2.setTexture('botonCR');
+                    if (this.doce) this.doce.setAlpha(0.2);
+                }
+                
                 this.actualizarInventarioEnPantalla();
                 console.log("Inventario actualizado desde el servidor", this.inventario);
                 break;
@@ -909,6 +984,10 @@ export class GameSceneO extends Phaser.Scene {
             case 'lOponente':
                 this.lOponente = data.valor;
                 break; 
+
+            case 'usarCaldero':
+                this.handleCaldero(data);
+                break;
 
             case 'puertaFinal':
                 this.handlePuertaFinal(data);

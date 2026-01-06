@@ -82,6 +82,9 @@ export class GameScene extends Phaser.Scene {
         this.processor = new CommandProcessor();
         this.cofreAbierto = false;
         this.walkSounds = new Map(); // Map para guardar el sonido de cada jugador
+        this.gameStartTime = Date.now(); // Rastrear inicio de partida
+        this.gameMode = 'local'; // Modo local
+        this.username = 'JugadorLocal'; // Usuario por defecto para local
 
         // Array de booleanos que representa que objetos han recogido entre ambos jugadores
         // Los objetos son: 0-llave, 1-libros, 2- pocion morada, 3- pocion verde, 4- pocion rosa, 5- pocion azul, 6- pocion amarilla, 7- pocion naranja, 8- velas, 9- bola de cristal, 10- planta, 11- estrella 1, 12- estrella 2

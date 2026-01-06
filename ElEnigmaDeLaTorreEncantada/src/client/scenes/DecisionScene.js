@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { recordGameSession } from '../api.js';
 
 export class DecisionScene extends Phaser.Scene {
     constructor() {
@@ -11,6 +12,10 @@ export class DecisionScene extends Phaser.Scene {
         this.load.image('fondoD', '/imagenes/eleccion.jpg');}   
 
     create(data){
+        // Obtener referencia a la escena de juego y guardar tiempo
+        this.gameScene = this.scene.get(data.modo === 'online' ? 'GameSceneO' : 'GameScene');
+        this.gameMode = data.modo || 'local';
+        
         this.fondoD = this.physics.add.image(500,300, 'fondoD');
         this.fondoD.setImmovable(true);
         this.fondoD.body.allowGravity = false;

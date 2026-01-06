@@ -6,6 +6,12 @@
  * Debes implementar cada función usando fetch() o la librería que prefieras.
  */
 
+import { 
+  recordLocalGameSession, 
+  getLocalGameStats, 
+  getLocalGameStatsRanking 
+} from './services/gameStatsService.js';
+
 const API_BASE_URL = 'http://localhost:3000';
 
 // ==================== USUARIOS ====================
@@ -182,6 +188,113 @@ export async function getLoggedInUsers() {
   }
 
   return await response.json();
+}
+
+/**
+ * Registra una partida (local u online)
+ * @param {string} username - Nombre del usuario
+ * @param {number} durationMs - Duración de la partida en milisegundos
+ * @param {string} mode - 'local' o 'online'
+ * @returns {Promise<object>} - Estadísticas actualizadas
+ */
+export async function recordGameSession(username, durationMs, mode = 'local') {
+  // Siempre guardar localmente
+  const localResult = recordLocalGameSession(username, durationMs);
+
+  // Si es online, enviar también al servidor
+  if (mode === 'online') {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/users/${username}/game-session`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ durationMs })
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        console.warn('Advertencia: No se pudo guardar en servidor:', error.error);
+      } else {
+        const serverResult = await response.json();
+        console.log(`Partida registrada en servidor: ${username}`);
+        return {
+          ...localResult,
+          modo: 'online',
+          sincronizadoServidor: true,
+          datosServidor: serverResult
+        };
+      }
+    } catch (error) {
+      console.warn('Error al conectar con servidor, guardando solo localmente:', error);
+    }
+  }
+
+  return localResult;
+}
+
+/**
+ * Obtiene las estadísticas de un usuario (local u online)
+ * @param {string} username - Nombre del usuario
+ * @param {string} mode - 'local' o 'online'
+ * @returns {Promise<object>} - Estadísticas del usuario
+ */
+export async function getUserGameStats(username, mode = 'local') {
+  if (mode === 'local') {
+    return getLocalGameStats(username);
+  }
+
+  // Modo online
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/users/${username}/stats`);
+
+    if (!response.ok) {
+      const error = await response.json();
+      console.warn('No hay estadísticas en servidor, usando locales:', error.error);
+      return getLocalGameStats(username);
+    }
+
+    const serverStats = await response.json();
+    console.log(`Estadísticas de ${username}:`, serverStats);
+    return {
+      ...serverStats,
+      modo: 'online',
+      fuente: 'servidor'
+    };
+  } catch (error) {
+    console.warn('Error al obtener estadísticas del servidor, usando locales:', error);
+    return getLocalGameStats(username);
+  }
+}
+
+/**
+ * Obtiene el ranking de jugadores (local u online)
+ * @param {number} limit - Número máximo de jugadores (default: 10)
+ * @param {string} mode - 'local' o 'online'
+ * @returns {Promise<Array>} - Array de jugadores ordenados por tiempo promedio
+ */
+export async function getGameStatsRanking(limit = 10, mode = 'local') {
+  if (mode === 'local') {
+    return getLocalGameStatsRanking(limit);
+  }
+
+  // Modo online
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/users/stats/ranking?limit=${limit}`);
+
+    if (!response.ok) {
+      const error = await response.json();
+      console.warn('No hay ranking en servidor, usando local:', error.error);
+      return getLocalGameStatsRanking(limit);
+    }
+
+    const serverRanking = await response.json();
+    console.log('Ranking de jugadores:', serverRanking);
+    return serverRanking;
+  } catch (error) {
+    console.warn('Error al obtener ranking del servidor, usando local:', error);
+    return getLocalGameStatsRanking(limit);
+  }
 }
 
 // ==================== MENSAJES ====================

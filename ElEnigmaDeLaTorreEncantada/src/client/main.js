@@ -11,6 +11,7 @@ import { DecisionScene } from './scenes/DecisionScene.js';
 import { FinalBScene } from './scenes/FinalBScene.js';
 import { FinalM1Scene } from './scenes/FinalM1Scene.js';
 import { FinalM2Scene } from './scenes/FinalM2Scene.js';
+import { StatsScene } from './scenes/StatsScene.js';
 import { ConnectionLostScene } from './scenes/ConnectionLostScene.js';
 import SalaDeEspera from './scenes/SalaDeEspera.js';
 import { GameSceneO } from './scenes/GameSceneO.js';
@@ -30,7 +31,7 @@ const config = {
     dom: {
         createContainer: true
     },
-    scene: [ LoginScene, MenuScene, GameSceneO, GameScene, LibreriaScene,  PauseScene, CreditsScene, HistoriaScene, ControlScene, DecisionScene, FinalBScene, FinalM1Scene, FinalM2Scene, ConnectionLostScene, SalaDeEspera ],
+    scene: [ LoginScene, MenuScene, GameSceneO, GameScene, LibreriaScene,  PauseScene, CreditsScene, HistoriaScene, ControlScene, DecisionScene, FinalBScene, FinalM1Scene, FinalM2Scene, StatsScene, ConnectionLostScene, SalaDeEspera ],
     backgroundColor: '#47ddffff',
 }
 
