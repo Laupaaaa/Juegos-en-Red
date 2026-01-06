@@ -18,14 +18,6 @@ export class ConnectionManager {
     window.addEventListener('beforeunload', () => {
       this.stopPolling();
     });
-
-    document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'visible') {
-        this.startPolling();
-      } else {
-        this.stopPolling();
-      }
-    });
   }
 
   /**

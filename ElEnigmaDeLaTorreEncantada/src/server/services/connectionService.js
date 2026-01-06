@@ -6,7 +6,7 @@ export function createConnectionService() {
   const connectedSessions = new Map();
 
   // Configuración de timeout (5 segundos sin actividad = desconectado)
-  const CONNECTION_TIMEOUT = 2000; // 5 segundos en milisegundos
+  const CONNECTION_TIMEOUT = 2000; // 2 segundos en milisegundos
   const CLEANUP_INTERVAL = 2000;    // Limpiar cada 2 segundos
 
   // Limpiar sesiones inactivas periódicamente
