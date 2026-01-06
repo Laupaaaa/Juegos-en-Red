@@ -14,6 +14,18 @@ export class ConnectionManager {
 
     // Iniciar el polling automático
     this.startPolling();
+
+    window.addEventListener('beforeunload', () => {
+      this.stopPolling();
+    });
+
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') {
+        this.startPolling();
+      } else {
+        this.stopPolling();
+      }
+    });
   }
 
   /**
@@ -76,6 +88,9 @@ export class ConnectionManager {
    */
   addListener(callback) {
     this.listeners.push(callback);
+
+    // Llamar inmediatamente con el estado actual
+    callback({ connected: this.isConnected, count: this.connectedCount });
   }
 
   /**
@@ -94,7 +109,11 @@ export class ConnectionManager {
    * @param {object} data - Datos del estado de conexión
    */
   notifyListeners(data) {
-    this.listeners.forEach(listener => listener(data));
+    this.listeners.forEach(listener => {try{
+      listener(data);
+    }catch(e){
+      console.error('Error en Listener:',e);
+    }});
   }
 
   /**
@@ -105,7 +124,8 @@ export class ConnectionManager {
     return {
       isConnected: this.isConnected,
       connectedCount: this.connectedCount,
-      lastCheckTime: this.lastCheckTime
+      lastCheckTime: this.lastCheckTime,
+      sessionId: this.sessionId
     };
   }
 
@@ -121,7 +141,7 @@ export class ConnectionManager {
     this.checkConnection();
 
     // Luego comprobar cada X segundos
-    this.intervalId = setInterval(() => {
+    this.intervalId = setInterval(() => { 
       this.checkConnection();
     }, this.checkInterval);
   }

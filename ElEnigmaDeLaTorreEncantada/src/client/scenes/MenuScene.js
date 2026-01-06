@@ -141,7 +141,7 @@ export class MenuScene extends Phaser.Scene {
         }).setOrigin(0.5);
 
         // Listener para cambios de conexión
-        this.connectionListener = (data) => {
+        this.connectionListener = (data) => { 
             this.updateConnectionDisplay(data);
         };
         connectionManager.addListener(this.connectionListener);

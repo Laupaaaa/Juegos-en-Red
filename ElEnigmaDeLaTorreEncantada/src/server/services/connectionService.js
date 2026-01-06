@@ -6,12 +6,25 @@ export function createConnectionService() {
   const connectedSessions = new Map();
 
   // Configuración de timeout (5 segundos sin actividad = desconectado)
-  const CONNECTION_TIMEOUT = 5000; // 5 segundos en milisegundos
+  const CONNECTION_TIMEOUT = 2000; // 5 segundos en milisegundos
   const CLEANUP_INTERVAL = 2000;    // Limpiar cada 2 segundos
 
   // Limpiar sesiones inactivas periódicamente
   const cleanupInterval = setInterval(() => {
-    // Implementar
+    const now = Date.now();
+    let eliminados = 0;
+
+    for (const [sessionId, lastTimestamp] of connectedSessions.entries()) {
+      const elapsed = now - lastTimestamp;
+      if (elapsed > CONNECTION_TIMEOUT) {
+        connectedSessions.delete(sessionId);
+        eliminados++;
+      }
+    }
+
+    if (eliminados > 0) {
+      console.log(`Limpieza de conexiones: ${eliminados} sesión(es) eliminada(s).`);
+    }
   }, CLEANUP_INTERVAL);
 
   return {
