@@ -15,6 +15,7 @@ import { StatsScene } from './scenes/StatsScene.js';
 import { ConnectionLostScene } from './scenes/ConnectionLostScene.js';
 import SalaDeEspera from './scenes/SalaDeEspera.js';
 import { GameSceneO } from './scenes/GameSceneO.js';
+import { SettingsScene } from './scenes/SettingsScene.js';
 
 const config = {
     type: Phaser.AUTO,
@@ -31,7 +32,7 @@ const config = {
     dom: {
         createContainer: true
     },
-    scene: [ LoginScene, MenuScene, GameSceneO, GameScene, LibreriaScene,  PauseScene, CreditsScene, HistoriaScene, ControlScene, DecisionScene, FinalBScene, FinalM1Scene, FinalM2Scene, StatsScene, ConnectionLostScene, SalaDeEspera ],
+    scene: [ LoginScene, MenuScene, SettingsScene, GameSceneO, GameScene, LibreriaScene,  PauseScene, CreditsScene, HistoriaScene, ControlScene, DecisionScene, FinalBScene, FinalM1Scene, FinalM2Scene, StatsScene, ConnectionLostScene, SalaDeEspera ],
     backgroundColor: '#47ddffff',
 }
 

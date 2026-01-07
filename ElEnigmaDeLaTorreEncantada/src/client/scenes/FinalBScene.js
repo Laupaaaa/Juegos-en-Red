@@ -34,9 +34,19 @@ export class FinalBScene extends Phaser.Scene {
         this.fondoC.setImmovable(true);
         this.fondoC.body.allowGravity = false;
 
-        // Reproducir música de victoria
+        // Cargar volumen de SFX y reproducir victoria
+        let sfxVolume = 0.7;
+        try {
+            const raw = localStorage.getItem('game_settings');
+            if (raw) {
+                const json = JSON.parse(raw);
+                const sv = Number(json.sfxVolume);
+                const legacy = Number(json.volume);
+                sfxVolume = Number.isFinite(sv) ? sv : (Number.isFinite(legacy) ? legacy : 0.7);
+            }
+        } catch (_) {}
         if (this.sound) {
-            this.sound.play('victoria', { volume: 0.7 });
+            this.sound.play('victoria', { volume: 0.7 * sfxVolume });
         }
 
         this.boton1 = this.add.image(500,500, 'boton')
@@ -82,7 +92,7 @@ export class FinalBScene extends Phaser.Scene {
             .setInteractive({ useHandCursor: true })
             .on('pointerover', () => {
                 btn.setStyle({ fill: '#4bffabff' });
-                this.sound.play('hover', { volume: 0.5 });
+                this.sound.play('hover', { volume: 0.5 * sfxVolume });
             })
             .on('pointerout', () => btn.setStyle({ fill: '#000000ff' }))
             .on('pointerdown', () => {

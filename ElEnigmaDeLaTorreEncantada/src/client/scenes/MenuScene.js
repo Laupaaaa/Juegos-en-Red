@@ -23,24 +23,37 @@ export class MenuScene extends Phaser.Scene {
     }
 
     create() {
+        // Cargar volúmenes guardados (música y SFX)
+        this.musicVolume = 0.7;
+        this.sfxVolume = 0.7;
+        try {
+            const raw = localStorage.getItem('game_settings');
+            if (raw) {
+                const json = JSON.parse(raw);
+                const mv = Number(json.musicVolume);
+                const sv = Number(json.sfxVolume);
+                const legacy = Number(json.volume);
+                this.musicVolume = Number.isFinite(mv) ? mv : (Number.isFinite(legacy) ? legacy : 0.7);
+                this.sfxVolume = Number.isFinite(sv) ? sv : (Number.isFinite(legacy) ? legacy : 0.7);
+            }
+        } catch (_) {}
+
         // Ensure no duplicate menu music plays (stop existing then play)
         try { if (this.sound) this.sound.stopByKey('musicaMenu'); } catch(err){ console.warn(err); }
-        this.game.sound.play('musicaMenu', { volume: 0.7, loop: true });
+        this.menuMusic = this.game.sound.play('musicaMenu', { volume: this.musicVolume, loop: true });
 
         this.fondo = this.add.image(500, 350, 'fondoM')
         this.fondo.setScale(0.8);
-        this.titulo = this.add.image(500, 120, 'titulo')
+        this.titulo = this.add.image(500, 110, 'titulo')
         this.titulo.setScale(0.25);
-        this.boton1 = this.add.image(500, 300, 'boton')
-        this.boton1.setScale(0.1);
-        this.boton2 = this.add.image(500, 350, 'boton')
-        this.boton2.setScale(0.1);
-        this.boton3 = this.add.image(500, 400, 'boton')
-        this.boton3.setScale(0.1);
-        this.boton4 = this.add.image(500, 450, 'boton')
-        this.boton4.setScale(0.1);
-        this.boton5 = this.add.image(500, 500, 'boton')
-        this.boton5.setScale(0.1);
+        const scaleBtn = 0.09;
+        const yStart = 280;
+        const yStep = 50;
+        this.boton1 = this.add.image(500, yStart + 0*yStep, 'boton').setScale(scaleBtn);
+        this.boton2 = this.add.image(500, yStart + 1*yStep, 'boton').setScale(scaleBtn);
+        this.boton3 = this.add.image(500, yStart + 2*yStep, 'boton').setScale(scaleBtn);
+        this.boton4 = this.add.image(500, yStart + 3*yStep, 'boton').setScale(scaleBtn);
+        this.boton5 = this.add.image(500, yStart + 4*yStep, 'boton').setScale(scaleBtn);
 
 
 
@@ -51,7 +64,7 @@ export class MenuScene extends Phaser.Scene {
         }).setOrigin(0.5)
         .setAngle(-8); 
 
-        const localBtn = this.add.text(500, 300, 'Local', {
+        const localBtn = this.add.text(500, yStart + 0*yStep, 'Local', {
             fontSize: '24px',
             fontFamily: 'Tagesschrift',
             color: '#000000ff',
@@ -59,7 +72,7 @@ export class MenuScene extends Phaser.Scene {
             .setInteractive({ useHandCursor: true })
             .on('pointerover', () => {
                 localBtn.setStyle({ fill: '#4bffabff' });
-                this.sound.play('hover', { volume: 0.5 });
+                this.sound.play('hover', { volume: 0.5 * this.sfxVolume });
             })
             .on('pointerout', () => localBtn.setStyle({ fill: '#000000ff' }))
             .on('pointerdown', () => {
@@ -68,7 +81,7 @@ export class MenuScene extends Phaser.Scene {
                 this.scene.start('GameScene');
             });
 
-        const onlineBtn = this.add.text(500, 350, 'Online', {
+        const onlineBtn = this.add.text(500, yStart + 1*yStep, 'Online', {
             fontSize: '24px',
             fontFamily: 'Tagesschrift',
             color: '#000000ff',
@@ -76,7 +89,7 @@ export class MenuScene extends Phaser.Scene {
         .setInteractive({ useHandCursor: true })
             .on('pointerover', () => {
                 onlineBtn.setStyle({ fill: '#ff0000ff' });
-                this.sound.play('hover', { volume: 0.5 });
+                this.sound.play('hover', { volume: 0.5 * this.sfxVolume });
             })
             .on('pointerout', () => onlineBtn.setStyle({ fill: '#000000ff' }))
             .on('pointerdown', async() => {
@@ -85,7 +98,7 @@ export class MenuScene extends Phaser.Scene {
             });
 
 
-        const creditosBtn = this.add.text(500, 400, 'Créditos', {
+        const creditosBtn = this.add.text(500, yStart + 2*yStep, 'Créditos', {
             fontSize: '24px',
             fontFamily: 'Tagesschrift',
             color: '#000000ff',
@@ -93,7 +106,7 @@ export class MenuScene extends Phaser.Scene {
             .setInteractive({ useHandCursor: true })
             .on('pointerover', () => {
                 creditosBtn.setStyle({ fill: '#ff9100ff' });
-                this.sound.play('hover', { volume: 0.5 });
+                this.sound.play('hover', { volume: 0.5 * this.sfxVolume });
             })
             .on('pointerout', () => creditosBtn.setStyle({ fill: '#000000ff' }))
             .on('pointerdown', () => {
@@ -101,7 +114,7 @@ export class MenuScene extends Phaser.Scene {
                 this.scene.start('CreditsScene');
             });
 
-        const historiaBtn = this.add.text(500, 450, 'Historia', {
+        const historiaBtn = this.add.text(500, yStart + 3*yStep, 'Historia', {
             fontSize: '24px',
             color: '#000000ff',
             fontFamily: 'Tagesschrift',
@@ -109,7 +122,7 @@ export class MenuScene extends Phaser.Scene {
             .setInteractive({ useHandCursor: true })
             .on('pointerover', () => {
                 historiaBtn.setStyle({ fill: '#38ffffff' });
-                this.sound.play('hover', { volume: 0.5 });
+                this.sound.play('hover', { volume: 0.5 * this.sfxVolume });
             })
             .on('pointerout', () => historiaBtn.setStyle({ fill: '#000000ff' }))
             .on('pointerdown', () => {
@@ -117,7 +130,7 @@ export class MenuScene extends Phaser.Scene {
                 this.scene.start('HistoriaScene');
             });
 
-        const controlBtn = this.add.text(500, 500, 'Controles', {
+        const controlBtn = this.add.text(500, yStart + 4*yStep, 'Controles', {
             fontSize: '24px',
             fontFamily: 'Tagesschrift',
             color: '#000000ff',
@@ -125,7 +138,7 @@ export class MenuScene extends Phaser.Scene {
             .setInteractive({ useHandCursor: true })
             .on('pointerover', () => {
                 controlBtn.setStyle({ fill: '#ff0dffc1' });
-                this.sound.play('hover', { volume: 0.5 });
+                this.sound.play('hover', { volume: 0.5 * this.sfxVolume });
             })
             .on('pointerout', () => controlBtn.setStyle({ fill: '#000000ff' }))
             .on('pointerdown', () => {
@@ -133,12 +146,27 @@ export class MenuScene extends Phaser.Scene {
                 this.scene.start('ControlScene', { originalScene: 'MenuScene' });
             });
 
+        // Botón Ajustes
+        const ajustesBg = this.add.image(500, yStart + 5*yStep, 'boton').setScale(scaleBtn);
+        const ajustesBtn = this.add.text(500, yStart + 5*yStep, 'Ajustes', {
+            fontSize: '24px',
+            fontFamily: 'Tagesschrift',
+            color: '#000000ff',
+        }).setOrigin(0.5)
+            .setInteractive({ useHandCursor: true })
+            .on('pointerover', () => { ajustesBtn.setStyle({ fill: '#4bffabff' }); this.sound.play('hover', { volume: 0.5 * this.sfxVolume }); })
+            .on('pointerout', () => ajustesBtn.setStyle({ fill: '#000000ff' }))
+            .on('pointerdown', () => {
+                this.scene.stop();
+                this.scene.start('SettingsScene');
+            });
+
         // Indicador de conexión al servidor
-        this.connectionText = this.add.text(500, 540, 'Servidor: Comprobando...', {
+        this.connectionText = this.add.text(960, 40, 'Servidor: Comprobando...', {
             fontSize: '18px',
             color: '#ffff00',
             fontFamily: 'Tagesschrift',
-        }).setOrigin(0.5);
+        }).setOrigin(1, 0.5);
 
         // Listener para cambios de conexión
         this.connectionListener = (data) => { 

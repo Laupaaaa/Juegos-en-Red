@@ -80,6 +80,20 @@ export default class SalaDeEspera extends Phaser.Scene {
     }
 
   create(){
+    // Cargar volúmenes guardados
+    this.musicVolume = 0.7;
+    this.sfxVolume = 0.7;
+    try {
+      const raw = localStorage.getItem('game_settings');
+      if (raw) {
+        const json = JSON.parse(raw);
+        const mv = Number(json.musicVolume);
+        const sv = Number(json.sfxVolume);
+        const legacy = Number(json.volume);
+        this.musicVolume = Number.isFinite(mv) ? mv : (Number.isFinite(legacy) ? legacy : 0.7);
+        this.sfxVolume = Number.isFinite(sv) ? sv : (Number.isFinite(legacy) ? legacy : 0.7);
+      }
+    } catch (_) {}
     this.anims.create({
       key: 'andar_mago_Azul',
       frames: [
@@ -98,8 +112,8 @@ export default class SalaDeEspera extends Phaser.Scene {
 
 
     // Crear un sonido de pasos para cada jugador
-    this.walkSounds.set('player1', this.sound.add('walk', { loop: true, volume: 0.3 }));
-    this.walkSounds.set('player2', this.sound.add('walk', { loop: true, volume: 0.3 }));
+    this.walkSounds.set('player1', this.sound.add('walk', { loop: true, volume: 0.3 * this.sfxVolume }));
+    this.walkSounds.set('player2', this.sound.add('walk', { loop: true, volume: 0.3 * this.sfxVolume }));
 
     // Parar pasos cuando la escena se pause (ej. PauseScene) y limpiar sonidos al shutdown
     this.events.on('pause', () => {
@@ -138,7 +152,7 @@ export default class SalaDeEspera extends Phaser.Scene {
 
     // Stop menu music and play background music
     this.game.sound.stopByKey('musicaMenu');
-    this.bgm = this.sound.add('bgm', { volume: 0.7, loop: true });
+    this.bgm = this.sound.add('bgm', { volume: 0.7 * this.musicVolume, loop: true });
     this.bgm.play();
 
     this.escKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);

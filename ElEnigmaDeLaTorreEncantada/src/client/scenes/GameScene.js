@@ -96,6 +96,21 @@ export class GameScene extends Phaser.Scene {
 
     create() {
 
+        // Cargar volúmenes guardados
+        this.musicVolume = 0.7;
+        this.sfxVolume = 0.7;
+        try {
+            const raw = localStorage.getItem('game_settings');
+            if (raw) {
+                const json = JSON.parse(raw);
+                const mv = Number(json.musicVolume);
+                const sv = Number(json.sfxVolume);
+                const legacy = Number(json.volume);
+                this.musicVolume = Number.isFinite(mv) ? mv : (Number.isFinite(legacy) ? legacy : 0.5);
+                this.sfxVolume = Number.isFinite(sv) ? sv : (Number.isFinite(legacy) ? legacy : 0.7);
+            }
+        } catch (_) {}
+
         this.anims.create({
             key: 'andar_mago_Azul',
             frames: [
@@ -138,14 +153,14 @@ export class GameScene extends Phaser.Scene {
             repeat: 0
         });
 
-        this.bgm = this.sound.add('bgm', { loop: true, volume: 0.5 });
+        this.bgm = this.sound.add('bgm', { loop: true, volume: 0.5 * this.musicVolume });
         if (!this.bgm.isPlaying) {
             this.bgm.play();
         }
 
         // Crear un sonido de pasos para cada jugador
-        this.walkSounds.set('player1', this.sound.add('walk', { loop: true, volume: 0.3 }));
-        this.walkSounds.set('player2', this.sound.add('walk', { loop: true, volume: 0.3 }));
+        this.walkSounds.set('player1', this.sound.add('walk', { loop: true, volume: 0.3 * this.sfxVolume }));
+        this.walkSounds.set('player2', this.sound.add('walk', { loop: true, volume: 0.3 * this.sfxVolume }));
 
         // Parar pasos cuando la escena se pause (ej. PauseScene) y limpiar sonidos al shutdown
         this.events.on('pause', () => {
@@ -401,7 +416,7 @@ console.log("Holaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
             // Conseguir la llave
             this.physics.add.overlap(player.sprite, this.llave, () => {
                 if (this.sound) {
-                    this.sound.play('recogerLlave', { volume: 0.6 });
+                    this.sound.play('recogerLlave', { volume: 0.6 * this.sfxVolume });
                 }
                 this.llave.destroy();
                 console.log("Llave conseguida");
@@ -453,7 +468,7 @@ console.log("Holaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
                             console.log("Poción de disminuir tamaño creada");
                             this.calderoColl.disableBody(); // desactivar el collider del caldero para mientras estén pequeños puedan atravesarlo (causaba bugs: levitaba)
                             if (this.sound) {
-                                this.sound.play('pequeño', { volume: 0.6 });
+                                this.sound.play('pequeño', { volume: 0.6 * this.sfxVolume });
                             }
                             this.players.forEach(player => {
                                 player.estado_normal = false;
@@ -462,7 +477,7 @@ console.log("Holaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
                     } else {
                         console.log("No tienes las pociones necesarias para crear la poción de disminuir tamaño");
                         if (this.sound) {
-                            this.sound.play('explosion', { volume: 0.5 });
+                            this.sound.play('explosion', { volume: 0.5 * this.sfxVolume });
                         }
 
                         this.mostrarExplosionCaldero();
@@ -570,7 +585,7 @@ console.log("Holaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
 
     abrirCofre() {
         if (this.sound) {
-            this.sound.play('abrirCofre', { volume: 0.5 });
+            this.sound.play('abrirCofre', { volume: 0.5 * this.sfxVolume });
             this.time.delayedCall(2000, () => {
                 this.sound.stopByKey('abrirCofre');
             });
@@ -612,7 +627,7 @@ console.log("Holaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
         if (this.inventario[10 + n]) { // comprobar que se tiene la estrella correspondiente
             console.log("Estrella " + n + " colocada");
             if (this.sound) {
-                this.sound.play('trigger', { volume: 0.6 });
+                this.sound.play('trigger', { volume: 0.6 * this.sfxVolume });
             }
             if (n === 1) {
                 this.boton1.setTexture('botonCR');
@@ -631,7 +646,7 @@ console.log("Holaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
             if (this.qkey.isDown && this.lkey.isDown && this.boton1Activado && this.boton2Activado) { // comprobar que ambos jugadores están pulsando su tecla correspondiente
                 console.log("Campo de fuerza desactivado");
                 if (this.sound) {
-                    this.sound.play('puerta', { volume: 0.7 });
+                    this.sound.play('puerta', { volume: 0.7 * this.sfxVolume });
                 }
                 this.campoFuerza.destroy();
                 this.crearPuertaFinal();

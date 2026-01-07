@@ -34,9 +34,19 @@ export class FinalM1Scene extends Phaser.Scene {
         this.fondo_1M.setImmovable(true);
         this.fondo_1M.body.allowGravity = false;
 
-        // Reproducir música de derrota
+        // Cargar volumen de SFX y reproducir derrota
+        let sfxVolume = 0.7;
+        try {
+            const raw = localStorage.getItem('game_settings');
+            if (raw) {
+                const json = JSON.parse(raw);
+                const sv = Number(json.sfxVolume);
+                const legacy = Number(json.volume);
+                sfxVolume = Number.isFinite(sv) ? sv : (Number.isFinite(legacy) ? legacy : 0.7);
+            }
+        } catch (_) {}
         if (this.sound) {
-            this.sound.play('derrota', { volume: 0.7 });
+            this.sound.play('derrota', { volume: 0.7 * sfxVolume });
         }
 
         this.boton1 = this.add.image(500,500, 'boton')
@@ -74,7 +84,7 @@ export class FinalM1Scene extends Phaser.Scene {
             .setInteractive({ useHandCursor: true })
             .on('pointerover', () => {
                 btn.setStyle({ fill: '#4bffabff' });
-                this.sound.play('hover', { volume: 0.5 });
+                this.sound.play('hover', { volume: 0.5 * sfxVolume });
             })
             .on('pointerout', () => btn.setStyle({ fill: '#000000ff' }))
             .on('pointerdown', () => {
