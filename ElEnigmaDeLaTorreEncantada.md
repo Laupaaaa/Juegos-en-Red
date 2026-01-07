@@ -37,6 +37,8 @@ ALEJANDRO HERNÁNDEZ RUIZ
 
   * [Inspiración y Referencias](#inspiración-y-referencias)
 
+  * [Fuente de texto](#fuente-de-texto)
+
 * **[3\. Sonido	](#3-sonido)**
 
   * [Música	](#música)
@@ -69,6 +71,8 @@ ALEJANDRO HERNÁNDEZ RUIZ
 
   * [Objetos Interactivos / Mejoras](#objetos-interactivos--mejoras)
 
+  * [Inventario](#inventario)
+
 * **[5\. Narrativa](#5-narrativa)**
 
   * [Sinopsis del mundo y trama](#sinopsis-del-mundo-y-trama)
@@ -81,11 +85,17 @@ ALEJANDRO HERNÁNDEZ RUIZ
 
   * [Contexto / ambientación](#contexto--ambientación)
 
-* **[6.Diagrama de Flujo y Prototipo](#6diagrama-de-flujo-y-prototipo)**
+* **[6\.Diagrama de Flujo y Prototipo](#6diagrama-de-flujo-y-prototipo)**
 
-* **[7\. Comunicación y Marketing	](#7-comunicación-y-marketing)**
+* **[7\. Modo Online](#7-modo-online)**
 
-* **[8\. Bibliografía	](#8-bibliografía)**
+  * [API REST](#api-rest)
+
+  * [WebSockets](#websockets)
+
+* **[8\. Comunicación y Marketing	](#8-comunicación-y-marketing)**
+
+* **[9\. Bibliografía	](#9-bibliografía)**
   
 # **1.Introducción** 
 
