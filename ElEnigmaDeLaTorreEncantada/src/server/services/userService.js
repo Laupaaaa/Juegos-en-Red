@@ -1,11 +1,37 @@
+import fs from 'fs';
+import path from 'path';
 
+const STATS_FILE = path.resolve('src/server/data/userStats.json');
+
+function loadStatsFromDisk() {
+  try {
+    if (!fs.existsSync(STATS_FILE)) {
+      return {};
+    }
+
+    const raw = fs.readFileSync(STATS_FILE, 'utf8');
+    return raw ? JSON.parse(raw) : {};
+  } catch (error) {
+    console.warn('[userService] No se pudieron cargar las estadísticas guardadas:', error);
+    return {};
+  }
+}
+
+function persistStats(stats) {
+  try {
+    fs.mkdirSync(path.dirname(STATS_FILE), { recursive: true });
+    fs.writeFileSync(STATS_FILE, JSON.stringify(stats, null, 2), 'utf8');
+  } catch (error) {
+    console.warn('[userService] No se pudieron guardar las estadísticas:', error);
+  }
+}
 
 export function createUserService() {
   // Estado privado: almacén de usuarios logeados
   let loggedInUsers = new Set(); // { 'usuario1', 'usuario2', ... }
   
   // Estado privado: estadísticas de partidas por usuario
-  let userGameStats = {}; // { username: { totalPartidas: 0, tiempoTotal: 0, partidas: [...] } }
+  let userGameStats = loadStatsFromDisk(); // { username: { totalPartidas: 0, tiempoTotal: 0, partidas: [...] } }
 
   /**
    * Realiza login de un usuario
@@ -148,9 +174,13 @@ export function createUserService() {
     console.log(`🎮 PARTIDA: ${username} - Duración: ${(durationMs / 1000).toFixed(2)}s`);
     console.log(`   Promedio: ${(stats.tiempoTotal / stats.totalPartidas / 1000).toFixed(2)}s`);
 
+    // Persistir para próximas partidas
+    persistStats(userGameStats);
+
     return {
       username,
-      partidasJugadas: stats.totalPartidas,
+      totalPartidas: stats.totalPartidas,
+      partidasJugadas: stats.totalPartidas, // alias para compatibilidad
       tiempoPromedio: stats.tiempoTotal / stats.totalPartidas,
       ultimaPartida: durationMs
     };

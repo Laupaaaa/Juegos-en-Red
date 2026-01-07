@@ -1,0 +1,30 @@
+{
+  "dfgsz": {
+    "totalPartidas": 2,
+    "tiempoTotal": 136792,
+    "partidas": [
+      {
+        "duracion": 85630,
+        "fecha": "2026-01-07T08:05:29.273Z"
+      },
+      {
+        "duracion": 51162,
+        "fecha": "2026-01-07T08:06:49.072Z"
+      }
+    ]
+  },
+  "ghmvc": {
+    "totalPartidas": 2,
+    "tiempoTotal": 136759,
+    "partidas": [
+      {
+        "duracion": 85581,
+        "fecha": "2026-01-07T08:05:29.241Z"
+      },
+      {
+        "duracion": 51178,
+        "fecha": "2026-01-07T08:06:49.077Z"
+      }
+    ]
+  }
+}
