@@ -12,7 +12,20 @@ import {
   getLocalGameStatsRanking 
 } from './services/gameStatsService.js';
 
-const API_BASE_URL = 'http://localhost:3000';
+// Construye dinámicamente la URL base de la API para que funcione
+// tanto en local como al acceder desde otro ordenador en la red.
+// - En producción: usa el mismo origen desde el que se sirve el juego
+// - En desarrollo (webpack dev server): cae a localhost:3000 si no hay window
+const API_BASE_URL = (() => {
+  try {
+    if (typeof window !== 'undefined' && window.location && window.location.origin) {
+      return window.location.origin;
+    }
+  } catch (_) {}
+  const host = process.env.API_HOST || 'localhost';
+  const port = process.env.API_PORT || '3000';
+  return `http://${host}:${port}`;
+})();
 
 // ==================== USUARIOS ====================
 
