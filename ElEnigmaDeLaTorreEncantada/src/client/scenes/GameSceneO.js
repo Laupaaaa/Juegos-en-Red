@@ -925,6 +925,7 @@ export class GameSceneO extends Phaser.Scene {
                 this.endGame(data.winnerId);
                 break; 
             case 'playerDisconnected':
+                console.log(data.message)
                 this.handleDisconnection();
                 break;      
                 

@@ -148,6 +148,10 @@ Además, se han utilizado referencias de la Edad Media para el apartado tanto ar
 ## **Escenario Final**
 ![Escenario Final](imagenes/escenario.png)
 
+## **Fuente de texto**
+Para la fuente de texto, se ha decidido buscar una fuente acorde con el estilo visual del juego, una fuente que parezca sacada de la edad media. Por ello, se ha elegido la fuente de texto " [Tagesschrift](https://fonts.google.com/specimen/Tagesschrift)", la cuál refleja ser una tipografía antigua hecha a mano. 
+
+
 
 ---
 
@@ -284,6 +288,10 @@ A lo largo de todo el juego, los magos deberán ir superando distintos tipos de 
 * Trampas: a lo largo del mapa habrá trampas que deberán evitar. De lo contrario, los magos perderán parte de su vida. 
 * Aumento de tamaño: algunos objetos están demasiado altos, y el mago no consigue alcanzarlos. Para ello, deberán usar un hechizo que aumente su tamaño para poder llegar. 
 * Interruptores: en la sala habrá múltiples interruptores que deberán pulsar en el orden correcto para poder avanzar. 
+
+## **Inventario** 
+Dado que "El Enigma De La Torre Encantada" se trata de un juego cooperativo, en ambos modos de juego (local y online), ambos magos contán con un inventario común. Es decir, si un mago coge por ejemplo dos pociones y una vela de la librería, el segundo mago también podrá crear pociones con esos ingredientes, ya que comparten todo entre ellos. Además, para que en todo momento sepan que objetos tienen disponibles, en la pantalla se verá reflejado su inventario, el cual se irá actualizando con las interacciones de ambos magos. 
+
 ---
 
 # **5\. Narrativa** 
@@ -340,7 +348,44 @@ A continuación se presenta un diagrama de flujo en el que se muestra el esquema
 
 ---
 
-# **7\. Comunicación y Marketing** 
+# **7\. Modo Online** 
+Además del juego en local, dónde ambos magos podrán jugar desde un mismo ordenador, se ha implementado un modo online para que cada mago pueda disfrutar de esta aventura desde su propio ordenador (en la parte superior de la pantalla en el centro). 
+
+En este modo, los jugadores podrán ver en todo momento que mago son, mostrandoles a través de un indicador en pantalla en todo momento del número de jugador que son y del color para que nunca estén perdidos.  
+
+## **API REST**
+Para conseguir este modo online, se ha implimentado la arquitectura cliente - servidor utilizando una API REST y se ha hecho uso de los verbos HTTP (GET, POST, PUT y DELETE), así como el manejo de errores posibles que puedan suceder durante el juego.
+
+Antes de comenzar el juego, cada usuario deberá iniciar sesión con su nombre. De esta forma, siempre que inicie sesión en su cuenta, podrá ver sus estadísticas al finalizar una nueva, incluyendo tiempo en completar la última partida, tiempo medio en completar todas las partidas que haya jugado, y el número total de partidas jugadas. 
+
+Una vez el jugador ha iniciado sesión, entrará al menú de inicio, dónde podrá ver a través de un indicador en pantalla (en la parte inferior de la pantalla en el centro) si el servidor está activo en ese momento, y si es así, se podrá ver cómo ha detectado su conexión. Además, cada vez que se conecte un nuevo usuario o que se desconecte un usuario existente, el servidor también le avisará a través de este indicador. 
+
+Si los jugadores están en medio de una partida online y de repente un usuario se desconecta o se cae el servidor, el juego le avisará y no podrá continuar la partida (ya que no podrá comunicarse con el otro mago).
+
+## **WebSockets**
+Algo muy importante para un buen juego online es la comunicación en tiempo real, ya que, sin ella, los jugadores no podrían jugar juntos en una partida. Por ello, se ha implementado una comunicación con WebSockets que permite esta comumincación, enviando mensajes con los inputs entre ambos clientes con una baja latencia y manejando posibles errores. 
+
+Gracias a ello, ambos magos tendrán sus pantallas sincronizadas, pudiendo ver en ambas pantallas las acciones a la vez. Es decir, si un mago se mueve, en la otra pantalla tambien; si crea la poción de disminuir tamaño, en ambas pantallas se harán pequeños; si juntos desactivan el campo de fuerza, ambos magos verán a la vez como desaparece... y así con cada una de las interacciones que realicen con el mapa. 
+
+Además, cuando los jugadores han ganado la partida, la escena final con la decisión del mago ganador, también se encuentra sincronizada. Es decir, una vez ambos magos hayan subido las escaleras, ambos verán la pantalla de la decisión, pero solo uno de ellos podrá interactuar con los botones y decidir su destino. Cuando este jugador decida una de las dos opciones, ambos magos verán el destino escogido.
+
+Por el contrario, si uno de los jugadores mueren, ambos jugadores habrán sido derrotados. En este caso, les saldrá a ambos la pantalla de derrota, explicando cuál de los dos jugadores ha muerto, y permitiendo que cada uno vuelva al menú cuando crear conveniente. 
+
+### Sala de espera 
+Cuando un jugador entre al modo online, entrará en una pantalla en la que (además de volver al menú) tendrá tres opciones:
+- **Entrar a una torre:** De esta forma, se creará una torre pública y el emparejamiento será aleatorio, esperando a que otro jugador se conecte a esa torre aleatoria.
+- **Crear una torre:** El jugador creará una torre privada. Le aparecerá el código de su torre en pantalla y estará a la espera de que otro jugador introduzca dicho código.
+- **Unirse a una torre:** Una vez otro jugador haya creado una torre privada, podrá introducir el código generado para unirse a su misma torre. 
+
+Una vez hayan entrado dos jugadores a la misma torre (independientemente de la opción elegida), la partida se iniciará y su aventura comenzará. 
+
+Además, "El Enigma de la Torre Encantada" busca permitir que todos aquellos jugadores que deseen se enfrenten a la torre. Por ello, no deberán esperar a que la sala esté libre, sino que se podrán mantener múltiples partidas  para que todos los que quieran, puedan jugar en el momento en el que tengan un compañero de aventura. 
+
+
+
+---
+
+# **8\. Comunicación y Marketing** 
 
 ¿Quieres llegar a lo alto de la torre Encantada junto a tus amigos? lánzate en este juego multijugador de puzzles donde arriba solo te espera la verdad y la amistad o la traición. 
 
@@ -354,7 +399,7 @@ Por último, para llegar a un mayor rango de personas y que comprendan mejor el 
 
 ---
 
-# **8\. Bibliografía** 
+# **9\. Bibliografía** 
 
 Toda la historia, personajes, mecánicas, arte y, en general todo el contenido de este documento ha sido fruto de la imaginación de los integrantes del equipo siguiendo la rúbrica y especificaciones del enunciado de la práctica. 
 
