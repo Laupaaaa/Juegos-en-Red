@@ -300,13 +300,6 @@ export class GameSceneO extends Phaser.Scene {
         //     this.visitLibreria = false;
         // }
 
-                        
-        // Sincronizar cambio de inventario con el otro jugador
-        this.ws.send(JSON.stringify({
-            type: 'actualizarInventario',
-            inventario: this.inventario
-        }));
-
         //actualizar inventario en pantalla
         this.actualizarInventarioEnPantalla();
 
@@ -452,12 +445,6 @@ export class GameSceneO extends Phaser.Scene {
                 console.log("Llave conseguida");
                 this.inventario[0] = true; // marcar en el inventario que se ha conseguido la llave
                 this.cero.setAlpha(1);
-                
-                // Sincronizar cambio de inventario con el otro jugador
-                this.ws.send(JSON.stringify({
-                    type: 'actualizarInventario',
-                    inventario: this.inventario
-                }));
             });
 
             let id; 
@@ -620,12 +607,6 @@ export class GameSceneO extends Phaser.Scene {
                 this.doce.setAlpha(1.0); // actualizar inventario en pantalla
             }
             
-            // Enviar actualización del inventario al otro jugador
-            this.ws.send(JSON.stringify({
-                type: 'actualizarInventario',
-                inventario: this.inventario
-            }));
-            
             this.sendMessage({type: 'cambiarSize', estado: 'pequeño'}); 
         }
 
@@ -649,12 +630,6 @@ export class GameSceneO extends Phaser.Scene {
                 this.doce.setAlpha(0.2); // actualizar inventario en pantalla
                 this.estrella = true;
             }
-            
-            // Enviar actualización del inventario al otro jugador
-            this.ws.send(JSON.stringify({
-                type: 'actualizarInventario',
-                inventario: this.inventario
-            }));
         }
     }
 
@@ -926,52 +901,13 @@ export class GameSceneO extends Phaser.Scene {
                 this.handleDaño(data);
                 break;
 
-            case 'Inventario': {
-                // cambios de inventario
-                const llaveAntesRecogida = this.inventario[0];
-                const estrella1AntesTenida = this.inventario[11];
-                const estrella2AntesTenida = this.inventario[12];
-                
+            case 'Inventario': 
                 this.inventario = data.inventario;
-                
-                // Si la llave fue recogida, destruirla en el cliente remoto
-                if (!llaveAntesRecogida && data.inventario[0] && this.llave) {
-                    console.log("Llave recogida por el otro jugador");
-                    this.llave.destroy();
-                }
-                
-                // Si la estrella 1 fue recogida
-                if (!estrella1AntesTenida && data.inventario[11] && this.estrella1) {
-                    console.log("Estrella 1 recogida por el otro jugador");
-                    this.estrella1.destroy();
-                    this.once.setAlpha(1.0);
-                }
-                
-                // Si la estrella 2 fue recogida 
-                if (!estrella2AntesTenida && data.inventario[12] && this.estrella2) {
-                    console.log("Estrella 2 recogida por el otro jugador");
-                    this.estrella2.destroy();
-                    this.doce.setAlpha(1.0);
-                }
-                
-                // Si la estrella 1 fue colocada
-                if (estrella1AntesTenida && !data.inventario[11]) {
-                    console.log("Estrella 1 colocada por el otro jugador");
-                    if (this.boton1) this.boton1.setTexture('botonCR');
-                    if (this.once) this.once.setAlpha(0.2);
-                }
-                
-                // Si la estrella 2 fue colocada
-                if (estrella2AntesTenida && !data.inventario[12]) {
-                    console.log("Estrella 2 colocada por el otro jugador");
-                    if (this.boton2) this.boton2.setTexture('botonCR');
-                    if (this.doce) this.doce.setAlpha(0.2);
-                }
                 
                 this.actualizarInventarioEnPantalla();
                 console.log("Inventario actualizado desde el servidor", this.inventario);
                 break;
-            }
+            
             case 'botonCF':
                 if (data.b === 1) this.boton1Activado = true;
                 else if (data.b === 2) this.boton2Activado = true;
