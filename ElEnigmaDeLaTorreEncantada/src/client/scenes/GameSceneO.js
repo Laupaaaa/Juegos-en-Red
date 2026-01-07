@@ -55,6 +55,9 @@ export class GameSceneO extends Phaser.Scene {
         this.load.image('andarRojo_7', '/imagenes/MagoRojo_Andando_7.png');
         this.load.image('andarRojo_8', '/imagenes/MagoRojo_Andando_8.png');
 
+        //Explosión caldero
+        this.load.spritesheet('explosionCaldero', '/imagenes/explosionCaldero.png', { frameWidth: 200, frameHeight: 200 });
+
         // Interfaz Muerte
         this.load.image('titulo', '/imagenes/pergaminoTitulo.png');
         this.load.image('boton', '/imagenes/botonTexto.png');
@@ -135,6 +138,16 @@ export class GameSceneO extends Phaser.Scene {
             ],
             frameRate: 10,
             repeat: -1
+        });
+
+        this.anims.create({
+            key: 'explosion_caldero',
+            frames: this.anims.generateFrameNumbers('explosionCaldero', {
+                start: 0,
+                end: 16   
+            }),
+            frameRate: 20,
+            repeat: 0
         });
 
         this.bgm = this.sound.add('bgm', { loop: true, volume: 0.5 });
@@ -424,6 +437,24 @@ export class GameSceneO extends Phaser.Scene {
         this.plataformas.create(380, 350, 'estanteR');
 
     }
+
+    mostrarExplosionCaldero() {
+        const explosion = this.add.sprite(
+            this.caldero.x,
+            this.caldero.y - 170, 
+            'explosionCaldero'
+        );
+
+        explosion.setDepth(50); 
+        explosion.setScale(1.2); 
+
+        explosion.play('explosion_caldero');
+
+        explosion.on('animationcomplete', () => {
+            explosion.destroy();
+        });
+    }
+
 
     establecerColisiones() {
         this.players.forEach(player => {
@@ -1030,6 +1061,8 @@ export class GameSceneO extends Phaser.Scene {
             if (this.sound) {
                 this.sound.play('explosion', { volume: 0.5 });
             }
+
+            this.mostrarExplosionCaldero();
 
             if (data.jugadorDañado === 1) {
                 this.dañoJugLeft();
