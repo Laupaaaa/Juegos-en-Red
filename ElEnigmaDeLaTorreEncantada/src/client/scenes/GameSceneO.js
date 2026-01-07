@@ -300,6 +300,13 @@ export class GameSceneO extends Phaser.Scene {
         //     this.visitLibreria = false;
         // }
 
+                        
+        // Sincronizar cambio de inventario con el otro jugador
+        this.ws.send(JSON.stringify({
+            type: 'actualizarInventario',
+            inventario: this.inventario
+        }));
+
         //actualizar inventario en pantalla
         this.actualizarInventarioEnPantalla();
 
@@ -619,13 +626,7 @@ export class GameSceneO extends Phaser.Scene {
                 inventario: this.inventario
             }));
             
-            this.players.forEach(player => {
-                this.time.delayedCall(4000, () => {
-                    player.estado_normal = true;
-                   // volver a activar el collider del caldero
-                    this.calderoColl.enableBody(false, 0, 0, true, true);
-                });
-            });
+            this.sendMessage({type: 'cambiarSize', estado: 'pequeño'}); 
         }
 
 
@@ -925,7 +926,7 @@ export class GameSceneO extends Phaser.Scene {
                 this.handleDaño(data);
                 break;
 
-            case 'Inventario':
+            case 'Inventario': {
                 // cambios de inventario
                 const llaveAntesRecogida = this.inventario[0];
                 const estrella1AntesTenida = this.inventario[11];
@@ -939,28 +940,28 @@ export class GameSceneO extends Phaser.Scene {
                     this.llave.destroy();
                 }
                 
-                // Si la estrella 1 fue recogida (inventario[11] pasó de false a true)
+                // Si la estrella 1 fue recogida
                 if (!estrella1AntesTenida && data.inventario[11] && this.estrella1) {
                     console.log("Estrella 1 recogida por el otro jugador");
                     this.estrella1.destroy();
                     this.once.setAlpha(1.0);
                 }
                 
-                // Si la estrella 2 fue recogida (inventario[12] pasó de false a true)
+                // Si la estrella 2 fue recogida 
                 if (!estrella2AntesTenida && data.inventario[12] && this.estrella2) {
                     console.log("Estrella 2 recogida por el otro jugador");
                     this.estrella2.destroy();
                     this.doce.setAlpha(1.0);
                 }
                 
-                // Si la estrella 1 fue colocada (inventario[11] pasó de true a false)
+                // Si la estrella 1 fue colocada
                 if (estrella1AntesTenida && !data.inventario[11]) {
                     console.log("Estrella 1 colocada por el otro jugador");
                     if (this.boton1) this.boton1.setTexture('botonCR');
                     if (this.once) this.once.setAlpha(0.2);
                 }
                 
-                // Si la estrella 2 fue colocada (inventario[12] pasó de true a false)
+                // Si la estrella 2 fue colocada
                 if (estrella2AntesTenida && !data.inventario[12]) {
                     console.log("Estrella 2 colocada por el otro jugador");
                     if (this.boton2) this.boton2.setTexture('botonCR');
@@ -970,7 +971,7 @@ export class GameSceneO extends Phaser.Scene {
                 this.actualizarInventarioEnPantalla();
                 console.log("Inventario actualizado desde el servidor", this.inventario);
                 break;
-
+            }
             case 'botonCF':
                 if (data.b === 1) this.boton1Activado = true;
                 else if (data.b === 2) this.boton2Activado = true;
@@ -988,6 +989,18 @@ export class GameSceneO extends Phaser.Scene {
             case 'usarCaldero':
                 this.handleCaldero(data);
                 break;
+
+            case 'size':              
+                if(data.estado === 'pequeño'){
+                    this.players.forEach(player => {
+                        this.time.delayedCall(4000, () => {
+                            player.estado_normal = true;
+                        // volver a activar el collider del caldero
+                            this.calderoColl.enableBody(false, 0, 0, true, true);
+                        });
+                    });
+                }
+                break; 
 
             case 'puertaFinal':
                 this.handlePuertaFinal(data);
@@ -1069,7 +1082,7 @@ export class GameSceneO extends Phaser.Scene {
 
         if (data.exito) {
             console.log("Poción de disminuir tamaño creada");
-            this.calderoColl.disableBody(); // desactivar el collider del caldero para mientras estén pequeños puedan atravesarlo (causaba bugs: levitaba)
+            this.calderoColl.disableBody(); // desactivar el collider del caldero para mientras estén pequeños puedan atravesarlo 
             if (this.sound) {
                 this.sound.play('pequeño', { volume: 0.6 });
             }

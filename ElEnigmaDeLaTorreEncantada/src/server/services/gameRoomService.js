@@ -422,6 +422,24 @@ function generateRoomCode() {
   }
 
   /**
+   * Handle player changing size
+   * @param {WebSocket} ws - Player's WebSocket
+   * @param {object} data - Jugador data
+   */
+  function handleSize (ws, data){
+    const roomId = ws.roomId;
+    if (!roomId) return;
+
+    const room = rooms.get(roomId);
+    if (!room) return;
+
+    // avisar a ambos jugadores que tienen que cambiar su tamaño
+    const resultado = { type: 'size', estado:data.estado};
+    room.player1.ws.send(JSON.stringify(resultado));
+    room.player2.ws.send(JSON.stringify(resultado));
+  }
+
+  /**
    * Handle player disconnection
    * @param {WebSocket} ws - Disconnected player's WebSocket
    */
@@ -501,6 +519,7 @@ function generateRoomCode() {
     }
   }
 
+
   return {
     findRoomById,
     findRoomByCode,
@@ -518,6 +537,7 @@ function generateRoomCode() {
     handleLPulsada,
     handlePuertaFinal,
     handleEscenaFinal, 
+    handleSize, 
     handleDisconnect,
     getActiveRoomCount,
     handleSetUsername

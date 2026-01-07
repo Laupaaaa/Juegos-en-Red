@@ -123,7 +123,7 @@ wss.on('connection', (ws) => {
       const data = JSON.parse(message);
 
       switch (data.type) {
-        case `createRoom`:
+        case `createRoom`: {
           const roomInfo = gameRoomService.createRoom(ws);
           if(roomInfo.success){
             ws.send(JSON.stringify({
@@ -141,7 +141,7 @@ wss.on('connection', (ws) => {
             console.error('Error al crear la sala de juego:', roomInfo.message);
           }
           break;
-        
+        }
         case 'setUsername':
           gameRoomService.handleSetUsername(ws, data);
           break;
@@ -209,7 +209,9 @@ wss.on('connection', (ws) => {
         case 'escenaFinal':
           gameRoomService.handleEscenaFinal(ws, data);
           break; 
-
+        case 'cambiarSize':
+          gameRoomService.handleSize(ws, data);
+          break;
         
 
         default:

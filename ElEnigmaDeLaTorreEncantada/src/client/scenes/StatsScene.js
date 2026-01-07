@@ -15,13 +15,16 @@ export class StatsScene extends Phaser.Scene {
         const mode = data?.mode || 'local';
         const lastGameDuration = data?.duration || 0;
 
+        this.boton1 = this.add.image(500, 450, 'boton')
+        this.boton1.setScale(0.1);
+
         // Fondo
-        this.add.rectangle(500, 280, 1000, 560, 0x1a1a2e).setDepth(-1);
+        this.add.rectangle(500, 280, 1000, 560, 0x000000).setDepth(-1).setAlpha(0.7);
 
         // Título
         this.add.text(500, 100, 'TIEMPO DE PARTIDA', {
             fontSize: '32px',
-            fontFamily: 'Tagesschrift',
+            fontFamily: 'Tagesschrift', 
             color: '#4bffabff',
         }).setOrigin(0.5);
 

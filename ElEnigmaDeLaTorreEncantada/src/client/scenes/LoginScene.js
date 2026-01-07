@@ -7,10 +7,14 @@ export class LoginScene extends Phaser.Scene {
     }
 
     preload() {
+        this.load.image('fondoM', '/imagenes/logoSinFondo.png');
     }
 
     create() {
-        this.add.rectangle(500, 280, 1000, 560, 0x1a1a1a);
+        
+        this.fondo = this.add.image(500, 350, 'fondoM')
+        this.fondo.setScale(0.8);
+        // this.add.rectangle(500, 280, 1000, 560, 0x1a1a1a);
 
         const loginForm = document.getElementById('login-form');
         const usernameInput = document.getElementById('username');
